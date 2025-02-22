@@ -26,11 +26,11 @@ local blind = {
 }
 
 blind.press_play = function(self, blind)
-    blind.prepped = true
+    self.prepped = true
 end
 
 blind.drawn_to_hand = function(self, blind)
-    if G.jokers and G.jokers.cards[1] and not G.jokers.cards[1].debuff and blind.prepped then
+    if G.jokers and G.jokers.cards[1] and not G.jokers.cards[1].debuff and self.prepped then
         G.jokers.cards[1]:set_debuff(true)
         G.jokers.cards[1]:juice_up()
         blind:wiggle()
