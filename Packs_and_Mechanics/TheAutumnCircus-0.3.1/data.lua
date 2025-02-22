@@ -19,7 +19,6 @@ data.BUFFERS = {
 	Spectrals = {},
 	Seals = {},
 	Vouchers = {},
-	Oddities = {},
 	Enhancements = {},
 }
 
@@ -85,37 +84,6 @@ data.buffer_register_funcs = {
 			if v.redeem then SMODS.Vouchers[a].redeem = v.redeem end
 			if v.set_badges then SMODS.Vouchers[a].set_badges = v.set_badges end
 			if v.subtitle then SMODS.Vouchers[a].subtitle = v.subtitle end
-		end
-	end,
-	Oddities = function(v)
-		if SMODS.INIT.OddityAPI and TheAutumnCircus.config.enabled_oddities[v.key] and ((not v.load_check) or v.load_check()) then
-			local a = "c_"..TheAutumnCircus.mod_prefix..v.key
-			SMODS.Oddity:new{
-				name = v.name,
-				slug = TheAutumnCircus.mod_prefix..v.key,
-				config = v.config,
-				pos = v.pos,
-				loc_txt = {
-					name = v.name,
-					text = v.text,
-				},
-				rarity = v.rarity,
-				cost = v.cost or 3,
-				cost_mult = 1.0,
-				effect = v.effect,
-				discovered = true,
-				consumeable = true,
-				consumed_on_use = not (v.consumeable == false),
-				atlas = v.atlas,
-				loc_def = v.loc_def,
-				use = v.use,
-				can_use = v.can_use,
-				calculate = v.calculate,
-				set_badges = v.set_badges,
-				yes_pool_flag = v.yes_pool_flag,
-				no_pool_flag = v.no_pool_flag,
-			}:register()
-			if v.subtitle then SMODS.Oddities[a].subtitle = v.subtitle end
 		end
 	end,
 	Enhancements = function(v)

@@ -37,7 +37,7 @@ function Card:generate_UIBox_ability_table()
 	local ret = alias__Card_generate_UIBox_ability_table(self)
 	
 	local key = self.config.center.key
-	local center_obj = SMODS.Jokers[key] or SMODS.Tarots[key] or SMODS.Planets[key] or SMODS.Spectrals[key] or SMODS.Vouchers[key] or SMODS.Oddities[key]
+	local center_obj = SMODS.Jokers[key] or SMODS.Tarots[key] or SMODS.Planets[key] or SMODS.Spectrals[key] or SMODS.Vouchers[key]
 	
 	if center_obj and center_obj.subtitle then
 	
