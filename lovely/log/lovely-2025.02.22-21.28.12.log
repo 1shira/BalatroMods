@@ -1489,3 +1489,132 @@ INFO - [G] 2025-02-22 21:28:19 :: INFO  :: TIMER :: [0000] Injected Shader in 0.
 INFO - [G] 2025-02-22 21:28:19 :: INFO  :: TIMER :: [0001] Injected Keybind in 0.007 ms
 INFO - [G] 2025-02-22 21:28:19 :: INFO  :: TIMER :: [0006] Injected Achievement in 0.069 ms
 INFO - [G] 2025-02-22 21:28:19 :: INFO  :: TIMER :: [0000] Injected [INTERNAL] in 13.632 ms
+INFO - [G] 3	3
+INFO - [G] 3	3
+INFO - [G] 3	3
+INFO - [G] 2	2
+INFO - [G] line not found
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] 2025-02-22 21:36:29 :: ERROR :: StackTrace :: Oops! The game crashed
+[string "C:\users\steamuser\AppData\Roaming\Balatro\Mo..."]:29: attempt to index local 'blind' (a nil value)
+Stack Traceback
+===============
+(1) Lua local 'handler' at file 'main.lua:612'
+	Local variables:
+	 msg = string: "[string \"C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mo...\"]:29: attempt to index local 'blind' (a nil value)"
+	 (*temporary) = Lua function '?' (defined at line 31 of chunk [SMODS _ "src/logging.lua"])
+	 (*temporary) = string: "Oops! The game crashed\
+"
+(2) LÖVE metamethod at file 'boot.lua:352'
+	Local variables:
+	 errhand = Lua function '?' (defined at line 598 of chunk main.lua)
+	 handler = Lua function '?' (defined at line 598 of chunk main.lua)
+(3) Lua method 'drawn_to_hand' at line 29 of chunk '"C:\users\steamuser\AppData\Roaming\Balatro\Mo..."]'
+	Local variables:
+	 self = table: 0x04ba2938  {debuff:table: 0x044c12c8, _saved_d_u:true, original_key:bird, mult:2, mod:table: 0x04522490 (more...)}
+	 blind = nil
+	 (*temporary) = number: 0.177775
+	 (*temporary) = number: -1
+	 (*temporary) = number: -1
+	 (*temporary) = number: 2
+	 (*temporary) = boolean: false
+	 (*temporary) = ee9.007e15  {array:table: 0x07d0f348, sign:1}
+	 (*temporary) = ee9.007e15  {array:table: 0x07d0f348, sign:1}
+	 (*temporary) = boolean: false
+	 (*temporary) = ee9.007e15  {array:table: 0x07d0f348, sign:1}
+	 (*temporary) = string: "attempt to index local 'blind' (a nil value)"
+(4) Lua method 'drawn_to_hand' at file 'blind.lua:629'
+	Local variables:
+	 self = table: 0x0856aa98  {click_offset:table: 0x0856ae40, static_rotation:false, ambient_tilt:0.3 (more...)}
+	 obj = table: 0x04ba2938  {debuff:table: 0x044c12c8, _saved_d_u:true, original_key:bird, mult:2, mod:table: 0x04522490 (more...)}
+(5) Lua field 'func' at file 'game.lua:3361'
+(6) Lua method 'handle' at file 'engine/event.lua:99'
+	Local variables:
+	 self = table: 0x0400d4c0  {start_timer:true, timer:TOTAL, blockable:true, trigger:immediate, func:function: 0x06a19910 (more...)}
+	 _results = table: 0x042df130  {blocking:true, pause_skip:false, time_done:false, completed:false}
+(7) Lua method 'update' at file 'engine/event.lua:182'
+	Local variables:
+	 self = table: 0x03e39d00  {queue_last_processed:489.06666666655, queues:table: 0x03e39d28, queue_dt:0.016666666666667 (more...)}
+	 dt = number: 0.00831997
+	 forced = nil
+	 (for generator) = C function: next
+	 (for state) = table: 0x03e39d28  {unlock:table: 0x03eb6e68, other:table: 0x03eb6f08, tutorial:table: 0x03eb6eb8 (more...)}
+	 (for control) = number: nan
+	 k = string: "base"
+	 v = table: 0x03eb6e90  {1:table: 0x085aec28, 2:table: 0x04014068, 3:table: 0x0400d4c0, 4:table: 0x04459560 (more...)}
+	 blocked = boolean: false
+	 i = number: 3
+	 results = table: 0x042df130  {blocking:true, pause_skip:false, time_done:false, completed:false}
+(8) Lua upvalue 'gameUpdateRef' at file 'game.lua:2631'
+	Local variables:
+	 self = table: 0x03cf08a0  {F_GUIDE:false, F_CRASH_REPORTS:false, F_QUIT_BUTTON:true, HUD_tags:table: 0x08b64bd8 (more...)}
+	 dt = number: 0.00831997
+	 http_resp = nil
+(9) Lua upvalue 'upd' at Steamodded file 'src/ui.lua:84' 
+	Local variables:
+	 self = table: 0x03cf08a0  {F_GUIDE:false, F_CRASH_REPORTS:false, F_QUIT_BUTTON:true, HUD_tags:table: 0x08b64bd8 (more...)}
+	 dt = number: 0.00831997
+(10) Lua upvalue 'game_updateref' at file 'main.lua:1750'
+	Local variables:
+	 self = table: 0x03cf08a0  {F_GUIDE:false, F_CRASH_REPORTS:false, F_QUIT_BUTTON:true, HUD_tags:table: 0x08b64bd8 (more...)}
+	 dt = number: 0.00831997
+(11) Lua method 'update' at file 'other/colours.lua:1025' (from mod with id MoreFluff)
+	Local variables:
+	 self = table: 0x03cf08a0  {F_GUIDE:false, F_CRASH_REPORTS:false, F_QUIT_BUTTON:true, HUD_tags:table: 0x08b64bd8 (more...)}
+	 dt = number: 0.00831997
+(12) Lua upvalue 'oldupd' at file 'main.lua:992'
+	Local variables:
+	 dt = number: 0.00831997
+(13) Lua field 'update' at file 'main.lua:1777'
+	Local variables:
+	 dt = number: 0.00831997
+(14) Lua function '?' at file 'main.lua:931' (best guess)
+(15) global C function 'xpcall'
+(16) LÖVE function at file 'boot.lua:377' (best guess)
+	Local variables:
+	 func = Lua function '?' (defined at line 902 of chunk main.lua)
+	 inerror = boolean: true
+	 deferErrhand = Lua function '(LÖVE Function)' (defined at line 348 of chunk [love "boot.lua"])
+	 earlyinit = Lua function '(LÖVE Function)' (defined at line 355 of chunk [love "boot.lua"])
+
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] 2025-02-22 21:36:29 :: INFO  :: StackTrace :: Additional Context:
+Balatro Version: 1.0.1n-FULL
+Modded Version: 1.0.0~ALPHA-1421b-STEAMODDED
+LÖVE Version: 11.5.0
+Lovely Version: 0.7.1
+Platform: Windows
+Steamodded Mods:
+    1: Feed the Vampire by Morpline [ID: FTV]
+    2: Absolute Deck by Steamo [ID: AbsoluteDeck]
+    3: Hold For Final Hand Score by Wiwiweb [ID: HoldForFinalHandScore]
+    4: Myst's Boss Blinds by Mysthaps [ID: MystBlinds, Version: 1.2.2]
+    5: Balatro+ by SomeCoder99 [ID: balatro_plus, Version: 1.0.1]
+    6: Yuri Blueprint Brainstorm  by eaze [ID: DereBS]
+    7: SDM_0's Stuff by SDM_0 [ID: sdm0sstuff, Version: 1.6.4k]
+    8: Talisman by MathIsFun_, Mathguy24, jenwalter666, cg-223 [ID: Talisman, Version: 2.0.2, Uses Lovely]
+        Break Infinity: omeganum
+    9: The Autumn Circus by AutumnMood [ID: TheAutumnCircus]
+    10: Handy by SleepyG11 [ID: Handy, Version: 1.3.2]
+    11: Tetrapak by tetraminus [ID: tetraminus_tetrapak]
+    12: Maxine's Joker Pack by MaxIsJoe [ID: MIJ, Version: 1.0.0]
+    13: Sylvie's Silliness by NewtTheFish [ID: SylvieSilly, Priority: 25]
+    14: Themed Decks by Blizzow [ID: ThemedDecks]
+    15: Nihility Challenge by ascriptmaster [ID: NihilityChallenge]
+    16: Ultimate Random Deck by Steamo [ID: UltimateRandomDeck]
+    17: Math Blinds by Bazinga_9000, tauttie [ID: MathBlinds, Version: 1.2.3]
+    18: Faster Stakes Unlock by Wiwiweb [ID: FasterStakesUnlock]
+    19: Joker Only Deck by Mojimoon [ID: JokerOnlyDeck]
+    20: More Fluff by notmario [ID: MoreFluff, Version: 1.0.2-ja]
+    21: Mika's Mod Collection by Mikadoe [ID: MikasMods]
+    22: Themed Tarots by Blizzow [ID: ThemedTarots]
+    23: Themed Jokers by Blizzow [ID: ThemedJokers]
+    24: Legendere Jokers by eaze [ID: DereJkr]
+    25: Last Stand Challenge by Tucaonormal [ID: LastStand]
+    26: Stylish Sleeves Challenge by Aure [ID: StylishSleeves]
+    27: PauperDeck by Aiksi [ID: pauperdeck, Version: 1.1]
+Lovely Mods:

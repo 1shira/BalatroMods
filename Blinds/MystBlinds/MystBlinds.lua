@@ -14,7 +14,6 @@ local blind_list = {
     "monster",
     "insect",
     "final_silence",
-    "bird",
     "ancestor",
     "final_mist",
     "fruit",
