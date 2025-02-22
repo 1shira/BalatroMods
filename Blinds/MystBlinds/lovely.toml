@@ -1,0 +1,17 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "local loc_target = localize{type = 'raw_descriptions', key = blind_choice.config.key, set = 'Blind', vars = {localize(G.GAME.current_round.most_played_poker_hand, 'poker_hands')}}"
+position = "after"
+payload = '''
+if blind_choice.config.key == 'bl_myst_ancestor' then
+    loc_target = localize{type = 'raw_descriptions', key = blind_choice.config.key, set = 'Blind', vars = {math.ceil((G.GAME.round + 1) * 1.5)}}
+end
+'''
+match_indent = true
+overwrite = false

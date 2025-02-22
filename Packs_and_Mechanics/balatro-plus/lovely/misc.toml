@@ -1,0 +1,308 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+# Change SPLASH_LOGO
+[[patches]]
+[patches.regex]
+target = "game.lua"
+pattern = '''[ \t]*G\.SPLASH_LOGO = Sprite\(0, 0, 
+[ \t]*13\*SC_scale, 
+[ \t]*13\*SC_scale\*\(G.ASSET_ATLAS\["balatro"\]\.py/G.ASSET_ATLAS\["balatro"\]\.px\),
+[ \t]*G\.ASSET_ATLAS\["balatro"\], \{x=0,y=0\}\)'''
+position = "at"
+payload = '''
+local key = "balatro"
+if BalatroPlus.config.replace_splash_logo then
+  key = "bplus_balatro_plus"
+end
+
+G.SPLASH_LOGO = Sprite(
+  0,
+  0, 
+  13 * SC_scale, 
+  13 * SC_scale * (G.ASSET_ATLAS[key].py / G.ASSET_ATLAS[key].px),
+  G.ASSET_ATLAS[key],
+  { x = 0, y = 0 }
+)
+'''
+
+# Add option param for create_card and get_current_pool function
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "function create_card(_type, area, legendary, _rarity, skip_materialize, soulable, forced_key, key_append)"
+position = "at"
+match_indent = true
+payload = """
+function create_card(_type, area, legendary, _rarity, skip_materialize, soulable, forced_key, key_append, opt)
+  opt = opt or {}
+"""
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "local _pool, _pool_key = get_current_pool(_type, _rarity, legendary, key_append)"
+position = "at"
+match_indent = true
+payload = """
+local _pool, _pool_key = get_current_pool(_type, _rarity, legendary, key_append, { forced_rarity = opt.forced_rarity })
+"""
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "function get_current_pool(_type, _rarity, _legendary, _append)"
+position = "at"
+match_indent = true
+payload = """
+function get_current_pool(_type, _rarity, _legendary, _append, opt)
+  opt = opt or {}
+"""
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "rarity = (_legendary and 4) or (rarity > 0.95 and 3) or (rarity > 0.7 and 2) or 1"
+position = "after"
+match_indent = true
+payload = """
+if opt.forced_rarity then
+  rarity = opt.forced_rarity
+end
+"""
+
+# Add some colors to loc_colour function
+[[patches]]
+[patches.pattern]
+target = "functions/misc_functions.lua"
+pattern = "G.ARGS.LOC_COLOURS = G.ARGS.LOC_COLOURS or {"
+position = "after"
+match_indent = true
+payload = """
+  eternal = G.C.ETERNAL,
+  rental = G.C.RENTAL,
+  bplus_sigil = G.C.SET.sigil,
+"""
+
+# Discard Repetitions
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "for i=1, highlighted_count do"
+position = "at"
+match_indent = true
+payload = """
+local reps = {1}
+for _, joker in ipairs(G.jokers.cards) do
+  local effect = joker:calculate_joker { discard_repetition = true }
+  if effect and next(effect) and effect.repetitions then
+    if not effect.card then
+      effect.card = joker
+    end
+    for rep = 1, effect.repetitions do
+      reps[#reps + 1] = effect
+    end
+  end
+end
+
+for i=1, highlighted_count do
+  for i2 = 1, #reps do
+    if reps[i2] ~= 1 and G.GAME.blind.name == "bl_bplus_lazy" and not G.GAME.blind.disabled then
+      local already = {}
+      for i = 2, #reps do
+        if not already[reps[i]] then
+          already[reps[i]] = true
+          bplus_bl_lazy_trigger(reps[i].card)
+        end
+      end
+      break
+    end
+    local effects = {}
+    if not G.hand.highlighted[i].ability.removed_by_discard then
+"""
+
+[[patches]]
+[patches.regex]
+target = "functions/state_events.lua"
+pattern = '''[ \t]*G\.hand\.highlighted\[i\]:calculate_seal\(\{discard = true\}\)
+[ \t]*local removed = false
+'''
+position = "at"
+payload = """
+local removed = false
+local eval
+eval = eval_card(G.hand.highlighted[i], {discard = true, full_hand = G.hand.highlighted})
+
+if eval.seals then
+  effects[#effects + 1] = eval.seals
+end
+
+if eval.jokers then
+  effects[#effects + 1] = eval.jokers
+end
+
+if eval and eval.remove then
+    removed = true
+end
+"""
+
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "eval = G.jokers.cards[j]:calculate_joker({discard = true, other_card =  G.hand.highlighted[i], full_hand = G.hand.highlighted})"
+position = "at"
+match_indent = true
+payload = """
+eval = G.jokers.cards[j]:calculate_joker({discard = true, other_card =  G.hand.highlighted[i], full_hand = G.hand.highlighted, callback = function(card, eval)
+  if eval then
+    if eval.remove then
+      removed = true
+    end
+    if next(eval) then
+      if not eval.card then
+        eval.card = card
+      end
+      effects[#effects + 1] = eval
+    end
+  end
+  if true then
+    return
+  end
+"""
+
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "table.insert(cards, G.hand.highlighted[i])"
+position = "before"
+match_indent = true
+payload = """
+    if reps[i2] ~= 1 and next(effects) then
+      card_eval_status_text(reps[i2].card, 'extra', nil, nil, nil, reps[i2])
+    end
+
+    for _, effect in ipairs(effects) do
+      if effect.func then effect.func() end
+      if not effect.silent then
+        card_eval_status_text(effect.card, 'extra', nil, 1, nil, effect)
+      end
+    end
+
+    if removed then
+      G.hand.highlighted[i].ability.removed_by_discard = true
+    end
+  end
+end
+
+local removed = G.hand.highlighted[i].ability.removed_by_discard
+"""
+
+# Add 'enhance' context for Joker trigger
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "local old_center = self.config.center"
+position = "before"
+match_indent = true
+payload = """
+if not initial then
+  if G.jokers and not self._bplus_copying_card and self.config.card.name and center ~= G.P_CENTERS.c_base then
+    for _, joker in ipairs(G.jokers.cards) do
+      joker:calculate_joker { enhance = true, other_card = self, from = self.config.center, to = center }
+    end
+  end
+end
+
+"""
+
+# Prevent copy_card to triggering 'enhance' context for joker trigger
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "new_card:set_ability(other.config.center)"
+position = "at"
+match_indent = true
+payload = """
+new_card._bplus_copying_card = true
+new_card:set_ability(other.config.center)
+new_card._bplus_copying_card = nil
+"""
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if amt > 0 or amt < 0 then"
+position = "before"
+match_indent = true
+payload = """
+if extra and extra.message then
+  text = extra.message
+end
+"""
+
+# Add return value for Purple Seal
+[[patches]]
+[patches.regex]
+target = "card.lua"
+pattern = '''[ \t]*if self\.seal == 'Purple' and #G\.consumeables\.cards \+ G\.GAME\.consumeable_buffer < G.consumeables\.config\.card_limit then
+[ \t]*G\.GAME\.consumeable_buffer = G\.GAME\.consumeable_buffer \+ 1
+'''
+position = "after"
+payload = """
+      return {
+        func = function()
+"""
+
+[[patches]]
+[patches.regex]
+target = "card.lua"
+pattern = '''[ \t]*card_eval_status_text\(self, 'extra', nil, nil, nil, \{message = localize\('k_plus_tarot'\), colour = G\.C\.PURPLE\}\)
+[ \t]*end
+[ \t]*end
+[ \t]*end
+'''
+position = "at"
+payload = """
+        end,
+        message = localize('k_plus_tarot'),
+        colour = G.C.PURPLE,
+        card = self,
+      }
+    end
+  end
+end
+"""
+
+# Modify probabilities logic
+[[patches]]
+[patches.regex]
+target = "card.lua"
+pattern = '''G.GAME.probabilities\.(?<key>[a-zA-Z0-9_]+)'''
+position = "at"
+payload = '''probability("$key")'''
+[[patches]]
+[patches.regex]
+target = "blind.lua"
+pattern = '''G.GAME.probabilities\.(?<key>[a-zA-Z0-9_]+)'''
+position = "at"
+payload = '''probability("$key")'''
+[[patches]]
+[patches.regex]
+target = "functions/state_events.lua"
+pattern = '''G.GAME.probabilities\.(?<key>[a-zA-Z0-9_]+)'''
+position = "at"
+payload = '''probability("$key")'''
+[[patches]]
+[patches.regex]
+target = "functions/button_callbacks.lua"
+pattern = '''G.GAME.probabilities\.(?<key>[a-zA-Z0-9_]+)'''
+position = "at"
+payload = '''probability("$key")'''
+[[patches]]
+[patches.regex]
+target = "functions/common_events.lua"
+pattern = '''G.GAME.probabilities\.(?<key>[a-zA-Z0-9_]+)'''
+position = "at"
+payload = '''probability("$key")'''
