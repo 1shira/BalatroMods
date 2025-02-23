@@ -18,20 +18,22 @@ local j = {
 }
 
 function j:loc_vars(_, card)
-  return { vars = { card.ability.extra, card.ability.mult } }
+  return { vars = { card.ability.extra, card.ability.mult, card.ability.triggered } }
 end
 
 function j:calculate(card, ctx)
   if ctx.joker_main and card.ability.mult > 0 then
+    card.ability.triggered = false
     return {
       message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.mult } },
       mult_mod = card.ability.mult,
       colour = G.C.MULT,
     }
-  elseif ctx.after and not ctx.blueprint then
+  elseif ctx.after and not ctx.blueprint and not card.ability.triggered then
+    card.ability.triggered = true
     local destroyed
-    for i = #ctx.full_hand, 1, -1 do
-      local c = ctx.full_hand[i]
+    for i = #G.play.cards, 1, -1 do
+      local c = G.play.cards[i]
       if not c.removed and not c.shattered and not c.destroyed then
         destroyed = c
         c.destroyed = true

@@ -1490,3 +1490,156 @@ INFO - [G] 2025-02-23 12:20:16 :: INFO  :: TIMER :: [0000] Injected [INTERNAL] i
 INFO - [G] ERROR LOADING GAME: Card area 'shop_booster' not instantiated before load
 INFO - [G] ERROR LOADING GAME: Card area 'shop_jokers' not instantiated before load
 INFO - [G] ERROR LOADING GAME: Card area 'shop_vouchers' not instantiated before load
+INFO - [G] line not found
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] 2025-02-23 12:26:52 :: ERROR :: StackTrace :: Oops! The game crashed
+[SMODS balatro_plus "src/jokers/paper_shredder.lua"]:33: attempt to get length of field 'full_hand' (a nil value)
+Stack Traceback
+===============
+(1) Lua local 'handler' at file 'main.lua:612'
+	Local variables:
+	 msg = string: "[SMODS balatro_plus \"src/jokers/paper_shredder.lua\"]:33: attempt to get length of field 'full_hand' (a nil value)"
+	 (*temporary) = Lua function '?' (defined at line 31 of chunk [SMODS _ "src/logging.lua"])
+	 (*temporary) = string: "Oops! The game crashed\
+"
+(2) LÖVE metamethod at file 'boot.lua:352'
+	Local variables:
+	 errhand = Lua function '?' (defined at line 598 of chunk main.lua)
+	 handler = Lua function '?' (defined at line 598 of chunk main.lua)
+(3) Lua method 'calculate' at file 'src/jokers/paper_shredder.lua:33' (from mod with id balatro_plus)
+	Local variables:
+	 self = table: 0x04a9cbe8  {loc_vars:function: 0x04000d58, _saved_d_u:true, original_key:paper_shredder (more...)}
+	 card = table: 0x04b05098  {click_offset:table: 0x04b05440, static_rotation:false, ambient_tilt:0.2 (more...)}
+	 ctx = table: 0x04e339c8  {after:true, mmc_scored_chips:296, card:table: 0x03f1da58}
+	 destroyed = nil
+	 (*temporary) = nil
+	 (*temporary) = number: 9.0072e+15
+	 (*temporary) = number: 10
+	 (*temporary) = number: 2
+	 (*temporary) = boolean: false
+	 (*temporary) = ee9.007e15  {array:table: 0x10e9b0f0, sign:1}
+	 (*temporary) = ee9.007e15  {array:table: 0x10e9b0f0, sign:1}
+	 (*temporary) = boolean: false
+	 (*temporary) = string: "attempt to get length of field 'full_hand' (a nil value)"
+(4) Lua upvalue 'ccj' at file 'card.lua:2472'
+	Local variables:
+	 self = table: 0x04b05098  {click_offset:table: 0x04b05440, static_rotation:false, ambient_tilt:0.2 (more...)}
+	 context = table: 0x04e339c8  {after:true, mmc_scored_chips:296, card:table: 0x03f1da58}
+	 obj = table: 0x04a9cbe8  {loc_vars:function: 0x04000d58, _saved_d_u:true, original_key:paper_shredder (more...)}
+(5) Lua method 'calculate_joker' at file 'main.lua:4512'
+	Local variables:
+	 self = table: 0x04b05098  {click_offset:table: 0x04b05440, static_rotation:false, ambient_tilt:0.2 (more...)}
+	 context = table: 0x04e339c8  {after:true, mmc_scored_chips:296, card:table: 0x03f1da58}
+(6) Lua global 'eval_card' at file 'functions/common_events.lua:755'
+	Local variables:
+	 card = table: 0x04b05098  {click_offset:table: 0x04b05440, static_rotation:false, ambient_tilt:0.2 (more...)}
+	 context = table: 0x04e339c8  {after:true, mmc_scored_chips:296, card:table: 0x03f1da58}
+	 ret = table: 0x03e639e8  {}
+	 post_trig = table: 0x03e63a10  {}
+	 areas = table: 0x03e63a38  {1:table: 0x10dd5530, 2:table: 0x03f1da58, 3:table: 0x04d6a138}
+	 area_set = table: 0x03e63a80  {table: 0x04d6a138:true, table: 0x03f1da58:true, table: 0x10dd5530:true (more...)}
+(7) Lua upvalue 'g_funcs_evaluate_play' at file 'MikasModCollection.lua:6118' (from mod with id MikasMods)
+	Local variables:
+	 self = nil
+	 e = nil
+	 (for index) = number: 1
+	 (for limit) = number: 1
+	 (for step) = number: 1
+	 i = number: 1
+(8) Lua field 'evaluate_play' at file 'src/blind.lua:3' (from mod with id balatro_plus)
+	Local variables:
+	 e = nil
+(9) Lua field 'func' at file 'functions/state_events.lua:480'
+(10) Lua method 'handle' at file 'engine/event.lua:99'
+	Local variables:
+	 self = table: 0x049ebd70  {start_timer:true, timer:TOTAL, blockable:true, trigger:immediate, func:function: 0x0409e4f8 (more...)}
+	 _results = table: 0x043aaef0  {blocking:true, pause_skip:false, time_done:false, completed:false}
+(11) Lua method 'update' at file 'engine/event.lua:182'
+	Local variables:
+	 self = table: 0x04a501e8  {queue_last_processed:396.09999999997, queues:table: 0x04a50210, queue_dt:0.016666666666667 (more...)}
+	 dt = number: 0.00352019
+	 forced = nil
+	 (for generator) = C function: next
+	 (for state) = table: 0x04a50210  {unlock:table: 0x04a50300, other:table: 0x04a503a0, tutorial:table: 0x04a50350 (more...)}
+	 (for control) = number: nan
+	 k = string: "base"
+	 v = table: 0x04a50328  {1:table: 0x06843f10, 2:table: 0x049ebd70, 3:table: 0x04b3c210, 4:table: 0x04b3c040 (more...)}
+	 blocked = boolean: false
+	 i = number: 2
+	 results = table: 0x043aaef0  {blocking:true, pause_skip:false, time_done:false, completed:false}
+(12) Lua upvalue 'gameUpdateRef' at file 'game.lua:2634'
+	Local variables:
+	 self = table: 0x03cd8890  {F_GUIDE:false, F_CRASH_REPORTS:false, F_QUIT_BUTTON:true, HUD_tags:table: 0x0656e400 (more...)}
+	 dt = number: 0.00352019
+	 http_resp = nil
+(13) Lua upvalue 'upd' at Steamodded file 'src/ui.lua:84' 
+	Local variables:
+	 self = table: 0x03cd8890  {F_GUIDE:false, F_CRASH_REPORTS:false, F_QUIT_BUTTON:true, HUD_tags:table: 0x0656e400 (more...)}
+	 dt = number: 0.00352019
+(14) Lua upvalue 'game_updateref' at file 'main.lua:4394'
+	Local variables:
+	 self = table: 0x03cd8890  {F_GUIDE:false, F_CRASH_REPORTS:false, F_QUIT_BUTTON:true, HUD_tags:table: 0x0656e400 (more...)}
+	 dt = number: 0.00352019
+(15) Lua method 'update' at file 'other/colours.lua:1026' (from mod with id MoreFluff)
+	Local variables:
+	 self = table: 0x03cd8890  {F_GUIDE:false, F_CRASH_REPORTS:false, F_QUIT_BUTTON:true, HUD_tags:table: 0x0656e400 (more...)}
+	 dt = number: 0.00352019
+(16) Lua upvalue 'love_update_ref' at file 'main.lua:992'
+	Local variables:
+	 dt = number: 0.00352019
+(17) Lua upvalue 'oldupd' at file 'main.lua:3129'
+	Local variables:
+	 dt = number: 0.00352019
+(18) Lua field 'update' at file 'main.lua:4421'
+	Local variables:
+	 dt = number: 0.00352019
+(19) Lua function '?' at file 'main.lua:931' (best guess)
+(20) global C function 'xpcall'
+(21) LÖVE function at file 'boot.lua:377' (best guess)
+	Local variables:
+	 func = Lua function '?' (defined at line 902 of chunk main.lua)
+	 inerror = boolean: true
+	 deferErrhand = Lua function '(LÖVE Function)' (defined at line 348 of chunk [love "boot.lua"])
+	 earlyinit = Lua function '(LÖVE Function)' (defined at line 355 of chunk [love "boot.lua"])
+
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] 2025-02-23 12:26:52 :: INFO  :: StackTrace :: Additional Context:
+Balatro Version: 1.0.1n-FULL
+Modded Version: 1.0.0~ALPHA-1421b-STEAMODDED
+LÖVE Version: 11.5.0
+Lovely Version: 0.7.1
+Platform: Windows
+Steamodded Mods:
+    1: Feed the Vampire by Morpline [ID: FTV]
+    2: Hold For Final Hand Score by Wiwiweb [ID: HoldForFinalHandScore]
+    3: Myst's Boss Blinds by Mysthaps [ID: MystBlinds, Version: 1.2.2]
+    4: Balatro+ by SomeCoder99 [ID: balatro_plus, Version: 1.0.1]
+    5: Absolute Deck by Steamo [ID: AbsoluteDeck]
+    6: Yuri Blueprint Brainstorm  by eaze [ID: DereBS]
+    7: Talisman by MathIsFun_, Mathguy24, jenwalter666, cg-223 [ID: Talisman, Version: 2.0.2, Uses Lovely]
+        Break Infinity: omeganum
+    8: Sylvie's Silliness by NewtTheFish [ID: SylvieSilly, Priority: 25]
+    9: Handy by SleepyG11 [ID: Handy, Version: 1.3.2, Uses Lovely]
+    10: The Autumn Circus by AutumnMood [ID: TheAutumnCircus]
+    11: Maxine's Joker Pack by MaxIsJoe [ID: MIJ, Version: 1.0.0]
+    12: Tetrapak by tetraminus [ID: tetraminus_tetrapak]
+    13: Themed Decks by Blizzow [ID: ThemedDecks]
+    14: Nihility Challenge by ascriptmaster [ID: NihilityChallenge]
+    15: Ultimate Random Deck by Steamo [ID: UltimateRandomDeck]
+    16: Math Blinds by Bazinga_9000, tauttie [ID: MathBlinds, Version: 1.2.3]
+    17: Faster Stakes Unlock by Wiwiweb [ID: FasterStakesUnlock]
+    18: Joker Only Deck by Mojimoon [ID: JokerOnlyDeck]
+    19: SDM_0's Stuff by SDM_0 [ID: sdm0sstuff, Version: 1.6.4k]
+    20: More Fluff by notmario [ID: MoreFluff, Version: 1.0.3-ja]
+    21: Mika's Mod Collection by Mikadoe [ID: MikasMods]
+    22: Themed Tarots by Blizzow [ID: ThemedTarots]
+    23: Themed Jokers by Blizzow [ID: ThemedJokers]
+    24: Legendere Jokers by eaze [ID: DereJkr]
+    25: Stylish Sleeves Challenge by Aure [ID: StylishSleeves]
+    26: Last Stand Challenge by Tucaonormal [ID: LastStand]
+    27: PauperDeck by Aiksi [ID: pauperdeck, Version: 1.1]
+Lovely Mods:
