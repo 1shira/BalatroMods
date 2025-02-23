@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '64d095a134931b73ab30249f53301f9f3f147926623be7769668977317bf6993'
+LOVELY_INTEGRITY = 'a96869ba40a54890846acfc72480e655f0fc6b91d1d40ab0e977c84cc61f4445'
 
 ---@class Controller
 Controller = Object:extend()
@@ -1085,6 +1085,7 @@ function Controller:queue_R_cursor_press(x, y)
     if self.locks.frame then return end
     if not G.SETTINGS.paused and G.hand and G.hand.highlighted[1] then 
         if (G.play and #G.play.cards > 0) or
+        Handy.deselect_hand.should_prevent() or
         (self.locked) or 
         (self.locks.frame) or
         (G.GAME.STOP_USE and G.GAME.STOP_USE > 0) then return end

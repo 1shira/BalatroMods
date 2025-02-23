@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'c36f3cd5ec1fbf90a2aaf5e437582fe52dd275e4245c61fb7e1b5bbb614c7a4a'
+LOVELY_INTEGRITY = 'dc99ccd4b0994835364e6a38b57cfca909d53388752f348e7a35f5910aca34af'
 
 --Class
 Game = Object:extend()
@@ -2138,6 +2138,7 @@ function Game:start_run(args)
     selected_back = get_deck_from_name(selected_back)
     self.GAME = saveTable and saveTable.GAME or self:init_game_object()
     if (not saveTable or not saveTable.GAME) and Talisman and Talisman.igo then self.GAME = Talisman.igo(self.GAME) end
+    Handy.UI.init()
     self.GAME.modifiers = self.GAME.modifiers or {}
     self.GAME.stake = args.stake or self.GAME.stake or 1
     self.GAME.STOP_USE = 0
@@ -2607,12 +2608,14 @@ function Game:update(dt)
 
         if (G.STATE == G.STATES.HAND_PLAYED) or (G.STATE == G.STATES.NEW_ROUND) then 
             G.ACC = math.min((G.ACC or 0) + dt*0.2*self.SETTINGS.GAMESPEED, 16)
+             elseif Handy.insta_cash_out.is_skipped then G.ACC = 999 
         else
             G.ACC = 0
         end
 
         self.SPEEDFACTOR = (G.STAGE == G.STAGES.RUN and not G.SETTINGS.paused and not G.screenwipe) and self.SETTINGS.GAMESPEED or 1
         self.SPEEDFACTOR = self.SPEEDFACTOR + math.max(0, math.abs(G.ACC) - 2)
+        self.SPEEDFACTOR = self.SPEEDFACTOR * Handy.speed_multiplier.value or 1
 
         self.TIMERS.TOTAL = self.TIMERS.TOTAL + dt*(self.SPEEDFACTOR)
 
@@ -3136,7 +3139,8 @@ end
 function Game:update_selecting_hand(dt)
     if not self.deck_preview and not G.OVERLAY_MENU and (
         (self.deck and self.deck.cards[1] and self.deck.cards[1].states.collide.is and ((not self.deck.cards[1].states.drag.is) or self.CONTROLLER.HID.touch) and (not self.CONTROLLER.HID.controller)) or 
-        G.CONTROLLER.held_buttons.triggerleft) then
+        G.CONTROLLER.held_buttons.triggerleft or Handy.show_deck_preview.is_hold
+) then
         if self.buttons then
             self.buttons.states.visible = false
         end
@@ -3148,7 +3152,8 @@ function Game:update_selecting_hand(dt)
             blocking = false,
             blockable = false,
             func = function()
-                if self.deck_preview and not (((self.deck and self.deck.cards[1] and self.deck.cards[1].states.collide.is and not self.CONTROLLER.HID.controller)) or G.CONTROLLER.held_buttons.triggerleft) then 
+                if self.deck_preview and not (((self.deck and self.deck.cards[1] and self.deck.cards[1].states.collide.is and not self.CONTROLLER.HID.controller)) or G.CONTROLLER.held_buttons.triggerleft or Handy.show_deck_preview.is_hold
+) then 
                     self.deck_preview:remove()
                     self.deck_preview = nil
                     local _card = G.CONTROLLER.focused.target
@@ -3451,6 +3456,7 @@ function Game:update_round_eval(dt)
                                     play_sound('cardFan2')
                                     delay(0.1)
                                     G.FUNCS.evaluate_round()
+                                    Handy.insta_cash_out.can_skip = true
                                     return true
                             end
                         end

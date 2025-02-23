@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'ed2c12afdada4baae23552a53ca580da9ae276b9012f8150052dde6fe5fa8865'
+LOVELY_INTEGRITY = 'f28a9ab9f6bca5d57934752dff764375ac5864201aab9c8fba84928caf514a20'
 
 --Moves the tutorial to the next step in queue
 --
@@ -2636,6 +2636,7 @@ end
                 G.STATE = G.GAME.PACK_INTERRUPT
                 ease_background_colour_blind(G.GAME.PACK_INTERRUPT)
                 G.GAME.PACK_INTERRUPT = nil
+                Handy.insta_booster_skip.is_skipped = false
           return true
       end}))
       SMODS.calculate_context({ending_booster = true, booster = booster_obj})
@@ -2942,6 +2943,7 @@ end
   end
 
 G.FUNCS.cash_out = function(e)
+if Handy.insta_cash_out.is_skipped and e.config.button then return end
     stop_use()
       if G.round_eval then  
         e.config.button = nil
@@ -2961,6 +2963,8 @@ G.FUNCS.cash_out = function(e)
               G.GAME.current_round.discards_left = math.max(0, G.GAME.round_resets.discards + G.GAME.round_bonus.discards)
               G.GAME.current_round.hands_left = (math.max(1, G.GAME.round_resets.hands + G.GAME.round_bonus.next_hands))
               G.STATE = G.STATES.SHOP
+              Handy.insta_cash_out.is_skipped = false
+              Handy.insta_cash_out.can_skip = false
               G.GAME.shop_free = nil
               G.GAME.shop_d6ed = nil
               G.STATE_COMPLETE = false

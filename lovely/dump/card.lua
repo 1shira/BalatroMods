@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'a1cdaa850fb5db04c2568b0d90c44a7fbb9b99dab8056310e3fa97815c2598aa'
+LOVELY_INTEGRITY = '5d28863eb5cb70fac28a9550d542e24e2e23e2757ef0e548293fbc786ed5daa3'
 
 --class
 Card = Moveable:extend()
@@ -4499,6 +4499,7 @@ function Card:align_h_popup()
 end
 
 function Card:hover()
+if Handy.controller.process_card_hover(self) then return end
     self:juice_up(0.05, 0.03)
     play_sound('paper1', math.random()*0.2 + 0.9, 0.35)
 
@@ -4855,6 +4856,7 @@ function Card:highlight(is_higlighted)
 end
 
 function Card:click() 
+if Handy.controller.process_card_click(self) then return end
     if self.area and self.area:can_highlight(self) then
         if (self.area == G.hand) and (G.STATE == G.STATES.HAND_PLAYED) then return end
         if self.highlighted ~= true then 
