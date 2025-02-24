@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '495ffff8f90a24018a50fa012c8f95e9002e85a243bf36744fce28e7f4e4b9c9'
+LOVELY_INTEGRITY = 'df13d1fd284c2949e92cea87bc66ba11ecaf53aeeb102200a5ad7059daa4303a'
 
 function win_game()
     if (not G.GAME.seeded and not G.GAME.challenge) or SMODS.config.seeded_unlocks then
@@ -90,13 +90,13 @@ function end_round()
     G.E_MANAGER:add_event(Event({
       trigger = 'after',
       delay = 0.2,
-      func = function()
+       func = G.LOBBY.code and G.MULTIPLAYER.end_round or function()
         G.GAME.blind.in_blind = false
         local game_over = true
         local game_won = false
         G.RESET_BLIND_STATES = true
         G.RESET_JIGGLES = true
-            if to_big(G.GAME.chips) >= to_big(G.GAME.blind.chips) then
+            if G.GAME.chips - G.GAME.blind.chips >= 0 then
                 game_over = false
             end
             -- context.end_of_round calculations
@@ -283,7 +283,6 @@ function new_round()
                     G.STATE = G.STATES.DRAW_TO_HAND
                     G.deck:shuffle('nr'..G.GAME.round_resets.ante)
                     G.deck:hard_set_T()
-if G.SCORING_COROUTINE then return false end 
                     G.STATE_COMPLETE = false
                     return true
                 end
@@ -408,7 +407,6 @@ G.FUNCS.discard_cards_from_highlighted = function(e, hook)
             G.E_MANAGER:add_event(Event({
                 trigger = 'immediate',
                 func = function()
-if G.SCORING_COROUTINE then return false end 
                     G.STATE_COMPLETE = false
                     return true
                 end
@@ -486,7 +484,6 @@ G.FUNCS.play_cards_from_highlighted = function(e)
                     trigger = 'after',
                     delay = 0.1,
                     func = function()
-                        if G.SCORING_COROUTINE then return false end 
                         check_for_unlock({type = 'play_all_hearts'})
                         G.FUNCS.draw_from_play_to_discard()
                         G.GAME.hands_played = G.GAME.hands_played + 1
@@ -497,7 +494,6 @@ G.FUNCS.play_cards_from_highlighted = function(e)
                 G.E_MANAGER:add_event(Event({
                     trigger = 'immediate',
                     func = function()
-if G.SCORING_COROUTINE then return false end 
                         G.STATE_COMPLETE = false
                         return true
                     end
@@ -756,7 +752,7 @@ G.FUNCS.evaluate_play = function(e)
 
       check_for_unlock({type = 'chip_score', chips = math.floor(hand_chips*mult)})
    
-    if to_big(hand_chips)*mult > to_big(0) then
+    if hand_chips*mult > 0 then 
         delay(0.8)
         G.E_MANAGER:add_event(Event({
         trigger = 'immediate',
@@ -855,7 +851,7 @@ G.FUNCS.evaluate_round = function()
     local pitch = 0.95
     local dollars = 0
 
-    if to_big(G.GAME.chips) >= to_big(G.GAME.blind.chips) then
+    if G.GAME.chips - G.GAME.blind.chips >= 0 then
         add_round_eval_row({dollars = G.GAME.blind.dollars, name='blind1', pitch = pitch})
         pitch = pitch + 0.06
         dollars = dollars + G.GAME.blind.dollars
@@ -926,6 +922,16 @@ G.FUNCS.evaluate_round = function()
         check_for_unlock({type = 'interest_streak'})
         dollars = dollars + G.GAME.interest_amount*math.min(math.floor(G.GAME.dollars/5), G.GAME.interest_cap/5)
     end
+  if not G.MULTIPLAYER_GAME.comeback_bonus_given then
+		G.MULTIPLAYER_GAME.comeback_bonus_given = true
+		add_round_eval_row({
+			bonus = true,
+			name = "comeback",
+			pitch = pitch,
+			dollars = 4 * G.MULTIPLAYER_GAME.comeback_bonus,
+		})
+		dollars = dollars + 4 * G.MULTIPLAYER_GAME.comeback_bonus
+	end
 
     pitch = pitch + 0.06
 
@@ -950,7 +956,6 @@ G.FUNCS.evaluate_round = function()
         }))
     end
     add_round_eval_row({name = 'bottom', dollars = dollars})
-    Talisman.dollars = dollars
 end
 
 G.FUNCS.tutorial_controller = function()

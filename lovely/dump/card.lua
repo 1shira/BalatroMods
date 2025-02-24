@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '5d28863eb5cb70fac28a9550d542e24e2e23e2757ef0e548293fbc786ed5daa3'
+LOVELY_INTEGRITY = '054236aee0156875cc9a37b390d5d2bfd3c76434f57228539920d3aea503d4ed'
 
 --class
 Card = Moveable:extend()
@@ -330,15 +330,6 @@ function Card:set_ability(center, initial, delay_sprites)
         t_mult = center.config.t_mult or 0,
         t_chips = center.config.t_chips or 0,
         x_mult = center.config.Xmult or 1,
-        e_mult = center.config.Emult or 0,
-        ee_mult = center.config.EEmult or 0,
-        eee_mult = center.config.EEEmult or 0,
-        hyper_mult = type(center.config.Hmult) == 'table' and center.config.Hmult or {0, 0},
-        x_chips = center.config.Xchips or 0,
-        e_chips = center.config.Echips or 0,
-        ee_chips = center.config.EEchips or 0,
-        eee_chips = center.config.EEEchips or 0,
-        hyper_chips = type(center.config.Hchips) == 'table' and center.config.Hchips or {0, 0},
         h_size = center.config.h_size or 0,
         d_size = center.config.d_size or 0,
         extra = copy_table(center.config.extra) or nil,
@@ -473,7 +464,8 @@ function Card:set_cost()
     if (self.ability.set == 'Planet' or (self.ability.set == 'Booster' and self.ability.name:find('Celestial'))) and #find_joker('Astronomer') > 0 then self.cost = 0 end
     if self.ability.rental then self.cost = 1 end
     self.sell_cost = math.max(1, math.floor(self.cost/2)) + (self.ability.extra_value or 0)
-    if self.area and self.ability.couponed and (self.area == G.shop_jokers or self.area == G.shop_booster) then self.cost = 0 end
+    if self.area and self.ability.couponed and (self.area == G.shop_jokers or self.area == G.shop_booster) then self.cost = 0 end  if self.edition and self.edition.type == 'mp_phantom' then self.sell_cost = 0 end
+  if self.ability.name == 'j_mp_lets_go_gambling' then self.sell_cost = -1 end
     self.sell_cost_label = self.facing == 'back' and '?' or self.sell_cost
 end
 
@@ -522,7 +514,7 @@ function Card:set_edition(edition, immediate, silent)
         end
     end
 
-    if self.edition and (not Talisman.config_file.disable_anims or (not Talisman.calculating_joker and not Talisman.calculating_score and not Talisman.calculating_card)) and not silent then
+    if self.edition and not silent then
         G.CONTROLLER.locks.edition = true
         G.E_MANAGER:add_event(Event({
             trigger = 'after',
@@ -1235,7 +1227,7 @@ function Card:get_p_dollars()
     end
     if ret > 0 then 
         G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + ret
-        if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+        G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
     end
     return ret
 end
@@ -1585,7 +1577,11 @@ function Card:use_consumeable(area, copier)
         for k, v in pairs(G.jokers.cards) do
             if not v.ability.eternal then deletable_jokers[#deletable_jokers + 1] = v end
         end
-        local chosen_joker = pseudorandom_element(G.jokers.cards, pseudoseed('ankh_choice'))
+        local copyable_jokers = {}
+            for i, v in ipairs(G.jokers.cards) do
+              if not G.jokers.cards[i].edition or G.jokers.cards[i].edition.type ~= "mp_phantom" then copyable_jokers[#copyable_jokers + 1] = v end
+            end
+            local chosen_joker = pseudorandom_element(copyable_jokers, pseudoseed('ankh_choice'))
         local _first_dissolve = nil
         G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.75, func = function()
             for k, v in pairs(deletable_jokers) do
@@ -1692,7 +1688,11 @@ function Card:can_use_consumeable(any_state, skip_check)
         end
         if self.ability.name == 'Ankh' then
             --if there is at least one joker
-            for k, v in pairs(G.jokers.cards) do
+             local copyable_jokers = {}
+      for i, v in ipairs(G.jokers.cards) do
+        if not G.jokers.cards[i].edition or G.jokers.cards[i].edition.type ~= "mp_phantom" then copyable_jokers[#copyable_jokers + 1] = v end
+      end
+      for k, v in pairs(copyable_jokers) do
                 if v.ability.set == 'Joker' and G.jokers.config.card_limit > 1 then 
                     return true
                 end
@@ -1796,6 +1796,9 @@ function Card:sell_card()
 end
 
 function Card:can_sell_card(context)
+if self.config.center.key == "j_mp_hanging_bad" and is_pvp_boss() then
+  return false
+end
     if (G.play and #G.play.cards > 0) or
         (G.CONTROLLER.locked) or 
         (G.GAME.STOP_USE and G.GAME.STOP_USE > 0) --or 
@@ -2555,7 +2558,7 @@ function Card:calculate_joker(context)
                                     juice_card_until(self, eval, true)
                 local jokers = {}
                 for i=1, #G.jokers.cards do 
-                    if G.jokers.cards[i] ~= self then
+                    if G.jokers.cards[i] ~= self and (not G.jokers.cards[i].edition or G.jokers.cards[i].edition.type ~= "mp_phantom") then
                         jokers[#jokers+1] = G.jokers.cards[i]
                     end
                 end
@@ -2918,7 +2921,7 @@ function Card:calculate_joker(context)
                 if G.GAME.blind.triggered then 
                     ease_dollars(self.ability.extra)
                     G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + self.ability.extra
-                    if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+                    G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                     return {
                         message = localize('$')..self.ability.extra,
                         colour = G.C.MONEY
@@ -3230,7 +3233,7 @@ function Card:calculate_joker(context)
                     end
                 end
                 if self.ability.name == 'Mr. Bones' and context.game_over and 
-                to_big(G.GAME.chips)/G.GAME.blind.chips >= to_big(0.25) then
+                G.GAME.chips/G.GAME.blind.chips >= 0.25 then
                     G.E_MANAGER:add_event(Event({
                         func = function()
                             G.hand_text_area.blind_chips:juice_up()
@@ -3335,7 +3338,7 @@ function Card:calculate_joker(context)
                 if self.ability.name == 'Golden Ticket' and
                     SMODS.has_enhancement(context.other_card, 'm_gold') then
                         G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + self.ability.extra
-                        if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+                        G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                         return {
                             dollars = self.ability.extra,
                             card = self
@@ -3361,7 +3364,7 @@ function Card:calculate_joker(context)
                     context.other_card:is_face() and
                     pseudorandom('business') < G.GAME.probabilities.normal/self.ability.extra then
                         G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + 2
-                        if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+                        G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                         return {
                             dollars = 2,
                             card = self
@@ -3409,7 +3412,7 @@ function Card:calculate_joker(context)
                 if self.ability.name == 'Rough Gem' and
                 context.other_card:is_suit("Diamonds") then
                     G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + self.ability.extra
-                    if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+                    G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                     return {
                         dollars = self.ability.extra,
                         card = self
@@ -3495,7 +3498,7 @@ function Card:calculate_joker(context)
                             }
                         else
                             G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + self.ability.extra.dollars
-                            if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+                            G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                             return {
                                 dollars = self.ability.extra.dollars,
                                 card = self
@@ -3680,7 +3683,7 @@ function Card:calculate_joker(context)
                     if self.ability.name == 'To Do List' and context.scoring_name == self.ability.to_do_poker_hand then
                         ease_dollars(self.ability.extra.dollars)
                         G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + self.ability.extra.dollars
-                        if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+                        G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                         return {
                             message = localize('$')..self.ability.extra.dollars,
                             colour = G.C.MONEY
@@ -3908,7 +3911,7 @@ function Card:calculate_joker(context)
                             if G.GAME.blind.triggered then 
                                 ease_dollars(self.ability.extra)
                                 G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + self.ability.extra
-                                if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+                                G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                                 return {
                                     message = localize('$')..self.ability.extra,
                                     colour = G.C.MONEY

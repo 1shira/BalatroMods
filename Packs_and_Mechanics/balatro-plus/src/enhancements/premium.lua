@@ -35,9 +35,9 @@ function e:loc_vars()
   return { vars = { self.config.Xmult, dollars < 0 and -dollars or dollars, dollars < 0 and "Loss" or "Earn" } }
 end
 
-function e:calculate(card, ctx, effect)
-  if ctx.cardarea == G.play and not ctx.repetition then
-    effect.p_dollars = (effect.p_dollars or 0) + bplus_premium_card_dollars()
+function e:calculate(card, ctx)
+  if ctx.main_scoring and ctx.cardarea == G.play and not ctx.repetition then
+    return {dollars = bplus_premium_card_dollars()}
   end
 end
 

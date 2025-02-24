@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '2774a24114332371bc4208f854d32c6f93786326d6810fc4139b615d177277e3'
+LOVELY_INTEGRITY = '7b802c12fdaae746a165e52cac945144c724b57c775e7d6668b57add75315dbc'
 
 ---@class Moveable: Node
 Moveable = Node:extend()
@@ -431,10 +431,6 @@ function Moveable:move_scale(dt)
 end
 
 function Moveable:move_wh(dt)
-if Big and G.STATE == G.STATES.MENU then self.T.w = to_big(self.T.w):to_number()
-self.T.h = to_big(self.T.h):to_number()
-self.VT.w = to_big(self.VT.w):to_number()
-self.VT.h = to_big(self.VT.h):to_number() end
     if (self.T.w ~= self.VT.w and not self.pinch.x) or 
         (self.T.h ~= self.VT.h and not self.pinch.y) or 
         (self.VT.w > 0 and self.pinch.x) or 

@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'f28a9ab9f6bca5d57934752dff764375ac5864201aab9c8fba84928caf514a20'
+LOVELY_INTEGRITY = 'a1ea172b92530a5d87096db71d5bcbeac7a8e5189227d6d53a59dadd577a5970'
 
 --Moves the tutorial to the next step in queue
 --
@@ -1823,7 +1823,7 @@ end
 
 G.FUNCS.start_setup_run = function(e)
   if G.OVERLAY_MENU then G.FUNCS.exit_overlay_menu() end
-  if G.SETTINGS.current_setup == 'New Run' then 
+  if G.SETTINGS.current_setup == 'New Run' or G.SETTINGS.current_setup == 'Multiplayer' then
     if not G.GAME or (not G.GAME.won and not G.GAME.seeded) then
       if G.SAVED_GAME ~= nil then
         if not G.SAVED_GAME.GAME.won then 
@@ -1920,7 +1920,7 @@ G.FUNCS.hand_mult_UI_set = function(e)
     G.GAME.current_round.current_hand.mult_text = new_mult_text
     e.config.object.scale = scale_number(G.GAME.current_round.current_hand.mult, 0.9, 1000)
     e.config.object:update_text()
-    if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.min(2,math.max(0,math.floor(math.log10(is_number(G.GAME.current_round.current_hand.mult) and G.GAME.current_round.current_hand.mult or 1))))) end
+    if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.max(0,math.floor(math.log10(type(G.GAME.current_round.current_hand.mult) == 'number' and G.GAME.current_round.current_hand.mult or 1)))) end
   end
 end
 
@@ -1930,12 +1930,12 @@ G.FUNCS.hand_chip_UI_set = function(e)
       G.GAME.current_round.current_hand.chip_text = new_chip_text
       e.config.object.scale = scale_number(G.GAME.current_round.current_hand.chips, 0.9, 1000)
       e.config.object:update_text()
-      if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.min(2,math.max(0,math.floor(math.log10(is_number(G.GAME.current_round.current_hand.chips) and G.GAME.current_round.current_hand.chips or 1))))) end
+      if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.max(0,math.floor(math.log10(type(G.GAME.current_round.current_hand.chips) == 'number' and G.GAME.current_round.current_hand.chips or 1)))) end
     end
 end
 
 G.FUNCS.hand_chip_total_UI_set = function(e)
-  if to_big(G.GAME.current_round.current_hand.chip_total) < to_big(1) then
+  if G.GAME.current_round.current_hand.chip_total < 1 then
     G.GAME.current_round.current_hand.chip_total_text = ''
   else
     local new_chip_total_text = number_format(G.GAME.current_round.current_hand.chip_total)
@@ -1943,7 +1943,7 @@ G.FUNCS.hand_chip_total_UI_set = function(e)
       e.config.object.scale = scale_number(G.GAME.current_round.current_hand.chip_total, 0.95, 100000000)
       
       G.GAME.current_round.current_hand.chip_total_text = new_chip_total_text
-      if not G.ARGS.hand_chip_total_UI_set or to_big(G.ARGS.hand_chip_total_UI_set) < to_big(G.GAME.current_round.current_hand.chip_total) then
+      if not G.ARGS.hand_chip_total_UI_set or G.ARGS.hand_chip_total_UI_set <  G.GAME.current_round.current_hand.chip_total then 
          G.FUNCS.text_super_juice(e, math.floor(math.log10(G.GAME.current_round.current_hand.chip_total)))
       end
       G.ARGS.hand_chip_total_UI_set = G.GAME.current_round.current_hand.chip_total
@@ -2018,7 +2018,7 @@ G.FUNCS.flame_handler = function(e)
       local _F = G.ARGS[v.arg_tab]
       local exptime = math.exp(-0.4*G.real_dt)
       
-      if to_big(G.ARGS.score_intensity.earned_score) >= to_big(G.ARGS.score_intensity.required_score) and to_big(G.ARGS.score_intensity.required_score) > to_big(0) then
+      if G.ARGS.score_intensity.earned_score >= G.ARGS.score_intensity.required_score and G.ARGS.score_intensity.required_score > 0 then
         _F.intensity = ((G.pack_cards and not G.pack_cards.REMOVED) or (G.TAROT_INTERRUPT)) and 0 or math.max(0., math.log(G.ARGS.score_intensity.earned_score, 5)-2)
       else
         _F.intensity = 0
@@ -2981,7 +2981,7 @@ if Handy.insta_cash_out.is_skipped and e.config.button then return end
         play_sound("coin7")
         G.VIBRATION = G.VIBRATION + 1
       end
-      ease_chips(to_big(0))
+      ease_chips(0)
       if G.GAME.round_resets.blind_states.Boss == 'Defeated' then 
         G.GAME.round_resets.blind_ante = G.GAME.round_resets.ante
         G.GAME.round_resets.blind_tags.Small = get_next_tag_key()

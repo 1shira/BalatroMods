@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '6eabc97289acbf23e95333ef77734d5f626be1df701d994f10013d3f0edbfe9d'
+LOVELY_INTEGRITY = 'ce267560ffb923b0877d512c00e4f203344192dcdfd769b88b834647a45a21ed'
 
 --Updates all display information for all displays for a given screenmode. Returns the key for the resolution option cycle
 --
@@ -794,7 +794,7 @@ function modulate_sound(dt)
   --For ambient sound control
   G.SETTINGS.ambient_control = G.SETTINGS.ambient_control or {}
   G.ARGS.score_intensity = G.ARGS.score_intensity or {}
-  if not is_number(G.GAME.current_round.current_hand.chips) or not is_number(G.GAME.current_round.current_hand.mult) then
+  if type(G.GAME.current_round.current_hand.chips) ~= 'number' or type(G.GAME.current_round.current_hand.mult) ~= 'number' then
     G.ARGS.score_intensity.earned_score = 0
   else
     G.ARGS.score_intensity.earned_score = G.GAME.current_round.current_hand.chips*G.GAME.current_round.current_hand.mult
@@ -802,7 +802,7 @@ function modulate_sound(dt)
   G.ARGS.score_intensity.required_score = G.GAME.blind and G.GAME.blind.chips or 0
   G.ARGS.score_intensity.flames = math.min(1, (G.STAGE == G.STAGES.RUN and 1 or 0)*(
     (G.ARGS.chip_flames and (G.ARGS.chip_flames.real_intensity + G.ARGS.chip_flames.change) or 0))/10)
-  G.ARGS.score_intensity.organ = G.video_organ or to_big(G.ARGS.score_intensity.required_score) > to_big(0) and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0
+  G.ARGS.score_intensity.organ = G.video_organ or G.ARGS.score_intensity.required_score > 0 and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0
 
   local AC = G.SETTINGS.ambient_control
   G.ARGS.ambient_sounds = G.ARGS.ambient_sounds or {
@@ -883,10 +883,6 @@ function count_of_suit(area, suit)
 end
 
 function prep_draw(moveable, scale, rotate, offset)
-if Big and G.STATE == G.STATES.MENU then moveable.VT.x = to_big(moveable.VT.x):to_number()
-moveable.VT.y = to_big(moveable.VT.y):to_number()
-moveable.VT.w = to_big(moveable.VT.w):to_number()
-moveable.VT.h = to_big(moveable.VT.h):to_number() end
     love.graphics.push()
     love.graphics.scale(G.TILESCALE*G.TILESIZE)
     love.graphics.translate(
@@ -1138,7 +1134,7 @@ end
 
 function check_and_set_high_score(score, amt)
   if not amt or type(amt) ~= 'number' then return end
-  if G.GAME.round_scores[score] and math.floor(amt) > (G.GAME.round_scores[score].amt or 0) then
+  if G.GAME.round_scores[score] and math.floor(amt) > G.GAME.round_scores[score].amt then
     G.GAME.round_scores[score].amt = math.floor(amt)
   end
   if  G.GAME.seeded  then return end

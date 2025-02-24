@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'dc99ccd4b0994835364e6a38b57cfca909d53388752f348e7a35f5910aca34af'
+LOVELY_INTEGRITY = 'bbb7e5b57e90ecfb0b810a39c37b964517b2765bc99d242af3576af061c1c89a'
 
 --Class
 Game = Object:extend()
@@ -109,109 +109,7 @@ function Game:start_up()
     boot_timer('window init', 'savemanager')
     --call the save manager to wait for any save requests
     G.SAVE_MANAGER = {
-        thread = love.thread.newThread([[require "love.system" 
-        
-        if (love.system.getOS() == 'OS X' ) and (jit.arch == 'arm64' or jit.arch == 'arm') then jit.off() end
-        
-        require "love.timer"
-        require "love.thread"
-        require 'love.filesystem'
-        require "engine/object"
-        require "engine/string_packer"
-        
-        --vars needed for sound manager thread
-        CHANNEL = love.thread.getChannel("save_request")
-        
-        talisman = "]] .. Talisman.config_file.break_infinity .. [["
-        
-        --untested
-        function tal_compress_and_save(_file, _data)
-          local save_string = type(_data) == 'table' and STR_PACK(_data) or _data
-          local fallback_save = STR_PACK({GAME = {won = true}}) --just bare minimum to not crash, maybe eventually display some info?
-          if talisman == 'bignumber' then
-            fallback_save = "if not BigMeta then " .. fallback_save
-          elseif talisman == 'omeganum' then
-            fallback_save = "if not OmegaMeta then " .. fallback_save
-          else
-            fallback_save = "if BigMeta or OmegaMeta then " .. fallback_save
-          end
-          fallback_save = fallback_save .. " end"
-          save_string = fallback_save .. " " .. save_string
-          save_string = love.data.compress('string', 'deflate', save_string, 1)
-          love.filesystem.write(_file,save_string)
-        end
-        
-         while true do
-            --Monitor the channel for any new requests
-            local request = CHANNEL:demand() -- Value from channel
-            if request then
-                --Saves progress for settings, unlocks, alerts and discoveries
-                if request.type == 'save_progress' then
-                    local prefix_profile = (request.save_progress.SETTINGS.profile or 1)..''
-                    if not love.filesystem.getInfo(prefix_profile) then love.filesystem.createDirectory( prefix_profile ) end
-                    prefix_profile = prefix_profile..'/'
-        
-                    if not love.filesystem.getInfo(prefix_profile..'meta.jkr') then
-                        love.filesystem.append( prefix_profile..'meta.jkr', 'return {}' )
-                    end
-        
-                    local meta = STR_UNPACK(get_compressed(prefix_profile..'meta.jkr') or 'return {}')
-                    meta.unlocked = meta.unlocked or {}
-                    meta.discovered = meta.discovered or {}
-                    meta.alerted = meta.alerted or {}
-        
-                    local _append = false
-        
-                    for k, v in pairs(request.save_progress.UDA) do
-                        if string.find(v, 'u') and not meta.unlocked[k] then 
-                            meta.unlocked[k] = true
-                            _append = true
-                        end
-                        if string.find(v, 'd') and not meta.discovered[k] then 
-                            meta.discovered[k] = true
-                            _append = true
-                        end
-                        if string.find(v, 'a') and not meta.alerted[k] then 
-                            meta.alerted[k] = true
-                            _append = true
-                        end
-                    end
-                    if _append then compress_and_save( prefix_profile..'meta.jkr', STR_PACK(meta)) end
-        
-                    compress_and_save('settings.jkr', request.save_progress.SETTINGS)
-                    compress_and_save(prefix_profile..'profile.jkr', request.save_progress.PROFILE)
-        
-                    CHANNEL:push('done')
-                --Saves the settings file
-                elseif request.type == 'save_settings' then 
-                    compress_and_save('settings.jkr', request.save_settings)
-                    compress_and_save(request.profile_num..'/profile.jkr', request.save_profile)
-                    --Saves the metrics file
-                elseif request.type == 'save_metrics' then 
-                    compress_and_save('metrics.jkr', request.save_metrics)
-                --Saves any notifications
-                elseif request.type == 'save_notify' then 
-                    local prefix_profile = (request.profile_num or 1)..''
-                    if not love.filesystem.getInfo(prefix_profile) then love.filesystem.createDirectory( prefix_profile ) end
-                    prefix_profile = prefix_profile..'/'
-        
-                    if not love.filesystem.getInfo(prefix_profile..'unlock_notify.jkr') then love.filesystem.append( prefix_profile..'unlock_notify.jkr', '') end
-                    local unlock_notify = get_compressed(prefix_profile..'unlock_notify.jkr') or ''
-        
-                    if request.save_notify and not string.find(unlock_notify, request.save_notify) then 
-                        compress_and_save( prefix_profile..'unlock_notify.jkr', unlock_notify..request.save_notify..'\n')
-                    end
-        
-                --Saves the run
-                elseif request.type == 'save_run' then 
-                    local prefix_profile = (request.profile_num or 1)..''
-                    if not love.filesystem.getInfo(prefix_profile) then love.filesystem.createDirectory( prefix_profile ) end
-                    prefix_profile = prefix_profile..'/'
-        
-                    tal_compress_and_save(prefix_profile..'save.jkr', request.save_table)
-                end
-            end
-        end]]),
+        thread = love.thread.newThread('engine/save_manager.lua'),
         channel = love.thread.getChannel('save_request')
     }
     G.SAVE_MANAGER.thread:start(2)
@@ -1345,7 +1243,6 @@ function Game:prep_stage(new_stage, new_state, new_game_obj)
         self.CONTROLLER.locks[k] = nil
     end
     if new_game_obj then self.GAME = self:init_game_object() end
-    if new_game_obj and Talisman and Talisman.igo then self.GAME = Talisman.igo(self.GAME) end
     self.STAGE = new_stage or self.STAGES.MAIN_MENU
     self.STATE = new_state or self.STATES.MENU
     self.STATE_COMPLETE = false
@@ -1704,7 +1601,6 @@ function Game:main_menu(change_context) --True if main menu is accessed from the
     local replace_card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS.S_A, G.P_CENTERS.c_base)
     self.title_top:emplace(replace_card)
 
-    replace_card:set_seal('Gold', true, true)
     replace_card.states.visible = false
     replace_card.no_ui = true
     replace_card.ambient_tilt = 0.0
@@ -1886,7 +1782,6 @@ function Game:demo_cta() --True if main menu is accessed from the splash screen,
     local replace_card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS.S_A, G.P_CENTERS.c_base)
     self.title_top:emplace(replace_card)
 
-    replace_card:set_seal('Gold', true, true)
     replace_card.states.visible = false
     replace_card.no_ui = true
     replace_card.ambient_tilt = 0.0
@@ -2025,7 +1920,7 @@ function Game:init_game_object()
         perishable_rounds = 5,
         rental_rate = 3,
         blind =  nil,
-        chips = to_big(0),
+        chips = 0,
         chips_text = '0',
         voucher_text = '',
         dollars = 0,
@@ -2045,7 +1940,7 @@ function Game:init_game_object()
         used_vouchers = {},
         current_round = {
             current_hand = {
-                chips = to_big(0),
+                chips = 0,
                 chip_text = '0',
                 mult = 0,
                 mult_text = '0',
@@ -2081,7 +1976,6 @@ function Game:init_game_object()
             temp_reroll_cost = nil,
             temp_handsize = nil,
             ante = 1,
-            ante_disp = number_format(1),
             blind_ante = 1,
             blind_states = {Small = 'Select', Big = 'Upcoming', Boss = 'Upcoming'},
             loc_blind_states = {Small = '', Big = '', Boss = ''},
@@ -2137,7 +2031,6 @@ function Game:start_run(args)
     local selected_back = saveTable and saveTable.BACK.name or (args.challenge and args.challenge.deck and args.challenge.deck.type) or (self.GAME.viewed_back and self.GAME.viewed_back.name) or self.GAME.selected_back and self.GAME.selected_back.name or 'Red Deck'
     selected_back = get_deck_from_name(selected_back)
     self.GAME = saveTable and saveTable.GAME or self:init_game_object()
-    if (not saveTable or not saveTable.GAME) and Talisman and Talisman.igo then self.GAME = Talisman.igo(self.GAME) end
     Handy.UI.init()
     self.GAME.modifiers = self.GAME.modifiers or {}
     self.GAME.stake = args.stake or self.GAME.stake or 1
@@ -3316,8 +3209,6 @@ function Game:update_play_tarot(dt)
 end
 
 function Game:update_hand_played(dt)
-G.GAME.chips = (G.GAME.chips or 0)
-G.GAME.blind.chips = (G.GAME.blind.chips or math.huge)
     if self.buttons then self.buttons:remove(); self.buttons = nil end
     if self.shop then self.shop:remove(); self.shop = nil end
 
@@ -3326,7 +3217,7 @@ G.GAME.blind.chips = (G.GAME.blind.chips or math.huge)
         G.E_MANAGER:add_event(Event({
             trigger = 'immediate',
             func = function()
-        if to_big(G.GAME.chips) >= to_big(G.GAME.blind.chips) or G.GAME.current_round.hands_left < 1 then
+        if G.GAME.chips - G.GAME.blind.chips >= 0 or G.GAME.current_round.hands_left < 1 then
             G.STATE = G.STATES.NEW_ROUND
         else
             G.STATE = G.STATES.DRAW_TO_HAND
@@ -3431,7 +3322,8 @@ function Game:update_round_eval(dt)
     if self.buttons then self.buttons:remove(); self.buttons = nil end
     if self.shop then self.shop:remove(); self.shop = nil end
 
-    if not G.STATE_COMPLETE then
+     if not G.STATE_COMPLETE and not G.MULTIPLAYER_GAME.prevent_eval then
+        G.MULTIPLAYER_GAME.prevent_eval = true
         stop_use()
         G.STATE_COMPLETE = true
         G.E_MANAGER:add_event(Event({
