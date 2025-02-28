@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'a1ea172b92530a5d87096db71d5bcbeac7a8e5189227d6d53a59dadd577a5970'
+LOVELY_INTEGRITY = '342046b689dd87acb8d53f7bf71e203cf79102c780359956ea557178d3384f06'
 
 --Moves the tutorial to the next step in queue
 --
@@ -1272,6 +1272,21 @@ G.FUNCS.RUN_SETUP_check_stake2 = function(e)
       config = {offset = {x=0,y=0}, align = 'cm', parent = e}
     }
     e.config.id = G.viewed_stake
+  end
+end
+
+G.FUNCS.change_viewed_collab = function(args)
+  G.viewed_collab = args.to_val
+end
+
+G.FUNCS.CREDITS_check_collab = function(e)
+  if (G.viewed_collab ~= e.config.id) then 
+    e.config.object:remove() 
+    e.config.object = UIBox{
+      definition =  G.UIDEF.viewed_collab_option(),
+      config = {offset = {x=0,y=0}, align = 'cm', parent = e}
+    }
+    e.config.id = G.viewed_collab
   end
 end
 

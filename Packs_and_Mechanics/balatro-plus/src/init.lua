@@ -146,11 +146,11 @@ BalatroPlus.load("voucher")("vouchers", {
   "big_pack",
 })
 
-BalatroPlus.load("enhancement")("enhancements", {
-  "premium",
-  "framed",
-  "balanced",
-})
+--BalatroPlus.load("enhancement")("enhancements", {
+--  "premium",
+--  "framed",
+--  "balanced",
+--})
 
 function SMODS.current_mod.reset_game_globals()
   for key, value in pairs(BalatroPlus.round_vars) do
