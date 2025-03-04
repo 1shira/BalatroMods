@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '5d28863eb5cb70fac28a9550d542e24e2e23e2757ef0e548293fbc786ed5daa3'
+LOVELY_INTEGRITY = '1c987cfe88da0191de764e4228c8d4921018c73b62a56b354d89cc53bbf71c9a'
 
 --class
 Card = Moveable:extend()
@@ -46,8 +46,8 @@ function Card:init(X, Y, W, H, card, center, params)
     self:set_base(card, true)
 
     self.discard_pos = {
-        r = 0, 
-        x = 0, 
+        r = 0,
+        x = 0,
         y = 0,
     }
  
@@ -177,19 +177,16 @@ function Card:set_sprites(_center, _front)
                 elseif self.config.center.consumeable and self.config.center.demo then 
                     self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS["Tarot"], G.c_locked.pos)
                 elseif not self.params.bypass_discovery_center and (_center.set == 'Edition' or _center.set == 'Joker' or _center.consumeable or _center.set == 'Voucher' or _center.set == 'Booster') and not _center.discovered then 
-                    self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[(_center.undiscovered and (_center.undiscovered[G.SETTINGS.colourblind_option and 'hc_atlas' or 'lc_atlas'] or _center.undiscovered.atlas))
-    or (SMODS.UndiscoveredSprites[_center.set] and (SMODS.UndiscoveredSprites[_center.set][G.SETTINGS.colourblind_option and 'hc_atlas' or 'lc_atlas'] or SMODS.UndiscoveredSprites[_center.set].atlas))
-    or _center.set] or G.ASSET_ATLAS["Joker"], 
-                    (_center.undiscovered and _center.undiscovered.pos) or (SMODS.UndiscoveredSprites[_center.set] and SMODS.UndiscoveredSprites[_center.set].pos) or
+                    self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center.atlas or _center.set], 
                     (_center.set == 'Joker' and G.j_undiscovered.pos) or 
                     (_center.set == 'Edition' and G.j_undiscovered.pos) or 
                     (_center.set == 'Tarot' and G.t_undiscovered.pos) or 
                     (_center.set == 'Planet' and G.p_undiscovered.pos) or 
                     (_center.set == 'Spectral' and G.s_undiscovered.pos) or 
                     (_center.set == 'Voucher' and G.v_undiscovered.pos) or 
-                    (_center.set == 'Booster' and G.booster_undiscovered.pos) or G.j_undiscovered.pos)
+                    (_center.set == 'Booster' and G.booster_undiscovered.pos))
                 elseif _center.set == 'Joker' or _center.consumeable or _center.set == 'Voucher' then
-                    self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center[G.SETTINGS.colourblind_option and 'hc_atlas' or 'lc_atlas'] or _center.atlas or _center.set], self.config.center.pos)
+                    self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center.set], self.config.center.pos)
                 else
                     self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center.atlas or 'centers'], _center.pos)
                 end
@@ -217,17 +214,14 @@ function Card:set_sprites(_center, _front)
         end
 
         if _center.soul_pos then 
-            self.children.floating_sprite = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[_center[G.SETTINGS.colourblind_option and 'hc_atlas' or 'lc_atlas'] or _center.atlas or _center.set], self.config.center.soul_pos)
+            self.children.floating_sprite = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS['Joker'], self.config.center.soul_pos)
             self.children.floating_sprite.role.draw_major = self
             self.children.floating_sprite.states.hover.can = false
             self.children.floating_sprite.states.click.can = false
         end
 
-        if _center.set_sprites and type(_center.set_sprites) == 'function' then
-            _center:set_sprites(self, _front)
-        end
-        if true then
-            self.children.back = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[(G.GAME.viewed_back or G.GAME.selected_back) and ((G.GAME.viewed_back or G.GAME.selected_back)[G.SETTINGS.colourblind_option and 'hc_atlas' or 'lc_atlas'] or (G.GAME.viewed_back or G.GAME.selected_back).atlas) or 'centers'], self.params.bypass_back or (self.playing_card and G.GAME[self.back].pos or G.P_CENTERS['b_red'].pos))
+        if not self.children.back then
+            self.children.back = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS["centers"], self.params.bypass_back or (self.playing_card and G.GAME[self.back].pos or G.P_CENTERS['b_red'].pos))
             self.children.back.states.hover = self.states.hover
             self.children.back.states.click = self.states.click
             self.children.back.states.drag = self.states.drag
@@ -248,7 +242,7 @@ function Card:set_ability(center, initial, delay_sprites)
         self:remove_from_deck()
         self.added_to_deck = true
     end
-    if type(center) == 'string' then 
+    if type(center) == 'string' then
         assert(G.P_CENTERS[center])
         center = G.P_CENTERS[center]
     end
@@ -329,16 +323,10 @@ function Card:set_ability(center, initial, delay_sprites)
         p_dollars = center.config.p_dollars or 0,
         t_mult = center.config.t_mult or 0,
         t_chips = center.config.t_chips or 0,
-        x_mult = center.config.Xmult or 1,
-        e_mult = center.config.Emult or 0,
-        ee_mult = center.config.EEmult or 0,
-        eee_mult = center.config.EEEmult or 0,
-        hyper_mult = type(center.config.Hmult) == 'table' and center.config.Hmult or {0, 0},
-        x_chips = center.config.Xchips or 0,
-        e_chips = center.config.Echips or 0,
-        ee_chips = center.config.EEchips or 0,
-        eee_chips = center.config.EEEchips or 0,
-        hyper_chips = type(center.config.Hchips) == 'table' and center.config.Hchips or {0, 0},
+        x_mult = center.config.Xmult or center.config.x_mult or 1,
+        h_chips = center.config.h_chips or 0,
+        x_chips = center.config.x_chips or 1,
+        h_x_chips = center.config.h_x_chips or 1,
         h_size = center.config.h_size or 0,
         d_size = center.config.d_size or 0,
         extra = copy_table(center.config.extra) or nil,
@@ -347,6 +335,15 @@ function Card:set_ability(center, initial, delay_sprites)
         order = center.order or nil,
         forced_selection = self.ability and self.ability.forced_selection or nil,
         perma_bonus = self.ability and self.ability.perma_bonus or 0,
+        perma_x_chips = self.ability and self.ability.perma_x_chips or 0,
+        perma_mult = self.ability and self.ability.perma_mult or 0,
+        perma_x_mult = self.ability and self.ability.perma_x_mult or 0,
+        perma_h_chips = self.ability and self.ability.perma_h_chips or 0,
+        perma_h_x_chips = self.ability and self.ability.perma_h_x_chips or 0,
+        perma_h_mult = self.ability and self.ability.perma_hmult or 0,
+        perma_h_x_mult = self.ability and self.ability.perma_h_x_mult or 0,
+        perma_p_dollars = self.ability and self.ability.perma_p_dollars or 0,
+        perma_h_dollars = self.ability and self.ability.perma_h_dollars or 0,
     }
     self.ability = self.ability or {}
     new_ability.extra_value = nil
@@ -355,7 +352,7 @@ function Card:set_ability(center, initial, delay_sprites)
         self.ability[k] = v
     end
     -- reset keys do not persist an ability change
-    local reset_keys = {'name', 'effect', 'set', 'extra', 'played_this_ante'}
+    local reset_keys = {'name', 'effect', 'set', 'extra', 'played_this_ante', 'perma_debuff'}
     for _, mod in ipairs(SMODS.mod_list) do
         if mod.set_ability_reset_keys then
             local keys = mod.set_ability_reset_keys()
@@ -724,7 +721,7 @@ function Card:add_to_deck(from_debuff)
             card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize('ph_boss_disabled')})
         end
         if self.ability.name == 'Chaos the Clown' then
-            G.GAME.current_round.free_rerolls = G.GAME.current_round.free_rerolls + 1
+            SMODS.change_free_rerolls(1)
             calculate_reroll_cost(true)
         end
         if self.ability.name == 'Turtle Bean' then
@@ -753,7 +750,7 @@ function Card:add_to_deck(from_debuff)
             G.hand:change_size(-self.ability.extra.h_size)
         end
         if true then
-            if from_debuff then 
+            if from_debuff then
                 self.ability.joker_added_to_deck_but_debuffed = nil
             else
                 if self.edition and self.edition.card_limit then
@@ -786,7 +783,7 @@ function Card:remove_from_deck(from_debuff)
             G.GAME.bankrupt_at = G.GAME.bankrupt_at + self.ability.extra
         end
         if self.ability.name == 'Chaos the Clown' then
-            G.GAME.current_round.free_rerolls = G.GAME.current_round.free_rerolls - 1
+            SMODS.change_free_rerolls(-1)
             calculate_reroll_cost(true)
         end
         if self.ability.name == 'Turtle Bean' then
@@ -857,9 +854,21 @@ function Card:generate_UIBox_ability_table(vars_only)
     elseif self.debuff then
         loc_vars = { debuffed = true, playing_card = not not self.base.colour, value = self.base.value, suit = self.base.suit, colour = self.base.colour }
     elseif card_type == 'Default' or card_type == 'Enhanced' then
+        local bonus_chips = self.ability.bonus + (self.ability.perma_bonus or 0)
+        local total_h_dollars = self:get_h_dollars()
         loc_vars = { playing_card = not not self.base.colour, value = self.base.value, suit = self.base.suit, colour = self.base.colour,
                     nominal_chips = self.base.nominal > 0 and self.base.nominal or nil,
-                    bonus_chips = (self.ability.bonus + (self.ability.perma_bonus or 0)) > 0 and (self.ability.bonus + (self.ability.perma_bonus or 0)) or nil,
+                    bonus_x_chips = self.ability.perma_x_chips ~= 0 and (self.ability.perma_x_chips + 1) or nil,
+                    bonus_mult = self.ability.perma_mult ~= 0 and self.ability.perma_mult or nil,
+                    bonus_x_mult = self.ability.perma_x_mult ~= 0 and (self.ability.perma_x_mult + 1) or nil,
+                    bonus_h_chips = self.ability.perma_h_chips ~= 0 and self.ability.perma_h_chips or nil,
+                    bonus_h_x_chips = self.ability.perma_h_x_chips ~= 0 and (self.ability.perma_h_x_chips + 1) or nil,
+                    bonus_h_mult = self.ability.perma_h_mult ~= 0 and self.ability.perma_h_mult or nil,
+                    bonus_h_x_mult = self.ability.perma_h_x_mult ~= 0 and (self.ability.perma_h_x_mult + 1) or nil,
+                    bonus_p_dollars = self.ability.perma_p_dollars ~= 0 and self.ability.perma_p_dollars or nil,
+                    bonus_h_dollars = self.ability.perma_h_dollars ~= 0 and self.ability.perma_h_dollars or nil,
+                    total_h_dollars = total_h_dollars ~= 0 and total_h_dollars or nil,
+                    bonus_chips = bonus_chips ~= 0 and bonus_chips or nil,
                 }
     elseif self.ability.set == 'Joker' then -- all remaining jokers
         if self.ability.name == 'Joker' then loc_vars = {self.ability.mult}
@@ -1091,7 +1100,7 @@ function Card:get_nominal(mod)
     local mult = 1
     local rank_mult = 1
     if mod == 'suit' then mult = 10000 end
-    if self.ability.effect == 'Stone Card' or (self.config.center.no_suit and self.config.center.no_rank) then 
+    if self.ability.effect == 'Stone Card' or (self.config.center.no_suit and self.config.center.no_rank) then
         mult = -10000
     elseif self.config.center.no_suit then
         mult = 0
@@ -1133,35 +1142,69 @@ end
 function Card:get_chip_mult()
     if self.debuff then return 0 end
     if self.ability.set == 'Joker' then return 0 end
-    if self.ability.effect == "Lucky Card" then 
+    local ret = self.ability.perma_mult or 0
+    if self.ability.effect == "Lucky Card" then
         if pseudorandom('lucky_mult') < G.GAME.probabilities.normal/5 then
             self.lucky_trigger = true
-            return self.ability.mult
-        else
-            return 0
+            ret = ret + self.ability.mult
         end
-    else  
-        return self.ability.mult
     end
+    if self.ability.effect == "Mult Card" then
+        ret = ret + self.ability.mult
+    end
+    -- TARGET: get_chip_mult
+    return ret
 end
 
 function Card:get_chip_x_mult(context)
     if self.debuff then return 0 end
     if self.ability.set == 'Joker' then return 0 end
-    if self.ability.x_mult <= 1 then return 0 end
-    return self.ability.x_mult
+    local ret = SMODS.multiplicative_stacking(self.ability.x_mult or 1, self.ability.perma_x_mult or 0)
+    -- TARGET: get_chip_x_mult
+    return ret
 end
 
 function Card:get_chip_h_mult()
     if self.debuff then return 0 end
-    return self.ability.h_mult
+    local ret = (self.ability.h_mult or 0) + (self.ability.perma_h_mult or 0)
+    -- TARGET: get_chip_h_mult
+    return ret
 end
 
 function Card:get_chip_h_x_mult()
     if self.debuff then return 0 end
-    return self.ability.h_x_mult
+    local ret = SMODS.multiplicative_stacking(self.ability.h_x_mult or 1, self.ability.perma_h_x_mult or 0)
+    -- TARGET: get_chip_h_x_mult
+    return ret
 end
 
+function Card:get_chip_x_bonus()
+    if self.debuff then return 0 end
+    local ret = SMODS.multiplicative_stacking(self.ability.x_chips or 1, self.ability.perma_x_chips or 0)
+    -- TARGET: get_chip_x_bonus
+    return ret
+end
+
+function Card:get_chip_h_bonus()
+    if self.debuff then return 0 end
+    local ret = (self.ability.h_chips or 0) + (self.ability.perma_h_chips or 0)
+    -- TARGET: get_chip_h_bonus
+    return ret
+end
+
+function Card:get_chip_h_x_bonus()
+    if self.debuff then return 0 end
+    local ret = SMODS.multiplicative_stacking(self.ability.h_x_chips or 1, self.ability.perma_h_x_chips or 0)
+    -- TARGET: get_chip_h_x_bonus
+    return ret
+end
+
+function Card:get_h_dollars()
+    if self.debuff then return 0 end
+    local ret = (self.ability.h_dollars or 0) + (self.ability.perma_h_dollars or 0)
+    -- TARGET: get_h_dollars
+    return ret
+end
 function Card:get_edition()
     if self.debuff then return end
     if self.edition then
@@ -1182,8 +1225,9 @@ end
 function Card:get_end_of_round_effect(context)
     if self.debuff then return {} end
     local ret = {}
-    if self.ability.h_dollars > 0 then
-        ret.h_dollars = self.ability.h_dollars
+    local h_dollars = self:get_h_dollars()
+    if h_dollars ~= 0 then
+        ret.h_dollars = h_dollars
         ret.card = self
     end
     if self.seal == 'Blue' and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit and not self.ability.extra_enhancement then
@@ -1233,7 +1277,9 @@ function Card:get_p_dollars()
             ret = ret + self.ability.p_dollars
         end
     end
-    if ret > 0 then 
+    ret = ret + (self.ability.perma_p_dollars) or 0
+    -- TARGET: get_p_dollars
+    if ret ~= 0 then
         G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + ret
         if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
     end
@@ -1855,24 +1901,8 @@ function Card:open()
         if booster_obj and SMODS.Centers[booster_obj.key] then
             G.STATE = G.STATES.SMODS_BOOSTER_OPENED
             SMODS.OPENED_BOOSTER = self
-        end        if self.ability.name:find('Arcana') then 
-            G.STATE = G.STATES.TAROT_PACK
-            G.GAME.pack_size = self.ability.extra
-        elseif self.ability.name:find('Celestial') then
-            G.STATE = G.STATES.PLANET_PACK
-            G.GAME.pack_size = self.ability.extra
-        elseif self.ability.name:find('Spectral') then
-            G.STATE = G.STATES.SPECTRAL_PACK
-            G.GAME.pack_size = self.ability.extra
-        elseif self.ability.name:find('Standard') then
-            G.STATE = G.STATES.STANDARD_PACK
-            G.GAME.pack_size = self.ability.extra
-        elseif self.ability.name:find('Buffoon') then
-            G.STATE = G.STATES.BUFFOON_PACK
-            G.GAME.pack_size = self.ability.extra
         end
-
-        G.GAME.pack_choices = self.config.center.config.choose or 1
+        G.GAME.pack_choices = self.ability.choose or self.config.center.config.choose or 1
 
         if self.cost > 0 then 
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
@@ -1893,7 +1923,7 @@ function Card:open()
                 
                 for i = 1, _size do
                     local card = nil
-                    if booster_obj.create_card and type(booster_obj.create_card) == "function" then 
+                    if booster_obj.create_card and type(booster_obj.create_card) == "function" then
                         local _card_to_spawn = booster_obj:create_card(self, i)
                         if type((_card_to_spawn or {}).is) == 'function' and _card_to_spawn:is(Card) then
                             card = _card_to_spawn
@@ -1978,7 +2008,8 @@ function Card:redeem()
         if not self.config.center.discovered then
             discover_card(self.config.center)
         end
-        if self.shop_voucher then G.GAME.current_round.voucher = nil end 
+        if self.shop_voucher then G.GAME.current_round.voucher.spawn[self.config.center_key] = false end 
+        if self.from_tag then G.GAME.current_round.voucher.spawn[G.GAME.current_round.voucher[1]] = false end
 
         self.states.hover.can = false
         G.GAME.used_vouchers[self.config.center_key] = true
@@ -2011,7 +2042,7 @@ function Card:redeem()
         inc_career_stat('c_vouchers_bought', 1)
         set_voucher_usage(self)
         check_for_unlock({type = 'run_redeem'})
-        G.GAME.current_round.voucher = nil
+        --G.GAME.current_round.voucher = nil
 
         self:apply_to_run()
 
@@ -2646,11 +2677,11 @@ function Card:calculate_joker(context)
         elseif context.first_hand_drawn then
             if self.ability.name == 'Certificate' then
                 local _card = create_playing_card({
-                    front = pseudorandom_element(G.P_CARDS, pseudoseed('cert_fr')), 
+                    front = pseudorandom_element(G.P_CARDS, pseudoseed('cert_fr')),
                     center = G.P_CENTERS.c_base}, G.discard, true, nil, {G.C.SECONDARY_SET.Enhanced}, true)
                 _card:set_seal(SMODS.poll_seal({guaranteed = true, type_key = 'certsl'}))
                 G.E_MANAGER:add_event(Event({
-                    func = function() 
+                    func = function()
                         G.hand:emplace(_card)
                         _card:start_materialize()
                         G.GAME.blind:debuff_card(_card)
@@ -2763,7 +2794,7 @@ function Card:calculate_joker(context)
                 G.playing_card = (G.playing_card and G.playing_card + 1) or 1
                 local card = Card(G.discard.T.x + G.discard.T.w/2, G.discard.T.y, G.CARD_W, G.CARD_H, front, G.P_CENTERS.m_stone, {playing_card = G.playing_card})
                 G.E_MANAGER:add_event(Event({
-                    func = function() 
+                    func = function()
                         card:start_materialize({G.C.SECONDARY_SET.Enhanced})
                         G.play:emplace(card)
                         table.insert(G.playing_cards, card)
@@ -2772,11 +2803,11 @@ function Card:calculate_joker(context)
                 card_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_plus_stone'), colour = G.C.SECONDARY_SET.Enhanced})
                 
                 G.E_MANAGER:add_event(Event({
-                    func = function() 
+                    func = function()
                         G.deck.config.card_limit = G.deck.config.card_limit + 1
                         return true
                     end}))
-                    draw_card(G.play,G.deck, 90,'up', nil)  
+                    draw_card(G.play,G.deck, 90,'up', nil)
                 
                 playing_card_joker_effects({card})
         return nil, true            end
@@ -4545,7 +4576,7 @@ function Card:draw(layer)
     
     if (layer == 'shadow' or layer == 'both') then
         self.ARGS.send_to_shader = self.ARGS.send_to_shader or {}
-        self.ARGS.send_to_shader[1] = math.min(self.VT.r*3, 1) + math.sin(G.TIMERS.REAL/28) + 1 + (self.juice and self.juice.r*20 or 0) + self.tilt_var.amt
+        self.ARGS.send_to_shader[1] = math.min(self.VT.r*3, 1) + G.TIMERS.REAL/(28) + (self.juice and self.juice.r*20 or 0) + self.tilt_var.amt
         self.ARGS.send_to_shader[2] = G.TIMERS.REAL
 
         for k, v in pairs(self.children) do
@@ -4556,7 +4587,7 @@ function Card:draw(layer)
     G.shared_shadow = self.sprite_facing == 'front' and self.children.center or self.children.back
 
     --Draw the shadow
-    if not self.no_shadow and G.SETTINGS.GRAPHICS.shadows == 'On' and((layer == 'shadow' or layer == 'both') and (self.ability.effect ~= 'Glass Card' and not self.greyed and self:should_draw_shadow() ) and ((self.area and self.area ~= G.discard and self.area.config.type ~= 'deck') or not self.area or self.states.drag.is)) then
+    if not self.no_shadow and G.SETTINGS.GRAPHICS.shadows == 'On' and((layer == 'shadow' or layer == 'both') and (self.ability.effect ~= 'Glass Card' and not self.greyed) and ((self.area and self.area ~= G.discard and self.area.config.type ~= 'deck') or not self.area or self.states.drag.is)) then
         self.shadow_height = 0*(0.08 + 0.4*math.sqrt(self.velocity.x^2)) + ((((self.highlighted and self.area == G.play) or self.states.drag.is) and 0.35) or (self.area and self.area.config.type == 'title_2') and 0.04 or 0.1)
         G.shared_shadow:draw_shader('dissolve', self.shadow_height)
     end
@@ -4614,15 +4645,13 @@ function Card:draw(layer)
             --Draw the main part of the card
             if (self.edition and self.edition.negative) or (self.ability.name == 'Antimatter' and (self.config.center.discovered or self.bypass_discovery_center)) then
                 self.children.center:draw_shader('negative', nil, self.ARGS.send_to_shader)
-                if self.children.front and (self.ability.delayed or (self.ability.effect ~= 'Stone Card' and not self.config.center.replace_base_card)) then
+                if self.children.front and self.ability.effect ~= 'Stone Card' then
                     self.children.front:draw_shader('negative', nil, self.ARGS.send_to_shader)
                 end
-            elseif not self:should_draw_base_shader() then
-                -- Don't render base dissolve shader.
             elseif not self.greyed then
                 self.children.center:draw_shader('dissolve')
                 --If the card has a front, draw that next
-                if self.children.front and (self.ability.delayed or (self.ability.effect ~= 'Stone Card' and not self.config.center.replace_base_card)) then
+                if self.children.front and self.ability.effect ~= 'Stone Card' then
                     self.children.front:draw_shader('dissolve')
                 end
             end
@@ -4634,71 +4663,44 @@ function Card:draw(layer)
                 local rotate_mod = 0.03*math.sin(1.219*G.TIMERS.REAL)
 
                 shared_sprite.role.draw_major = self
-                if (self.config.center.undiscovered and not self.config.center.undiscovered.no_overlay) or not( SMODS.UndiscoveredSprites[self.ability.set] and SMODS.UndiscoveredSprites[self.ability.set].no_overlay) then 
-                    shared_sprite:draw_shader('dissolve', nil, nil, nil, self.children.center, scale_mod, rotate_mod)
-                else
-                    if SMODS.UndiscoveredSprites[self.ability.set] and SMODS.UndiscoveredSprites[self.ability.set].overlay_sprite then
-                        SMODS.UndiscoveredSprites[self.ability.set].overlay_sprite:draw_shader('dissolve', nil, nil, nil, self.children.center, scale_mod, rotate_mod)
-                    end
-                end
+                shared_sprite:draw_shader('dissolve', nil, nil, nil, self.children.center, scale_mod, rotate_mod)
             end
 
             if self.ability.name == 'Invisible Joker' and (self.config.center.discovered or self.bypass_discovery_center) then
-                if self:should_draw_base_shader() then
-                    self.children.center:draw_shader('voucher', nil, self.ARGS.send_to_shader)
-                end
+                self.children.center:draw_shader('voucher', nil, self.ARGS.send_to_shader)
             end
 
-            local center = self.config.center
-            if center.draw and type(center.draw) == 'function' then
-                center:draw(self, layer)
-            end
-            if center.set == 'Default' or center.set == 'Enhanced' and not center.replace_base_card then
-                if not center.no_suit then
-                    local suit = SMODS.Suits[self.base.suit] or {}
-                    if suit.draw and type(suit.draw) == 'function' then
-                        suit:draw(self, layer)
-                    end
-                end
-                if not center.no_rank then
-                    local rank = SMODS.Ranks[self.base.value] or {}
-                    if rank.draw and type(rank.draw) == 'function' then
-                        rank:draw(self, layer)
-                    end
-                end
-            end
             --If the card has any edition/seal, add that here
-            if true then
+            if self.edition or self.seal or self.ability.eternal or self.ability.rental or self.ability.perishable or self.sticker or ((self.sticker_run and self.sticker_run ~= 'NONE') and G.SETTINGS.run_stake_stickers) or (self.ability.set == 'Spectral') or self.debuff or self.greyed or (self.ability.name == 'The Soul') or (self.ability.set == 'Voucher') or (self.ability.set == 'Booster') or self.config.center.soul_pos or self.config.center.demo then
                 
                 if (self.ability.set == 'Voucher' or self.config.center.demo) and (self.ability.name ~= 'Antimatter' or not (self.config.center.discovered or self.bypass_discovery_center)) then
-                    if self:should_draw_base_shader() then
-                        self.children.center:draw_shader('voucher', nil, self.ARGS.send_to_shader)
-                    end
+                    self.children.center:draw_shader('voucher', nil, self.ARGS.send_to_shader)
                 end
-                if (self.ability.set == 'Booster' or self.ability.set == 'Spectral') and self:should_draw_base_shader() then
+                if self.ability.set == 'Booster' or self.ability.set == 'Spectral' then
                     self.children.center:draw_shader('booster', nil, self.ARGS.send_to_shader)
                 end
-                if self.edition then
-                    for k, v in pairs(G.P_CENTER_POOLS.Edition) do
-                        if self.edition[v.key:sub(3)] and v.shader then
-                            if type(v.draw) == 'function' then
-                                v:draw(self, layer)
-                            else
-                                self.children.center:draw_shader(v.shader, nil, self.ARGS.send_to_shader)
-                                if self.children.front and self.ability.effect ~= 'Stone Card' and not self.config.center.replace_base_card then
-                                    self.children.front:draw_shader(v.shader, nil, self.ARGS.send_to_shader)
-                                end
-                            end
-                        end
+                if self.edition and self.edition.holo then
+                    self.children.center:draw_shader('holo', nil, self.ARGS.send_to_shader)
+                    if self.children.front and self.ability.effect ~= 'Stone Card' then
+                        self.children.front:draw_shader('holo', nil, self.ARGS.send_to_shader)
+                    end
+                end
+                if self.edition and self.edition.foil then
+                    self.children.center:draw_shader('foil', nil, self.ARGS.send_to_shader)
+                    if self.children.front and self.ability.effect ~= 'Stone Card' then
+                        self.children.front:draw_shader('foil', nil, self.ARGS.send_to_shader)
+                    end
+                end
+                if self.edition and self.edition.polychrome then
+                    self.children.center:draw_shader('polychrome', nil, self.ARGS.send_to_shader)
+                    if self.children.front and self.ability.effect ~= 'Stone Card' then
+                        self.children.front:draw_shader('polychrome', nil, self.ARGS.send_to_shader)
                     end
                 end
                 if (self.edition and self.edition.negative) or (self.ability.name == 'Antimatter' and (self.config.center.discovered or self.bypass_discovery_center)) then
                     self.children.center:draw_shader('negative_shine', nil, self.ARGS.send_to_shader)
                 end
-                local seal = G.P_SEALS[self.seal or {}] or {}
-                if type(seal.draw) == 'function' then
-                    seal:draw(self, layer)
-                elseif self.seal then
+                if self.seal then
                     G.shared_seals[self.seal].role.draw_major = self
                     G.shared_seals[self.seal]:draw_shader('dissolve', nil, nil, nil, self.children.center)
                     if self.seal == 'Gold' then G.shared_seals[self.seal]:draw_shader('voucher', nil, self.ARGS.send_to_shader, nil, self.children.center) end
@@ -4728,17 +4730,6 @@ function Card:draw(layer)
                     G.shared_stickers[self.sticker_run]:draw_shader('voucher', nil, self.ARGS.send_to_shader, nil, self.children.center)
                 end
 
-                for k, v in pairs(SMODS.Stickers) do
-                    if self.ability[v.key] then
-                        if v and v.draw and type(v.draw) == 'function' then
-                            v:draw(self, layer)
-                        else
-                            G.shared_stickers[v.key].role.draw_major = self
-                            G.shared_stickers[v.key]:draw_shader('dissolve', nil, nil, nil, self.children.center)
-                            G.shared_stickers[v.key]:draw_shader('voucher', nil, self.ARGS.send_to_shader, nil, self.children.center)
-                        end
-                    end
-                end
                 if self.ability.name == 'The Soul' and (self.config.center.discovered or self.bypass_discovery_center) then
                     local scale_mod = 0.05 + 0.05*math.sin(1.8*G.TIMERS.REAL) + 0.07*math.sin((G.TIMERS.REAL - math.floor(G.TIMERS.REAL))*math.pi*14)*(1 - (G.TIMERS.REAL - math.floor(G.TIMERS.REAL)))^3
                     local rotate_mod = 0.1*math.sin(1.219*G.TIMERS.REAL) + 0.07*math.sin((G.TIMERS.REAL)*math.pi*5)*(1 - (G.TIMERS.REAL - math.floor(G.TIMERS.REAL)))^2
@@ -4759,27 +4750,18 @@ function Card:draw(layer)
                     else
                         self.children.floating_sprite:draw_shader('dissolve',0, nil, nil, self.children.center,scale_mod, rotate_mod,nil, 0.1 + 0.03*math.sin(1.8*G.TIMERS.REAL),nil, 0.6)
                         self.children.floating_sprite:draw_shader('dissolve', nil, nil, nil, self.children.center, scale_mod, rotate_mod)
-                        if self.edition then 
-                            for k, v in pairs(G.P_CENTER_POOLS.Edition) do
-                                if v.apply_to_float then
-                                    if self.edition[v.key:sub(3)] then
-                                        self.children.floating_sprite:draw_shader(v.shader, nil, nil, nil, self.children.center, scale_mod, rotate_mod)
-                                    end
-                                end
-                            end
-                        end
                     end
                     
                 end
                 if self.debuff then
                     self.children.center:draw_shader('debuff', nil, self.ARGS.send_to_shader)
-                    if self.children.front and (self.ability.delayed or (self.ability.effect ~= 'Stone Card' and not self.config.center.replace_base_card)) then
+                    if self.children.front and self.ability.effect ~= 'Stone Card' then
                         self.children.front:draw_shader('debuff', nil, self.ARGS.send_to_shader)
                     end
                 end
                 if self.greyed then
                     self.children.center:draw_shader('played', nil, self.ARGS.send_to_shader)
-                    if self.children.front and (self.ability.delayed or (self.ability.effect ~= 'Stone Card' and not self.config.center.replace_base_card)) then
+                    if self.children.front and self.ability.effect ~= 'Stone Card' then
                         self.children.front:draw_shader('played', nil, self.ARGS.send_to_shader)
                     end
                 end
@@ -4809,7 +4791,7 @@ function Card:draw(layer)
         end
 
         for k, v in pairs(self.children) do
-            if not v.custom_draw and k ~= 'focused_ui' and k ~= "front" and k ~= "back" and k ~= "soul_parts" and k ~= "center" and k ~= 'floating_sprite' and k~= "shadow" and k~= "use_button" and k ~= 'buy_button' and k ~= 'buy_and_use_button' and k~= "debuff" and k ~= 'price' and k~= 'particles' and k ~= 'h_popup' then v:draw() end
+            if k ~= 'focused_ui' and k ~= "front" and k ~= "back" and k ~= "soul_parts" and k ~= "center" and k ~= 'floating_sprite' and k~= "shadow" and k~= "use_button" and k ~= 'buy_button' and k ~= 'buy_and_use_button' and k~= "debuff" and k ~= 'price' and k~= 'particles' and k ~= 'h_popup' then v:draw() end
         end
 
         if (layer == 'card' or layer == 'both') and self.area == G.hand then 

@@ -1,0 +1,1995 @@
+INFO - [♥] Lovely 0.7.1
+INFO - [♥] Game directory is at "E:\\shira\\.local\\share\\Steam\\steamapps\\common\\Balatro"
+INFO - [♥] Writing logs to "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\lovely\\log"
+INFO - [♥] Using mod directory at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods"
+WARN - [♥] Unknown key `patches.0.?.match_indent` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\BalatroMultiplayer-0.1.8.3\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.1.?.match_indent` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\BalatroMultiplayer-0.1.8.3\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.9.?.match_indent` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\BalatroMultiplayer-0.1.8.3\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.10.?.match_indent` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\BalatroMultiplayer-0.1.8.3\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.13.?.match_indent` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\BalatroMultiplayer-0.1.8.3\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.15.?.match_indent` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\HandyBalatro\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.15.?.overwrite` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\HandyBalatro\\lovely.toml", ignoring it
+INFO - [♥] Cleaning up dumps directory at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\lovely\\dump"
+INFO - [♥] Initialization complete in 229ms
+INFO - [♥] Applied 18 patches to 'main.lua'
+INFO - [♥] Applied 6 patches to 'engine/controller.lua'
+INFO - [♥] Applied 13 patches to 'back.lua'
+INFO - [♥] Applied 6 patches to 'tag.lua'
+INFO - [♥] Applied 1 patch to 'engine/moveable.lua'
+INFO - [♥] Applied 2 patches to 'engine/sprite.lua'
+INFO - [♥] Applied 2 patches to 'engine/animatedsprite.lua'
+INFO - [♥] Applied 41 patches to 'functions/misc_functions.lua'
+INFO - [♥] Applied 30 patches to 'game.lua'
+INFO - [♥] Applied 1 patch to 'globals.lua'
+INFO - [♥] Applied 3 patches to 'engine/ui.lua'
+INFO - [♥] Applied 81 patches to 'functions/UI_definitions.lua'
+INFO - [♥] Applied 43 patches to 'functions/state_events.lua'
+INFO - [♥] Applied 91 patches to 'functions/common_events.lua'
+INFO - [♥] Applied 45 patches to 'functions/button_callbacks.lua'
+INFO - [♥] Applied 149 patches to 'card.lua'
+INFO - [♥] Applied 7 patches to 'cardarea.lua'
+INFO - [♥] Applied 30 patches to 'blind.lua'
+INFO - [♥] Applied 2 patches to 'engine/text.lua'
+INFO - [G] Failed to connect to the debug server
+INFO - [G] 2025-02-28 22:17:52 :: DEBUG :: DebugConsole :: Steamodded Debug Socket started !
+INFO - [♥] Applied 9 patches to 'engine/sound_manager.lua'
+INFO - [♥] Applied 1 patch to 'engine/save_manager.lua'
+INFO - [G] 2025-02-28 22:17:53 :: INFO  :: DefaultLogger :: Valid JSON file found
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): MathBlinds.lua
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Saving Mod Info: MathBlinds
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): AbsoluteDeck.lua
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Saving Mod Info: AbsoluteDeck
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): JokerOnlyDeck.lua
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Saving Mod Info: JokerOnlyDeck
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): PauperDeck.lua
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Saving Mod Info: pauperdeck
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): UltimateRandom.lua
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Saving Mod Info: UltimateRandomDeck
+INFO - [G] 2025-02-28 22:17:53 :: INFO  :: DefaultLogger :: Valid JSON file found
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): steamodded.lua
+INFO - [G] 2025-02-28 22:17:53 :: WARN  :: Loader :: Duplicate Mod ID: Handy
+INFO - [G] 2025-02-28 22:17:53 :: INFO  :: DefaultLogger :: Valid JSON file found
+INFO - [G] 2025-02-28 22:17:53 :: ERROR :: Loader :: Found invalid metadata JSON file at C:\users\steamuser\AppData\Roaming\Balatro\Mods/Jokers/ParrotJoker/manifest.json, ignoring: [SMODS _ "src/loader.lua"]:226: id
+INFO - [G] 2025-02-28 22:17:53 :: ERROR :: Loader :: Found invalid metadata JSON file at C:\users\steamuser\AppData\Roaming\Balatro\Mods/Jokers/SnoresvilleTurbulentJokers/SnoresvilleTurbulentJokers.json, ignoring: [SMODS _ "src/loader.lua"]:105: attempt to call method 'gmatch' (a nil value)
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): ThemedDecks.lua
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Saving Mod Info: ThemedDecks
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): ThemedJokers.lua
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Saving Mod Info: ThemedJokers
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): ThemedTarots.lua
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Saving Mod Info: ThemedTarots
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): MikasModCollection.lua
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Saving Mod Info: MikasMods
+INFO - [G] 2025-02-28 22:17:53 :: ERROR :: Loader :: Found invalid metadata JSON file at C:\users\steamuser\AppData\Roaming\Balatro\Mods/Packs_and_Mechanics/MikasBalatro/manifest.json, ignoring: [SMODS _ "src/loader.lua"]:226: id
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): SylvieSilly.lua
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Saving Mod Info: SylvieSilly
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): Tetrapak.lua
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Saving Mod Info: tetraminus_tetrapak
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): TheAutumnCircus.lua
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Saving Mod Info: TheAutumnCircus
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): FasterStakesUnlock.lua
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Saving Mod Info: FasterStakesUnlock
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Processing Mod file (Legacy header): HoldForFinalHandScore.lua
+INFO - [G] 2025-02-28 22:17:53 :: TRACE :: Loader :: Saving Mod Info: HoldForFinalHandScore
+INFO - [G] 2025-02-28 22:17:53 :: INFO  :: DefaultLogger :: Valid JSON file found
+INFO - [G] 2025-02-28 22:17:53 :: INFO  :: mij :: Registered: grug_economics
+INFO - [G] 2025-02-28 22:17:53 :: INFO  :: mij :: Registered: programmer_socks
+INFO - [G] 2025-02-28 22:17:53 :: INFO  :: mij :: Registered: glass_house
+INFO - [G] 2025-02-28 22:17:54 :: INFO  :: mij :: Registered: introverted_joker
+INFO - [G] 2025-02-28 22:17:54 :: INFO  :: mij :: Registered: unloyal_joker
+INFO - [G] 2025-02-28 22:17:54 :: INFO  :: mij :: Registered: insurance_joker
+INFO - [G] 2025-02-28 22:17:54 :: INFO  :: mij :: Registered: anarchist_joker
+INFO - [G] 2025-02-28 22:17:54 :: INFO  :: mij :: Registered: pol_joker
+INFO - [G] 2025-02-28 22:17:54 :: INFO  :: mij :: Registered: wally_joker
+INFO - [G] 2025-02-28 22:17:54 :: INFO  :: mij :: Registered: succ_joker
+INFO - [G] 2025-02-28 22:17:54 :: INFO  :: mij-wally :: mij_laugh2: 
+  path: laugh2.ogg
+  mod: 
+    version: 1.0.0
+    id: MIJ
+    main_file: maxine.lua
+    can_load: true
+    badge_colour: 
+      1: 1
+      2: 0
+      3: 0
+      4: 1
+    badge_text_colour: 
+      1: 1
+      2: 1
+      3: 1
+      4: 1
+    priority: 0
+    author: 
+      1: MaxIsJoe
+    config: 
+    json: true
+    config_file: config.lua
+    description: Adds a few new jokers to the game.
+    path: C:\users\steamuser\AppData\Roaming\Balatro\Mods/Jokers/MaxineJokers/
+    prefix: mij
+    dependencies: 
+    display_name: Maxine's Joker Pack
+    name: Maxine's Joker Pack
+    optional_dependencies: 
+  sound_code: mij_laugh2
+  registered: true
+  original_key: laugh2
+  key: mij_laugh2
+  prefix_config: 
+xchips: 
+  path: xchips.ogg
+  prefix_config: 
+  sound_code: xchips
+  registered: true
+  key: xchips
+  original_key: xchips
+mij_laugh1: 
+  path: laugh1.ogg
+  mod: 
+    version: 1.0.0
+    id: MIJ
+    main_file: maxine.lua
+    can_load: true
+    badge_colour: 
+      1: 1
+      2: 0
+      3: 0
+      4: 1
+    badge_text_colour: 
+      1: 1
+      2: 1
+      3: 1
+      4: 1
+    priority: 0
+    author: 
+      1: MaxIsJoe
+    config: 
+    json: true
+    config_file: config.lua
+    description: Adds a few new jokers to the game.
+    path: C:\users\steamuser\AppData\Roaming\Balatro\Mods/Jokers/MaxineJokers/
+    prefix: mij
+    dependencies: 
+    display_name: Maxine's Joker Pack
+    name: Maxine's Joker Pack
+    optional_dependencies: 
+  sound_code: mij_laugh1
+  registered: true
+  original_key: laugh1
+  key: mij_laugh1
+  prefix_config: 
+mij_heykiddo: 
+  path: heykiddo.ogg
+  mod: 
+    version: 1.0.0
+    id: MIJ
+    main_file: maxine.lua
+    can_load: true
+    badge_colour: 
+      1: 1
+      2: 0
+      3: 0
+      4: 1
+    badge_text_colour: 
+      1: 1
+      2: 1
+      3: 1
+      4: 1
+    priority: 0
+    author: 
+      1: MaxIsJoe
+    config: 
+    json: true
+    config_file: config.lua
+    description: Adds a few new jokers to the game.
+    path: C:\users\steamuser\AppData\Roaming\Balatro\Mods/Jokers/MaxineJokers/
+    prefix: mij
+    dependencies: 
+    display_name: Maxine's Joker Pack
+    name: Maxine's Joker Pack
+    optional_dependencies: 
+  sound_code: mij_heykiddo
+  registered: true
+  original_key: heykiddo
+  key: mij_heykiddo
+  prefix_config: 
+
+INFO - [G] No config file found for Tetrapak, creating
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_ace_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_page_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_incense
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_prime_time
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_straight_nate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fisherman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_impatient
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cultist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_camper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scratch_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_delayed
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_showoff
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_sniper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blackjack
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_batman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_bomb
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_eye_chart
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_grudgeful
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_finishing_blow
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_aurora_borealis
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_historical
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_suit_alley
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_printer
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_training_wheels
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_horseshoe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_incomplete
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_abbey_road
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fishing_license
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_gold_bar
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_rigged
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_commander
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blue_moon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dagonet
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glue
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_harp_seal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_football_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_special_edition
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_stockpiler
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_student_loans
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_go_for_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_street_fighter
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_checklist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_one_of_us
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_investor
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_mountain_climber
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_shackles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_buy_one_get_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_pack_a_punch
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_steal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_tax_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glass_cannon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scoring_test
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cicero
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dawn
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_savings
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_monopolist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_nebula
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheapskate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_psychic
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheat
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_plus_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_MoreConsumables
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_JokerStamps
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_VouchMe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedJokers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedTarots
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_backs
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_moons
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_vouchers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_blinds
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_spectrals
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_boosters
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_1
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: The Booster named Suits Pack with the slug p_suit_normal_1 have been registered at the id 34.
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_ace_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_page_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_incense
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_prime_time
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_straight_nate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fisherman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_impatient
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cultist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_camper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scratch_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_delayed
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_showoff
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_sniper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blackjack
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_batman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_bomb
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_eye_chart
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_grudgeful
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_finishing_blow
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_aurora_borealis
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_historical
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_suit_alley
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_printer
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_training_wheels
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_horseshoe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_incomplete
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_abbey_road
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fishing_license
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_gold_bar
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_rigged
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_commander
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blue_moon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dagonet
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glue
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_harp_seal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_football_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_special_edition
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_stockpiler
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_student_loans
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_go_for_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_street_fighter
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_checklist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_one_of_us
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_investor
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_mountain_climber
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_shackles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_buy_one_get_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_pack_a_punch
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_steal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_tax_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glass_cannon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scoring_test
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cicero
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dawn
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_savings
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_monopolist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_nebula
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheapskate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_psychic
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheat
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_plus_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_MoreConsumables
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_JokerStamps
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_VouchMe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedJokers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedTarots
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_backs
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_moons
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_vouchers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_blinds
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_spectrals
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_boosters
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_normal_2
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: The Booster named Suits Pack with the slug p_suit_normal_2 have been registered at the id 35.
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_ace_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_page_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_incense
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_prime_time
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_straight_nate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fisherman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_impatient
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cultist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_camper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scratch_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_delayed
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_showoff
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_sniper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blackjack
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_batman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_bomb
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_eye_chart
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_grudgeful
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_finishing_blow
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_aurora_borealis
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_historical
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_suit_alley
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_printer
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_training_wheels
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_horseshoe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_incomplete
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_abbey_road
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fishing_license
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_gold_bar
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_rigged
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_commander
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blue_moon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dagonet
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glue
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_harp_seal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_football_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_special_edition
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_stockpiler
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_student_loans
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_go_for_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_street_fighter
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_checklist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_one_of_us
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_investor
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_mountain_climber
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_shackles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_buy_one_get_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_pack_a_punch
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_steal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_tax_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glass_cannon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scoring_test
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cicero
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dawn
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_savings
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_monopolist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_nebula
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheapskate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_psychic
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheat
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_plus_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_MoreConsumables
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_JokerStamps
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_VouchMe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedJokers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedTarots
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_backs
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_moons
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_vouchers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_blinds
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_spectrals
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_boosters
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: The Booster named Jumbo Suits Pack with the slug p_suit_jumbo have been registered at the id 36.
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_ace_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_page_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_incense
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_prime_time
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_straight_nate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fisherman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_impatient
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cultist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_camper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scratch_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_delayed
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_showoff
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_sniper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blackjack
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_batman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_bomb
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_eye_chart
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_grudgeful
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_finishing_blow
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_aurora_borealis
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_historical
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_suit_alley
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_printer
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_training_wheels
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_horseshoe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_incomplete
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_abbey_road
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fishing_license
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_gold_bar
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_rigged
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_commander
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blue_moon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dagonet
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glue
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_harp_seal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_football_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_special_edition
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_stockpiler
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_student_loans
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_go_for_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_street_fighter
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_checklist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_one_of_us
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_investor
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_mountain_climber
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_shackles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_buy_one_get_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_pack_a_punch
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_steal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_tax_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glass_cannon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scoring_test
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cicero
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dawn
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_savings
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_monopolist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_nebula
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheapskate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_psychic
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheat
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_plus_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_MoreConsumables
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_JokerStamps
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_VouchMe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedJokers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedTarots
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_backs
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_moons
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_vouchers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_blinds
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_spectrals
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_boosters
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_suit_mega
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: The Booster named Mega Suits Pack with the slug p_suit_mega have been registered at the id 37.
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_ace_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_page_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_incense
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_prime_time
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_straight_nate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fisherman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_impatient
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cultist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_camper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scratch_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_delayed
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_showoff
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_sniper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blackjack
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_batman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_bomb
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_eye_chart
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_grudgeful
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_finishing_blow
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_aurora_borealis
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_historical
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_suit_alley
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_printer
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_training_wheels
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_horseshoe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_incomplete
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_abbey_road
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fishing_license
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_gold_bar
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_rigged
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_commander
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blue_moon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dagonet
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glue
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_harp_seal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_football_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_special_edition
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_stockpiler
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_student_loans
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_go_for_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_street_fighter
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_checklist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_one_of_us
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_investor
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_mountain_climber
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_shackles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_buy_one_get_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_pack_a_punch
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_steal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_tax_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glass_cannon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scoring_test
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cicero
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dawn
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_savings
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_monopolist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_nebula
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheapskate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_psychic
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheat
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_plus_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_MoreConsumables
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_JokerStamps
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_VouchMe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedJokers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedTarots
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_backs
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_moons
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_vouchers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_blinds
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_spectrals
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_boosters
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: The Booster named Bonus Pack with the slug p_bonus_normal have been registered at the id 38.
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_ace_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_page_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_incense
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_prime_time
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_straight_nate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fisherman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_impatient
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cultist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_camper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scratch_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_delayed
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_showoff
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_sniper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blackjack
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_batman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_bomb
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_eye_chart
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_grudgeful
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_finishing_blow
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_aurora_borealis
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_historical
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_suit_alley
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_printer
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_training_wheels
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_horseshoe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_incomplete
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_abbey_road
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fishing_license
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_gold_bar
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_rigged
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_commander
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blue_moon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dagonet
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glue
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_harp_seal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_football_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_special_edition
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_stockpiler
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_student_loans
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_go_for_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_street_fighter
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_checklist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_one_of_us
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_investor
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_mountain_climber
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_shackles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_buy_one_get_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_pack_a_punch
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_steal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_tax_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glass_cannon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scoring_test
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cicero
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dawn
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_savings
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_monopolist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_nebula
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheapskate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_psychic
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheat
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_plus_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_MoreConsumables
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_JokerStamps
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_VouchMe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedJokers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedTarots
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_backs
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_moons
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_vouchers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_blinds
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_spectrals
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_boosters
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_bonus_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: The Booster named Jumbo Bonus Pack with the slug p_bonus_jumbo have been registered at the id 39.
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_ace_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_page_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_incense
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_prime_time
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_straight_nate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fisherman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_impatient
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cultist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_camper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scratch_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_delayed
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_showoff
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_sniper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blackjack
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_batman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_bomb
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_eye_chart
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_grudgeful
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_finishing_blow
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_aurora_borealis
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_historical
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_suit_alley
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_printer
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_training_wheels
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_horseshoe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_incomplete
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_abbey_road
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fishing_license
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_gold_bar
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_rigged
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_commander
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blue_moon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dagonet
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glue
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_harp_seal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_football_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_special_edition
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_stockpiler
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_student_loans
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_go_for_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_street_fighter
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_checklist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_one_of_us
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_investor
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_mountain_climber
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_shackles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_buy_one_get_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_pack_a_punch
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_steal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_tax_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glass_cannon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scoring_test
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cicero
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dawn
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_savings
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_monopolist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_nebula
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheapskate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_psychic
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheat
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_plus_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_MoreConsumables
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_JokerStamps
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_VouchMe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedJokers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedTarots
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_backs
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_moons
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_vouchers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_blinds
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_spectrals
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_boosters
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_normal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: The Booster named Fortune Pack with the slug p_fortune_normal have been registered at the id 40.
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_ace_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_page_of_pentacles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: c_mmc_incense
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_prime_time
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_straight_nate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fisherman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_impatient
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cultist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_camper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scratch_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_delayed
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_showoff
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_sniper
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blackjack
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_batman
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_bomb
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_eye_chart
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_grudgeful
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_finishing_blow
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_aurora_borealis
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_historical
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_suit_alley
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_printer
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_training_wheels
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_horseshoe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_incomplete
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_abbey_road
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_fishing_license
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_gold_bar
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_rigged
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_commander
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_blue_moon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dagonet
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glue
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_harp_seal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_football_card
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_special_edition
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_stockpiler
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_student_loans
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_go_for_broke
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_street_fighter
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_checklist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_one_of_us
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_investor
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_mountain_climber
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_shackles
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_buy_one_get_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_pack_a_punch
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_seal_steal
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_tax_collector
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_glass_cannon
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_scoring_test
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cicero
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_dawn
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_savings
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_monopolist
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_nebula
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheapskate
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_psychic
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_cheat
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: j_mmc_plus_one
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_MoreConsumables
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_JokerStamps
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: Thac_VouchMe
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedJokers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: ThemedTarots
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_backs
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_moons
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_vouchers
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_blinds
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_spectrals
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: sylvie_boosters
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: p_fortune_jumbo
+INFO - [G] 2025-02-28 22:17:54 :: DEBUG :: DefaultLogger :: The Booster named Jumbo Fortune Pack with the slug p_fortune_jumbo have been registered at the id 41.
+INFO - [G] 2025-02-28 22:17:54 :: TRACE :: MULTIPLAYER :: Client sent message: connect
+INFO - [G] 2025-02-28 22:17:54 :: INFO  :: TIMER :: [0000] Injected Language in 0.002 ms
+INFO - [G] 2025-02-28 22:17:54 :: INFO  :: TIMER :: [0000] Injected [INTERNAL] in 1.073 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0098] Injected Atlas in 919.084 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0004] Injected Sound in 3.363 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0008] Injected Stake in 0.312 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0004] Injected Rarity in 0.041 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0005] Injected ObjectType in 0.078 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0288] Injected Center in 4.363 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0007] Injected Undiscovered Sprite in 0.020 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0036] Injected Blind in 0.824 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0010] Injected Seal in 0.460 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0004] Injected Suit in 0.172 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0013] Injected Rank in 0.159 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0028] Injected DeckSkin in 0.468 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0012] Injected PokerHand in 0.109 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0021] Injected Challenge in 0.215 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0000] Injected Tag in 0.002 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0005] Injected Sticker in 0.107 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0000] Injected Shader in 0.002 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0001] Injected Keybind in 0.009 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0000] Injected Achievement in 0.140 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: TIMER :: [0000] Injected [INTERNAL] in 11.153 ms
+INFO - [G] 2025-02-28 22:17:55 :: INFO  :: MULTIPLAYER :: Generated Mod Hash: 8995
+INFO - [G] 2025-02-28 22:17:55 :: TRACE :: MULTIPLAYER :: Client got connected message:  (action: connected) 
+INFO - [G] 2025-02-28 22:17:55 :: TRACE :: MULTIPLAYER :: Client sent message: action:username,username:Shira,modHash:TheAutumnCircus-0.0.0;HoldForFinalHandScore-0.0.0;balatro_plus-1.0.1;ThemedTarots-0.0.0;Handy-1.3.2;MIJ-1.0.0;VirtualizedMultiplayer-0.1.8.3;UltimateRandomDeck-0.0.0;MathBlinds-1.2.3;FasterStakesUnlock-0.0.0;JokerOnlyDeck-0.0.0;tetraminus_tetrapak-0.0.0;MikasMods-0.0.0;SylvieSilly-0.0.0;ThemedJokers-0.0.0;AbsoluteDeck-0.0.0;ThemedDecks-0.0.0;pauperdeck-1.1;
+INFO - [G] 2025-02-28 22:17:55 :: TRACE :: MULTIPLAYER :: Client got version message:  (action: version) 
+INFO - [G] 2025-02-28 22:17:55 :: TRACE :: MULTIPLAYER :: Client sent message: action:version,version:0.1.8.3-MULTIPLAYER
+INFO - [G] 2025-02-28 22:18:25 :: TRACE :: MULTIPLAYER :: Client sent message: action:username,username:Shira,modHash:TheAutumnCircus-0.0.0;HoldForFinalHandScore-0.0.0;balatro_plus-1.0.1;ThemedTarots-0.0.0;Handy-1.3.2;MIJ-1.0.0;VirtualizedMultiplayer-0.1.8.3;UltimateRandomDeck-0.0.0;MathBlinds-1.2.3;FasterStakesUnlock-0.0.0;JokerOnlyDeck-0.0.0;tetraminus_tetrapak-0.0.0;MikasMods-0.0.0;SylvieSilly-0.0.0;ThemedJokers-0.0.0;AbsoluteDeck-0.0.0;ThemedDecks-0.0.0;pauperdeck-1.1;
+INFO - [G] 2025-02-28 22:18:29 :: TRACE :: MULTIPLAYER :: Client sent message: action:createLobby,gameMode:attrition
+INFO - [G] 2025-02-28 22:18:29 :: TRACE :: MULTIPLAYER :: Client got joinedLobby message:  (type: attrition)  (action: joinedLobby)  (code: ZKJXE) 
+INFO - [G] 2025-02-28 22:18:29 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyInfo
+INFO - [G] 2025-02-28 22:18:29 :: DEBUG :: MULTIPLAYER :: Resetting game states
+INFO - [G] 2025-02-28 22:18:30 :: TRACE :: MULTIPLAYER :: Client got lobbyInfo message:  (host: Shira)  (action: lobbyInfo)  (isHost: true)  (hostHash: TheAutumnCircus-0.0.0;HoldForFinalHandScore-0.0.0;balatro_plus-1.0.1;ThemedTarots-0.0.0;Handy-1.3.2;MIJ-1.0.0;VirtualizedMultiplayer-0.1.8.3;UltimateRandomDeck-0.0.0;MathBlinds-1.2.3;FasterStakesUnlock-0.0.0;JokerOnlyDeck-0.0.0;tetraminus_tetrapak-0.0.0;MikasMods-0.0.0;SylvieSilly-0.0.0;ThemedJokers-0.0.0;AbsoluteDeck-0.0.0;ThemedDecks-0.0.0;pauperdeck-1.1;) 
+INFO - [G] 2025-02-28 22:18:30 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:false,gamemode:attrition,sleeve:sleeve_casl_none,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:4,back:Red Deck,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:18:42 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:false,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:4,back:Black Deck,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:19:27 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:false,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:4,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:19:38 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:false,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:4,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:21:01 :: TRACE :: MULTIPLAYER :: Client got lobbyInfo message:  (host: Shira)  (guestHash: TheAutumnCircus-0.0.0;HoldForFinalHandScore-0.0.0;balatro_plus-1.0.1;ThemedTarots-0.0.0;Handy-1.3.2;MIJ-1.0.0;VirtualizedMultiplayer-0.1.8.3;UltimateRandomDeck-0.0.0;MathBlinds-1.2.3;FasterStakesUnlock-0.0.0;JokerOnlyDeck-0.0.0;tetraminus_tetrapak-0.0.0;MikasMods-0.0.0;SylvieSilly-0.0.0;ThemedJokers-0.0.0;AbsoluteDeck-0.0.0;ThemedDecks-0.0.0;pauperdeck-1.1;)  (guest: Guest)  (action: lobbyInfo)  (hostHash: TheAutumnCircus-0.0.0;HoldForFinalHandScore-0.0.0;balatro_plus-1.0.1;ThemedTarots-0.0.0;Handy-1.3.2;MIJ-1.0.0;VirtualizedMultiplayer-0.1.8.3;UltimateRandomDeck-0.0.0;MathBlinds-1.2.3;FasterStakesUnlock-0.0.0;JokerOnlyDeck-0.0.0;tetraminus_tetrapak-0.0.0;MikasMods-0.0.0;SylvieSilly-0.0.0;ThemedJokers-0.0.0;AbsoluteDeck-0.0.0;ThemedDecks-0.0.0;pauperdeck-1.1;)  (isHost: true) 
+INFO - [G] 2025-02-28 22:21:01 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:false,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:4,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:21:02 :: TRACE :: MULTIPLAYER :: Client got lobbyInfo message:  (host: Shira)  (guestHash: TheAutumnCircus-0.0.0;HoldForFinalHandScore-0.0.0;balatro_plus-1.0.1;ThemedTarots-0.0.0;Handy-1.3.2;MIJ-1.0.0;VirtualizedMultiplayer-0.1.8.3;UltimateRandomDeck-0.0.0;MathBlinds-1.2.3;FasterStakesUnlock-0.0.0;JokerOnlyDeck-0.0.0;tetraminus_tetrapak-0.0.0;MikasMods-0.0.0;SylvieSilly-0.0.0;ThemedJokers-0.0.0;AbsoluteDeck-0.0.0;ThemedDecks-0.0.0;pauperdeck-1.1;)  (guest: Guest)  (action: lobbyInfo)  (hostHash: TheAutumnCircus-0.0.0;HoldForFinalHandScore-0.0.0;balatro_plus-1.0.1;ThemedTarots-0.0.0;Handy-1.3.2;MIJ-1.0.0;VirtualizedMultiplayer-0.1.8.3;UltimateRandomDeck-0.0.0;MathBlinds-1.2.3;FasterStakesUnlock-0.0.0;JokerOnlyDeck-0.0.0;tetraminus_tetrapak-0.0.0;MikasMods-0.0.0;SylvieSilly-0.0.0;ThemedJokers-0.0.0;AbsoluteDeck-0.0.0;ThemedDecks-0.0.0;pauperdeck-1.1;)  (isHost: true) 
+INFO - [G] 2025-02-28 22:21:02 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:false,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:4,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:21:05 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:4,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:21:05 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:false,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:4,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:21:07 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:4,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:21:09 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:false,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:4,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:21:10 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:4,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:21:14 :: TRACE :: MULTIPLAYER :: Client sent message: action:startGame
+INFO - [G] 2025-02-28 22:21:15 :: TRACE :: MULTIPLAYER :: Client got startGame message:  (deck: c_multiplayer_1)  (action: startGame)  (seed: 12P5Z) 
+INFO - [G] 2025-02-28 22:21:15 :: DEBUG :: MULTIPLAYER :: Resetting game states
+INFO - [G] 2025-02-28 22:21:15 :: TRACE :: MULTIPLAYER :: Client sent message: action:setAnte,ante:0
+INFO - [G] 2025-02-28 22:21:15 :: TRACE :: MULTIPLAYER :: Client got playerInfo message:  (lives: 4)  (action: playerInfo) 
+INFO - [G] 2025-02-28 22:21:19 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:21:19 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:21:19 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_small
+INFO - [G] 2025-02-28 22:21:29 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:21:29 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_small)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:22:02 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:22:06 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:22:14 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:22:19 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:22:21 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:22:21 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:22:21 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_big
+INFO - [G] 2025-02-28 22:22:39 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:22:41 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:22:41 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_big)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:22:59 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:23:03 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:23:05 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:23:17 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:23:18 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:23:19 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:23:19 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:23:19 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_pillar
+INFO - [G] 2025-02-28 22:23:21 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:23:22 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_pillar)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:23:32 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:23:32 :: TRACE :: MULTIPLAYER :: Client sent message: action:setAnte,ante:2
+INFO - [G] 2025-02-28 22:23:36 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:23:39 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:24:17 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:24:22 :: TRACE :: MULTIPLAYER :: Client sent message: action:skip,skips:1
+INFO - [G] 2025-02-28 22:24:31 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:24:32 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:24:33 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_small)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:24:45 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:24:45 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:24:45 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_big
+INFO - [G] 2025-02-28 22:24:53 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:25:00 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:25:01 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:25:01 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_big)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:25:21 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:25:26 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:25:28 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_ready)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:25:42 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:25:48 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:26:22 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:26:24 :: TRACE :: MULTIPLAYER :: Toggling Ready
+INFO - [G] 2025-02-28 22:26:24 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_ready
+INFO - [G] 2025-02-28 22:26:24 :: TRACE :: MULTIPLAYER :: Client sent message: action:readyBlind
+INFO - [G] 2025-02-28 22:26:24 :: TRACE :: MULTIPLAYER :: Client got startBlind message:  (action: startBlind) 
+INFO - [G] 2025-02-28 22:26:24 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:26:24 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:26:24 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_pvp
+INFO - [G] 2025-02-28 22:26:25 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:26:25 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_pvp)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:26:36 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:2960,handsLeft:3,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:26:45 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:5643,handsLeft:2,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:26:48 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 3)  (score: 2805) 
+INFO - [G] 2025-02-28 22:26:58 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 2)  (score: 5610) 
+INFO - [G] 2025-02-28 22:27:00 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:9935,handsLeft:1,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:27:10 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 1)  (score: 8562) 
+INFO - [G] 2025-02-28 22:27:24 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 0)  (score: 9570) 
+INFO - [G] 2025-02-28 22:27:24 :: TRACE :: MULTIPLAYER :: Client got endPvP message:  (lost: false)  (action: endPvP) 
+INFO - [G] 2025-02-28 22:27:30 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:14462,handsLeft:0,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:27:30 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:27:30 :: TRACE :: MULTIPLAYER :: Client sent message: action:setAnte,ante:3
+INFO - [G] 2025-02-28 22:27:31 :: TRACE :: MULTIPLAYER :: Client got endPvP message:  (lost: false)  (action: endPvP) 
+INFO - [G] 2025-02-28 22:27:35 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:27:48 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:27:54 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:28:06 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:28:06 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:28:06 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_small
+INFO - [G] 2025-02-28 22:28:18 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:28:19 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:28:19 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_small)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:28:50 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:28:58 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:29:02 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:29:08 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:29:10 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:29:10 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_big)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:29:23 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:29:24 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:29:24 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:29:24 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_big
+INFO - [G] Mrbones Seal apply function running now
+INFO - [G] 2025-02-28 22:29:40 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:30:04 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:30:09 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:30:19 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:30:21 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_ready)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:30:43 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:30:44 :: TRACE :: MULTIPLAYER :: Toggling Ready
+INFO - [G] 2025-02-28 22:30:44 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_ready
+INFO - [G] 2025-02-28 22:30:44 :: TRACE :: MULTIPLAYER :: Client sent message: action:readyBlind
+INFO - [G] 2025-02-28 22:30:45 :: TRACE :: MULTIPLAYER :: Client got startBlind message:  (action: startBlind) 
+INFO - [G] 2025-02-28 22:30:45 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:30:45 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:30:45 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_pvp
+INFO - [G] Mrbones Seal apply function running now
+INFO - [G] 2025-02-28 22:30:45 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:30:46 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_pvp)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:31:00 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:8640,handsLeft:3,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:31:09 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 3)  (score: 1500) 
+INFO - [G] 2025-02-28 22:31:12 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:14880,handsLeft:2,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:31:17 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 2)  (score: 10005) 
+INFO - [G] 2025-02-28 22:31:36 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 1)  (score: 10905) 
+INFO - [G] 2025-02-28 22:31:40 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:20032,handsLeft:1,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:31:47 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 0)  (score: 12795) 
+INFO - [G] 2025-02-28 22:31:47 :: TRACE :: MULTIPLAYER :: Client got endPvP message:  (lost: false)  (action: endPvP) 
+INFO - [G] 2025-02-28 22:31:47 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:31:47 :: TRACE :: MULTIPLAYER :: Client sent message: action:setAnte,ante:4
+INFO - [G] 2025-02-28 22:31:54 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] Mrbones Seal apply function running now
+INFO - [G] Mrbones Seal apply function running now
+INFO - [G] 2025-02-28 22:31:55 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:32:19 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:32:20 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:32:20 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_small)  (action: enemyLocation) 
+INFO - [G] Jimbo Seal apply function running now
+INFO - [G] Andy Seal apply function running now
+INFO - [G] 2025-02-28 22:32:53 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:32:56 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:32:56 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:32:56 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_small
+INFO - [G] 2025-02-28 22:33:02 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:33:09 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:33:11 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:33:11 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_big)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:33:16 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:33:20 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] Jimbo Seal apply function running now
+INFO - [G] 2025-02-28 22:33:59 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:34:01 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:34:01 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:34:01 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_big
+INFO - [G] 2025-02-28 22:34:21 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:34:25 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:34:36 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:34:59 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:35:01 :: TRACE :: MULTIPLAYER :: Toggling Ready
+INFO - [G] 2025-02-28 22:35:01 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_ready
+INFO - [G] 2025-02-28 22:35:01 :: TRACE :: MULTIPLAYER :: Client sent message: action:readyBlind
+INFO - [G] 2025-02-28 22:35:29 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:35:38 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_ready)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:35:38 :: TRACE :: MULTIPLAYER :: Client got startBlind message:  (action: startBlind) 
+INFO - [G] 2025-02-28 22:35:38 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:35:38 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:35:38 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_pvp
+INFO - [G] 2025-02-28 22:35:39 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:35:39 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_pvp)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:35:56 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 3)  (score: 26565) 
+INFO - [G] 2025-02-28 22:36:09 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 2)  (score: 55660) 
+INFO - [G] 2025-02-28 22:36:15 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:34515,handsLeft:3,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:36:25 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 1)  (score: 76585) 
+INFO - [G] 2025-02-28 22:36:29 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:69030,handsLeft:2,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:36:40 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:75750,handsLeft:1,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:36:41 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 0)  (score: 97144) 
+INFO - [G] 2025-02-28 22:36:51 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:111592,handsLeft:0,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:36:51 :: TRACE :: MULTIPLAYER :: Client got endPvP message:  (lost: false)  (action: endPvP) 
+INFO - [G] 2025-02-28 22:36:51 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:36:51 :: TRACE :: MULTIPLAYER :: Client sent message: action:setAnte,ante:5
+INFO - [G] 2025-02-28 22:36:56 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:36:59 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:37:10 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:37:13 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:37:13 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_small)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:37:33 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:37:34 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:37:34 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:37:34 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_small
+INFO - [G] 2025-02-28 22:37:37 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:37:55 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:37:59 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:37:59 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_big)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:38:10 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:38:14 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:38:14 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:38:24 :: TRACE :: MULTIPLAYER :: Client got asteroid message:  (action: asteroid) 
+INFO - [G] 2025-02-28 22:38:47 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:38:48 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_ready)  (action: enemyLocation) 
+INFO - [G] Andy Seal apply function running now
+INFO - [G] 2025-02-28 22:39:05 :: TRACE :: MULTIPLAYER :: Client sent message: action:asteroid
+INFO - [G] Todd Seal apply function running now
+INFO - [G] 2025-02-28 22:39:32 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:39:37 :: TRACE :: MULTIPLAYER :: Client sent message: action:skip,skips:2
+INFO - [G] 2025-02-28 22:39:38 :: TRACE :: MULTIPLAYER :: Toggling Ready
+INFO - [G] 2025-02-28 22:39:38 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_ready
+INFO - [G] 2025-02-28 22:39:38 :: TRACE :: MULTIPLAYER :: Client sent message: action:readyBlind
+INFO - [G] 2025-02-28 22:39:39 :: TRACE :: MULTIPLAYER :: Client got startBlind message:  (action: startBlind) 
+INFO - [G] 2025-02-28 22:39:39 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:39:39 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:39:39 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_pvp
+INFO - [G] 2025-02-28 22:39:39 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:39:40 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_pvp)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:39:56 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:25920,handsLeft:3,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:40:01 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 3)  (score: 24346) 
+INFO - [G] 2025-02-28 22:40:09 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 2)  (score: 46879) 
+INFO - [G] 2025-02-28 22:40:13 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:78960,handsLeft:2,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:40:28 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 1)  (score: 66444) 
+INFO - [G] 2025-02-28 22:40:28 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:111135,handsLeft:1,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:40:38 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 0)  (score: 89754) 
+INFO - [G] 2025-02-28 22:40:38 :: TRACE :: MULTIPLAYER :: Client got winGame message:  (action: winGame) 
+INFO - [G] 2025-02-28 22:40:41 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:148185,handsLeft:0,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:40:41 :: TRACE :: MULTIPLAYER :: Client got winGame message:  (action: winGame) 
+INFO - [G] 2025-02-28 22:41:05 :: TRACE :: MULTIPLAYER :: Client sent message: action:stopGame
+INFO - [G] 2025-02-28 22:41:06 :: TRACE :: MULTIPLAYER :: Client got stopGame message:  (action: stopGame) 
+INFO - [G] 2025-02-28 22:41:06 :: DEBUG :: MULTIPLAYER :: Resetting game states
+INFO - [G] 2025-02-28 22:41:06 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: Blind Select)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:41:26 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:5,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:26 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:6,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:27 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:7,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:27 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:8,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:30 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:7,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:30 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:6,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:31 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:7,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:32 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:6,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:32 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:5,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:33 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:6,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:39 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:6,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:42 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:7,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:42 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:8,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:43 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:9,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:44 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:8,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:44 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:7,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:48 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:false,starting_lives:7,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:48 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:7,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:48 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:false,starting_lives:7,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:50 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:7,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:41:51 :: TRACE :: MULTIPLAYER :: Client sent message: action:startGame
+INFO - [G] 2025-02-28 22:41:52 :: TRACE :: MULTIPLAYER :: Client got startGame message:  (deck: c_multiplayer_1)  (action: startGame)  (seed: MO147) 
+INFO - [G] 2025-02-28 22:41:52 :: DEBUG :: MULTIPLAYER :: Resetting game states
+INFO - [G] 2025-02-28 22:41:52 :: TRACE :: MULTIPLAYER :: Client sent message: action:setAnte,ante:0
+INFO - [G] 2025-02-28 22:41:52 :: TRACE :: MULTIPLAYER :: Client got playerInfo message:  (lives: 7)  (action: playerInfo) 
+INFO - [G] 2025-02-28 22:41:56 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:41:56 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:41:56 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_small
+INFO - [G] 2025-02-28 22:42:02 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:42:02 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_small)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:42:36 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:42:57 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:43:00 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:43:00 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_big)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:43:06 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:43:09 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:43:28 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:43:30 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:43:30 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:43:30 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_big
+INFO - [G] 2025-02-28 22:43:41 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:43:59 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:44:06 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:44:24 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:44:25 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:44:26 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_backside)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:44:51 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:44:53 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:44:53 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:44:53 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_backside
+INFO - [G] 2025-02-28 22:44:58 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:45:01 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:45:03 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 1)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:45:05 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 1)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:45:05 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_big)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:45:22 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:45:22 :: TRACE :: MULTIPLAYER :: Client sent message: action:setAnte,ante:2
+INFO - [G] 2025-02-28 22:45:28 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:45:51 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:45:52 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:45:52 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:45:52 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_small
+INFO - [G] 2025-02-28 22:46:01 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:46:38 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:46:42 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:46:48 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:46:49 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_ready)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:47:08 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:47:09 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:47:09 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:47:09 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_big
+INFO - [G] 2025-02-28 22:47:52 :: TRACE :: MULTIPLAYER :: Client sent message: action:failRound
+INFO - [G] 2025-02-28 22:47:53 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:47:53 :: TRACE :: MULTIPLAYER :: Client got playerInfo message:  (lives: 6)  (action: playerInfo) 
+INFO - [G] 2025-02-28 22:47:57 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:48:13 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:48:14 :: TRACE :: MULTIPLAYER :: Toggling Ready
+INFO - [G] 2025-02-28 22:48:14 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_ready
+INFO - [G] 2025-02-28 22:48:14 :: TRACE :: MULTIPLAYER :: Client sent message: action:readyBlind
+INFO - [G] 2025-02-28 22:48:14 :: TRACE :: MULTIPLAYER :: Client got startBlind message:  (action: startBlind) 
+INFO - [G] 2025-02-28 22:48:14 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:48:14 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:48:14 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_pvp
+INFO - [G] 2025-02-28 22:48:15 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 1)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:48:15 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_pvp)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:48:24 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:728,handsLeft:3,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:48:30 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 1)  (action: enemyInfo)  (handsLeft: 3)  (score: 576) 
+INFO - [G] 2025-02-28 22:48:35 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:1400,handsLeft:2,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:48:45 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:2120,handsLeft:1,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:48:47 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 1)  (action: enemyInfo)  (handsLeft: 2)  (score: 1512) 
+INFO - [G] 2025-02-28 22:48:54 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 1)  (action: enemyInfo)  (handsLeft: 1)  (score: 1587) 
+INFO - [G] 2025-02-28 22:48:57 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:2656,handsLeft:0,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:49:04 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 1)  (action: enemyInfo)  (handsLeft: 0)  (score: 2027) 
+INFO - [G] 2025-02-28 22:49:04 :: TRACE :: MULTIPLAYER :: Client got endPvP message:  (lost: false)  (action: endPvP) 
+INFO - [G] 2025-02-28 22:49:04 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:49:04 :: TRACE :: MULTIPLAYER :: Client sent message: action:setAnte,ante:3
+INFO - [G] 2025-02-28 22:49:11 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:49:15 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:49:39 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:49:45 :: TRACE :: MULTIPLAYER :: Client sent message: action:skip,skips:1
+INFO - [G] 2025-02-28 22:49:47 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:49:47 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:49:47 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_big
+INFO - [G] 2025-02-28 22:50:05 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:50:10 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 2)  (action: enemyInfo)  (handsLeft: 0)  (score: 2027) 
+INFO - [G] 2025-02-28 22:50:11 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 2)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:50:11 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_big)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:50:38 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:50:42 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:50:46 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:51:02 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:51:03 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_ready)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:51:17 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:51:19 :: TRACE :: MULTIPLAYER :: Toggling Ready
+INFO - [G] 2025-02-28 22:51:19 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_ready
+INFO - [G] 2025-02-28 22:51:19 :: TRACE :: MULTIPLAYER :: Client sent message: action:readyBlind
+INFO - [G] 2025-02-28 22:51:19 :: TRACE :: MULTIPLAYER :: Client got startBlind message:  (action: startBlind) 
+INFO - [G] 2025-02-28 22:51:19 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:51:19 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:51:19 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_pvp
+INFO - [G] 2025-02-28 22:51:20 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 2)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:51:20 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_pvp)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:51:38 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:1116,handsLeft:3,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:51:53 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 2)  (action: enemyInfo)  (handsLeft: 3)  (score: 10080) 
+INFO - [G] 2025-02-28 22:51:53 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:3300,handsLeft:2,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:52:03 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:3840,handsLeft:1,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:52:04 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 2)  (action: enemyInfo)  (handsLeft: 2)  (score: 11475) 
+INFO - [G] 2025-02-28 22:52:13 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:4128,handsLeft:0,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:52:14 :: TRACE :: MULTIPLAYER :: Client got playerInfo message:  (lives: 5)  (action: playerInfo) 
+INFO - [G] 2025-02-28 22:52:14 :: TRACE :: MULTIPLAYER :: Client got endPvP message:  (lost: true)  (action: endPvP) 
+INFO - [G] 2025-02-28 22:52:14 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 2)  (action: enemyInfo)  (handsLeft: 1)  (score: 12963) 
+INFO - [G] 2025-02-28 22:52:14 :: TRACE :: MULTIPLAYER :: Client got endPvP message:  (lost: true)  (action: endPvP) 
+INFO - [G] 2025-02-28 22:52:14 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:52:14 :: TRACE :: MULTIPLAYER :: Client sent message: action:setAnte,ante:4
+INFO - [G] 2025-02-28 22:52:19 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:52:20 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:52:54 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:52:55 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 2)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:52:55 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_small)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:53:22 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:53:25 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:53:25 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:53:25 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_small
+INFO - [G] 2025-02-28 22:53:48 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:54:33 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:54:37 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:54:37 :: TRACE :: MULTIPLAYER :: Client got stopGame message:  (action: stopGame) 
+INFO - [G] 2025-02-28 22:54:37 :: DEBUG :: MULTIPLAYER :: Resetting game states
+INFO - [G] 2025-02-28 22:54:37 :: TRACE :: MULTIPLAYER :: Client got lobbyInfo message:  (host: Shira)  (action: lobbyInfo)  (isHost: true)  (hostHash: TheAutumnCircus-0.0.0;HoldForFinalHandScore-0.0.0;balatro_plus-1.0.1;ThemedTarots-0.0.0;Handy-1.3.2;MIJ-1.0.0;VirtualizedMultiplayer-0.1.8.3;UltimateRandomDeck-0.0.0;MathBlinds-1.2.3;FasterStakesUnlock-0.0.0;JokerOnlyDeck-0.0.0;tetraminus_tetrapak-0.0.0;MikasMods-0.0.0;SylvieSilly-0.0.0;ThemedJokers-0.0.0;AbsoluteDeck-0.0.0;ThemedDecks-0.0.0;pauperdeck-1.1;) 
+INFO - [G] 2025-02-28 22:54:37 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:7,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:55:25 :: TRACE :: MULTIPLAYER :: Client got lobbyInfo message:  (host: Shira)  (guestHash: TheAutumnCircus-0.0.0;HoldForFinalHandScore-0.0.0;balatro_plus-1.0.1;ThemedTarots-0.0.0;Handy-1.3.2;MIJ-1.0.0;VirtualizedMultiplayer-0.1.8.3;UltimateRandomDeck-0.0.0;MathBlinds-1.2.3;FasterStakesUnlock-0.0.0;JokerOnlyDeck-0.0.0;tetraminus_tetrapak-0.0.0;MikasMods-0.0.0;SylvieSilly-0.0.0;ThemedJokers-0.0.0;AbsoluteDeck-0.0.0;ThemedDecks-0.0.0;pauperdeck-1.1;)  (guest: Guest)  (action: lobbyInfo)  (hostHash: TheAutumnCircus-0.0.0;HoldForFinalHandScore-0.0.0;balatro_plus-1.0.1;ThemedTarots-0.0.0;Handy-1.3.2;MIJ-1.0.0;VirtualizedMultiplayer-0.1.8.3;UltimateRandomDeck-0.0.0;MathBlinds-1.2.3;FasterStakesUnlock-0.0.0;JokerOnlyDeck-0.0.0;tetraminus_tetrapak-0.0.0;MikasMods-0.0.0;SylvieSilly-0.0.0;ThemedJokers-0.0.0;AbsoluteDeck-0.0.0;ThemedDecks-0.0.0;pauperdeck-1.1;)  (isHost: true) 
+INFO - [G] 2025-02-28 22:55:25 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:7,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:55:25 :: TRACE :: MULTIPLAYER :: Client got lobbyInfo message:  (host: Shira)  (guestHash: TheAutumnCircus-0.0.0;HoldForFinalHandScore-0.0.0;balatro_plus-1.0.1;ThemedTarots-0.0.0;Handy-1.3.2;MIJ-1.0.0;VirtualizedMultiplayer-0.1.8.3;UltimateRandomDeck-0.0.0;MathBlinds-1.2.3;FasterStakesUnlock-0.0.0;JokerOnlyDeck-0.0.0;tetraminus_tetrapak-0.0.0;MikasMods-0.0.0;SylvieSilly-0.0.0;ThemedJokers-0.0.0;AbsoluteDeck-0.0.0;ThemedDecks-0.0.0;pauperdeck-1.1;)  (guest: Guest)  (action: lobbyInfo)  (hostHash: TheAutumnCircus-0.0.0;HoldForFinalHandScore-0.0.0;balatro_plus-1.0.1;ThemedTarots-0.0.0;Handy-1.3.2;MIJ-1.0.0;VirtualizedMultiplayer-0.1.8.3;UltimateRandomDeck-0.0.0;MathBlinds-1.2.3;FasterStakesUnlock-0.0.0;JokerOnlyDeck-0.0.0;tetraminus_tetrapak-0.0.0;MikasMods-0.0.0;SylvieSilly-0.0.0;ThemedJokers-0.0.0;AbsoluteDeck-0.0.0;ThemedDecks-0.0.0;pauperdeck-1.1;)  (isHost: true) 
+INFO - [G] 2025-02-28 22:55:25 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:7,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 22:55:30 :: TRACE :: MULTIPLAYER :: Client sent message: action:startGame
+INFO - [G] 2025-02-28 22:55:30 :: TRACE :: MULTIPLAYER :: Client got startGame message:  (deck: c_multiplayer_1)  (action: startGame)  (seed: 74GE5) 
+INFO - [G] 2025-02-28 22:55:30 :: DEBUG :: MULTIPLAYER :: Resetting game states
+INFO - [G] 2025-02-28 22:55:30 :: TRACE :: MULTIPLAYER :: Client sent message: action:setAnte,ante:0
+INFO - [G] 2025-02-28 22:55:30 :: TRACE :: MULTIPLAYER :: Client got playerInfo message:  (lives: 7)  (action: playerInfo) 
+INFO - [G] 2025-02-28 22:55:33 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:55:33 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:55:33 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_small
+INFO - [G] 2025-02-28 22:55:38 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:55:38 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_small)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:55:43 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:55:46 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:55:55 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:55:56 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:56:07 :: TRACE :: MULTIPLAYER :: Client sent message: action:skip,skips:1
+INFO - [G] 2025-02-28 22:56:08 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:56:08 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:56:08 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_backside
+INFO - [G] 2025-02-28 22:56:27 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:56:28 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:56:28 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_big)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:56:33 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:56:33 :: TRACE :: MULTIPLAYER :: Client sent message: action:setAnte,ante:2
+INFO - [G] 2025-02-28 22:56:40 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:57:10 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:57:24 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:57:25 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:57:25 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_backside)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:57:27 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:57:31 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 22:57:31 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 22:57:31 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_small
+INFO - [G] 2025-02-28 22:58:09 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 22:58:16 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 22:58:33 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 22:58:35 :: TRACE :: MULTIPLAYER :: Client sent message: action:skip,skips:2
+INFO - [G] 2025-02-28 22:58:37 :: TRACE :: MULTIPLAYER :: Toggling Ready
+INFO - [G] 2025-02-28 22:58:37 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_ready
+INFO - [G] 2025-02-28 22:58:37 :: TRACE :: MULTIPLAYER :: Client sent message: action:readyBlind
+INFO - [G] 2025-02-28 22:58:51 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:59:29 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 22:59:37 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 22:59:37 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_small)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 23:00:51 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 23:01:09 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 23:01:11 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 23:01:11 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_big)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 23:04:34 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 23:07:19 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 23:07:20 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_ready)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 23:07:20 :: TRACE :: MULTIPLAYER :: Client got startBlind message:  (action: startBlind) 
+INFO - [G] 2025-02-28 23:07:20 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 23:07:20 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 23:07:20 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_pvp
+INFO - [G] 2025-02-28 23:07:21 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 23:07:21 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_pvp)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 23:07:29 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:726,handsLeft:3,hasSpeedrun:false
+INFO - [G] 2025-02-28 23:07:37 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 3)  (score: 580) 
+INFO - [G] 2025-02-28 23:07:41 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:1452,handsLeft:2,hasSpeedrun:false
+INFO - [G] 2025-02-28 23:07:50 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:2178,handsLeft:1,hasSpeedrun:false
+INFO - [G] 2025-02-28 23:07:51 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 2)  (score: 1105) 
+INFO - [G] 2025-02-28 23:08:00 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:2893,handsLeft:0,hasSpeedrun:false
+INFO - [G] 2025-02-28 23:08:03 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 1)  (score: 1835) 
+INFO - [G] 2025-02-28 23:08:15 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 0)  (score: 2180) 
+INFO - [G] 2025-02-28 23:08:15 :: TRACE :: MULTIPLAYER :: Client got endPvP message:  (lost: false)  (action: endPvP) 
+INFO - [G] 2025-02-28 23:08:15 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 23:08:15 :: TRACE :: MULTIPLAYER :: Client sent message: action:setAnte,ante:3
+INFO - [G] 2025-02-28 23:08:19 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 23:08:22 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 1 ---- table: 0x13684520
+INFO - [G] object --- table: 0x0484af58
+INFO - [G] click_offset -- table: 0x136ec770
+INFO - [G] children -- table: 0x03eb1020
+INFO - [G] pop_in_rate -- 4
+INFO - [G] font -- table: 0x0426fdf8
+INFO - [G] T -- table: 0x04a6a000
+INFO - [G] offset -- table: 0x03fa0ec0
+INFO - [G] role -- table: 0x065ac520
+INFO - [G] last_aligned -- -1
+INFO - [G] bump_rate -- 2.666
+INFO - [G] text_offset -- table: 0x04aab898
+INFO - [G] silent -- true
+INFO - [G] VT -- table: 0x03eb1048
+INFO - [G] states -- table: 0x133dcd48
+INFO - [G] RETS -- table: 0x04a69fd8
+INFO - [G] ID -- 124024
+INFO - [G] created_time -- 872.7001461281
+INFO - [G] container -- table: 0x0655d590
+INFO - [G] shadow -- true
+INFO - [G] velocity -- table: 0x041ef8e0
+INFO - [G] scale -- 0.518
+INFO - [G] alignment -- table: 0x046426d0
+INFO - [G] reset_pop_in -- false
+INFO - [G] focused_string -- 1
+INFO - [G] shadow_height -- 0.2
+INFO - [G] layered_parallax -- table: 0x041bdfc0
+INFO - [G] shadow_parrallax -- table: 0x03fa0ee8
+INFO - [G] Mid -- table: 0x0484af58
+INFO - [G] bump_amount -- 1
+INFO - [G] static_rotation -- false
+INFO - [G] colours -- table: 0x0c3a4138
+INFO - [G] FRAME -- table: 0x047f66b8
+INFO - [G] last_moved -- -1
+INFO - [G] hover_offset -- table: 0x136ec798
+INFO - [G] start_pop_in -- false
+INFO - [G] strings -- table: 0x046572b0
+INFO - [G] config -- table: 0x0484af30
+INFO - [G] string -- Dysnomia
+INFO - [G] ARGS -- table: 0x0c439ea8
+INFO - [G] pinch -- table: 0x04223408
+INFO - [G] created_on_pause -- false
+INFO - [G] CT -- table: 0x04a6a000
+INFO - [G] attempting badge surgery
+INFO - [G] badge surgery successful
+INFO - [G] 1 ---- table: 0x06696bf0
+INFO - [G] object --- table: 0x0664bd78
+INFO - [G] click_offset -- table: 0x134b6150
+INFO - [G] children -- table: 0x04b6cd60
+INFO - [G] pop_in_rate -- 4
+INFO - [G] font -- table: 0x0426fdf8
+INFO - [G] T -- table: 0x0669fa68
+INFO - [G] offset -- table: 0x048211a0
+INFO - [G] role -- table: 0x0481b6c0
+INFO - [G] last_aligned -- -1
+INFO - [G] bump_rate -- 2.666
+INFO - [G] text_offset -- table: 0x135056e8
+INFO - [G] silent -- true
+INFO - [G] VT -- table: 0x04b6cd88
+INFO - [G] states -- table: 0x065216b0
+INFO - [G] RETS -- table: 0x04631018
+INFO - [G] ID -- 124110
+INFO - [G] created_time -- 878.76097667683
+INFO - [G] container -- table: 0x0655d590
+INFO - [G] shadow -- true
+INFO - [G] velocity -- table: 0x042687a8
+INFO - [G] scale -- 0.518
+INFO - [G] alignment -- table: 0x06cc5810
+INFO - [G] reset_pop_in -- false
+INFO - [G] focused_string -- 1
+INFO - [G] shadow_height -- 0.2
+INFO - [G] layered_parallax -- table: 0x04748358
+INFO - [G] shadow_parrallax -- table: 0x04821200
+INFO - [G] Mid -- table: 0x0664bd78
+INFO - [G] bump_amount -- 1
+INFO - [G] static_rotation -- false
+INFO - [G] colours -- table: 0x0664bd38
+INFO - [G] FRAME -- table: 0x0461ef48
+INFO - [G] last_moved -- -1
+INFO - [G] hover_offset -- table: 0x0461ef20
+INFO - [G] start_pop_in -- false
+INFO - [G] strings -- table: 0x041e6020
+INFO - [G] config -- table: 0x1347a630
+INFO - [G] string -- Dysnomia
+INFO - [G] ARGS -- table: 0x066be800
+INFO - [G] pinch -- table: 0x0c47f980
+INFO - [G] created_on_pause -- false
+INFO - [G] CT -- table: 0x0669fa68
+INFO - [G] attempting badge surgery
+INFO - [G] badge surgery successful
+INFO - [G] 2025-02-28 23:09:14 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 23:09:17 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 23:09:17 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 23:09:17 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_small
+INFO - [G] 2025-02-28 23:09:29 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 23:09:31 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 23:09:32 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_small)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 23:09:53 :: TRACE :: MULTIPLAYER :: Client sent message: action:failRound
+INFO - [G] 2025-02-28 23:09:53 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 23:09:53 :: TRACE :: MULTIPLAYER :: Client got playerInfo message:  (lives: 6)  (action: playerInfo) 
+INFO - [G] 2025-02-28 23:09:58 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 23:10:08 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 23:10:15 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_selecting
+INFO - [G] 2025-02-28 23:10:16 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_selecting)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 23:10:17 :: TRACE :: MULTIPLAYER :: Client sent message: action:playHand,score:0,handsLeft:4,hasSpeedrun:false
+INFO - [G] 2025-02-28 23:10:17 :: TRACE :: MULTIPLAYER :: Client sent message: action:newRound
+INFO - [G] 2025-02-28 23:10:17 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_playing-bl_big
+INFO - [G] 2025-02-28 23:10:19 :: TRACE :: MULTIPLAYER :: Client got enemyInfo message:  (skips: 0)  (action: enemyInfo)  (handsLeft: 4)  (score: 0) 
+INFO - [G] 2025-02-28 23:10:19 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_playing-bl_big)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 23:10:47 :: TRACE :: MULTIPLAYER :: Client got enemyLocation message:  (location: loc_shop)  (action: enemyLocation) 
+INFO - [G] 2025-02-28 23:11:09 :: TRACE :: MULTIPLAYER :: Client sent message: action:failRound
+INFO - [G] 2025-02-28 23:11:09 :: DEBUG :: DefaultLogger :: calculate_context
+INFO - [G] 2025-02-28 23:11:10 :: TRACE :: MULTIPLAYER :: Client got playerInfo message:  (lives: 5)  (action: playerInfo) 
+INFO - [G] 2025-02-28 23:11:13 :: TRACE :: MULTIPLAYER :: Client sent message: action:setLocation,location:loc_shop
+INFO - [G] 2025-02-28 23:11:29 :: TRACE :: MULTIPLAYER :: Client got stopGame message:  (action: stopGame) 
+INFO - [G] 2025-02-28 23:11:29 :: DEBUG :: MULTIPLAYER :: Resetting game states
+INFO - [G] 2025-02-28 23:11:29 :: TRACE :: MULTIPLAYER :: Client got lobbyInfo message:  (host: Shira)  (action: lobbyInfo)  (isHost: true)  (hostHash: TheAutumnCircus-0.0.0;HoldForFinalHandScore-0.0.0;balatro_plus-1.0.1;ThemedTarots-0.0.0;Handy-1.3.2;MIJ-1.0.0;VirtualizedMultiplayer-0.1.8.3;UltimateRandomDeck-0.0.0;MathBlinds-1.2.3;FasterStakesUnlock-0.0.0;JokerOnlyDeck-0.0.0;tetraminus_tetrapak-0.0.0;MikasMods-0.0.0;SylvieSilly-0.0.0;ThemedJokers-0.0.0;AbsoluteDeck-0.0.0;ThemedDecks-0.0.0;pauperdeck-1.1;) 
+INFO - [G] 2025-02-28 23:11:29 :: TRACE :: MULTIPLAYER :: Client sent message: action:lobbyOptions,different_decks:false,death_on_round_loss:true,custom_seed:random,stake:1,no_gold_on_round_loss:true,gamemode:attrition,different_seeds:false,showdown_starting_antes:3,gold_on_life_loss:true,starting_lives:7,back:Jokers for Hire,multiplayer_jokers:true
+INFO - [G] 2025-02-28 23:12:25 :: TRACE :: MULTIPLAYER :: Client sent message: action:leaveLobby
+INFO - [G] 2025-02-28 23:12:25 :: DEBUG :: MULTIPLAYER :: Resetting game states

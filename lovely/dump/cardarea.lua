@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '9271a34f55da30e7d5bede6bedcafa775c1be53b7777743122832e9d72ec3ad3'
+LOVELY_INTEGRITY = 'fb51bac9dd84dd0a2fddda8ef2091443017f6dc10f93b3b6e0ceeaa3212d14c5'
 
 --Class
 CardArea = Moveable:extend()
@@ -32,7 +32,7 @@ function CardArea:init(X, Y, W, H, config)
 end
 
 function CardArea:emplace(card, location, stay_flipped)
-    if card.edition and card.edition.card_limit and (self == G.hand) then
+    if not card.debuff and card.edition and card.edition.card_limit and (self == G.hand) then
         self.config.real_card_limit = (self.config.real_card_limit or self.config.card_limit) + card.edition.card_limit
         self.config.card_limit = math.max(0, self.config.real_card_limit)
     end
@@ -86,7 +86,7 @@ function CardArea:remove_card(card, discarded_only)
     end
     for i = #self.cards,1,-1 do
         if self.cards[i] == card then
-            if card.edition and card.edition.card_limit and (self == G.hand) then
+            if not card.debuff and card.edition and card.edition.card_limit and (self == G.hand) then
                 self.config.real_card_limit = (self.config.real_card_limit or self.config.card_limit) - card.edition.card_limit
                 self.config.card_limit = math.max(0, self.config.real_card_limit)
             end
@@ -141,7 +141,7 @@ end
 function CardArea:add_to_highlighted(card, silent)
     --if self.config.highlighted_limit <= #self.highlighted then return end
     if self.config.type == 'shop' then
-        if self.highlighted[1] then
+        if #self.highlighted >= self.config.highlighted_limit then
             self:remove_from_highlighted(self.highlighted[1])
         end
         --if not G.FUNCS.check_for_buy_space(card) then return false end

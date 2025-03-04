@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'f28a9ab9f6bca5d57934752dff764375ac5864201aab9c8fba84928caf514a20'
+LOVELY_INTEGRITY = '2ffa91d693933c12db44473c7cfe2b19b6c85ff2b5954ce93b43e17e828364e2'
 
 --Moves the tutorial to the next step in queue
 --
@@ -203,7 +203,7 @@ G.FUNCS.can_continue = function(e)
       if not G.SAVED_GAME then 
         G.SAVED_GAME = get_compressed(G.SETTINGS.profile..'/'..'save.jkr')
         if G.SAVED_GAME ~= nil then G.SAVED_GAME = STR_UNPACK(G.SAVED_GAME) end
-        if G.SAVED_GAME == nil then 
+        if G.SAVED_GAME == nil then
             e.config.colour = G.C.UI.BACKGROUND_INACTIVE
             e.config.button = nil
             return _can_continue
@@ -1275,6 +1275,21 @@ G.FUNCS.RUN_SETUP_check_stake2 = function(e)
   end
 end
 
+G.FUNCS.change_viewed_collab = function(args)
+  G.viewed_collab = args.to_val
+end
+
+G.FUNCS.CREDITS_check_collab = function(e)
+  if (G.viewed_collab ~= e.config.id) then 
+    e.config.object:remove() 
+    e.config.object = UIBox{
+      definition =  G.UIDEF.viewed_collab_option(),
+      config = {offset = {x=0,y=0}, align = 'cm', parent = e}
+    }
+    e.config.id = G.viewed_collab
+  end
+end
+
 G.FUNCS.RUN_SETUP_check_back_stake_column= function(e)
   if G.GAME.viewed_back.name ~= e.config.id then 
     --removes the UI from the previously selected back and adds the new one
@@ -2110,7 +2125,9 @@ end
   end
 
   G.FUNCS.can_select_card = function(e)
-    if e.config.ref_table.ability.set ~= 'Joker' or (e.config.ref_table.edition and e.config.ref_table.edition.negative) or #G.jokers.cards < G.jokers.config.card_limit then 
+    local card = e.config.ref_table
+    local card_limit = card.edition and card.edition.card_limit or 0
+    if card.ability.set ~= 'Joker' or #G.jokers.cards < G.jokers.config.card_limit + card_limit then
         e.config.colour = G.C.GREEN
         e.config.button = 'use_card'
     else
@@ -2404,7 +2421,7 @@ end
   end
 
 G.FUNCS.shop_voucher_empty = function(e)
-  if (G.shop_vouchers and G.shop_vouchers.cards and (G.shop_vouchers.cards[1] or G.GAME.current_round.voucher)) then
+    if (G.shop_vouchers and G.shop_vouchers.cards and G.shop_vouchers.cards[1]) then
     e.states.visible = false
   elseif G.SETTINGS.language ~= 'en-us' then 
     e.states.visible = false

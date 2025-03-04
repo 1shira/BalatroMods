@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '3d0395906e098682391897a81b05df12cd2dc6e39322ebd87a281c6c9d1caebc'
+LOVELY_INTEGRITY = 'f8f07d63bcd92886aea85046430bbb88e6f1f9642ef91181b8ce642f99ad6358'
 
 --Class
 Sprite = Moveable:extend()
@@ -105,7 +105,7 @@ function Sprite:draw_shader(_shader, _shadow_height, _send, _no_tilt, other_obj,
         G.SHADERS[_shader or 'dissolve']:send("burn_colour_1",_draw_major.dissolve_colours and _draw_major.dissolve_colours[1] or G.C.CLEAR)
         G.SHADERS[_shader or 'dissolve']:send("burn_colour_2",_draw_major.dissolve_colours and _draw_major.dissolve_colours[2] or G.C.CLEAR)
         G.SHADERS[_shader or 'dissolve']:send("shadow",(not not _shadow_height))
-        if _send then 
+        if _send then
             G.SHADERS[_shader or 'dissolve']:send((SMODS.Shaders[_shader or 'dissolve'] and SMODS.Shaders[_shader or 'dissolve'].original_key) or _shader,_send)
         end
     end
@@ -115,7 +115,7 @@ function Sprite:draw_shader(_shader, _shadow_height, _send, _no_tilt, other_obj,
         local sh = G.SHADERS[_shader or 'dissolve']
         local parent_card = self.role.major and self.role.major:is(Card) and self.role.major
         local send_vars = p_shader.send_vars(self, parent_card)
-        
+    
         if type(send_vars) == "table" then
             for key, value in pairs(send_vars) do
                 sh:send(key, value)

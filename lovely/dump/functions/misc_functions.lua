@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '6eabc97289acbf23e95333ef77734d5f626be1df701d994f10013d3f0edbfe9d'
+LOVELY_INTEGRITY = '6c48b0d99a37eec7f58792dece1f2761b67d9b1378ca43201d1e6d08d5da48ff'
 
 --Updates all display information for all displays for a given screenmode. Returns the key for the resolution option cycle
 --
@@ -327,6 +327,7 @@ end
 
 function pseudoseed(key, predict_seed)
   if key == 'seed' then return math.random() end
+  if G.SETTINGS.paused and key ~= 'to_do' then return math.random() end
 
   if predict_seed then 
     local _pseed = pseudohash(key..(predict_seed or ''))
@@ -1644,7 +1645,7 @@ function loc_colour(_c, _default)
           G.ARGS.LOC_COLOURS[v:lower()] = G.C.RARITY[v]
       end
       for _, v in ipairs(SMODS.ConsumableType.ctype_buffer) do
-          G.ARGS.LOC_COLOURS[v:lower()] = G.C.SECONDARY_SET[v] 
+          G.ARGS.LOC_COLOURS[v:lower()] = G.C.SECONDARY_SET[v]
       end
       for _, v in ipairs(SMODS.Suit.obj_buffer) do
           G.ARGS.LOC_COLOURS[v:lower()] = G.C.SUITS[v]
@@ -2076,6 +2077,8 @@ return {
     consumable_slots = 2,
     no_faces = false,
     erratic_suits_and_ranks = false,
+    boosters_in_shop = 2,
+    vouchers_in_shop = 1,
   }
 end
 

@@ -1,3 +1,0 @@
-http://www.kurage-kosho.info/battle.html
-heal: magic04
-poison: status02

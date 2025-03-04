@@ -35,7 +35,7 @@ pattern = "if G.SAVED_GAME ~= nil then G.SAVED_GAME = STR_UNPACK(G.SAVED_GAME) e
 position = 'after'
 match_indent = true
 payload = """
-if G.SAVED_GAME == nil then 
+if G.SAVED_GAME == nil then
     e.config.colour = G.C.UI.BACKGROUND_INACTIVE
     e.config.button = nil
     return _can_continue
@@ -168,7 +168,7 @@ if self.added_to_deck and old_center and not self.debuff then
     self:remove_from_deck()
     self.added_to_deck = true
 end
-if type(center) == 'string' then 
+if type(center) == 'string' then
     assert(G.P_CENTERS[center])
     center = G.P_CENTERS[center]
 end
@@ -209,7 +209,7 @@ for k, v in pairs(new_ability) do
     self.ability[k] = v
 end
 -- reset keys do not persist an ability change
-local reset_keys = {'name', 'effect', 'set', 'extra', 'played_this_ante'}
+local reset_keys = {'name', 'effect', 'set', 'extra', 'played_this_ante', 'perma_debuff'}
 for _, mod in ipairs(SMODS.mod_list) do
     if mod.set_ability_reset_keys then
         local keys = mod.set_ability_reset_keys()
@@ -239,14 +239,14 @@ payload = "self.label = center.label or self.config.card and self.config.card.la
 
 ## Blind:drawn_to_hand()
 [[patches]]
-[patches.pattern]
+[patches.regex]
 target = 'blind.lua'
-pattern = "if self.name == 'Crimson Heart' and self.prepped and G.jokers.cards[1] then"
+pattern = "if self.name == 'Crimson Heart' and self.prepped and G.jokers.cards\\[1\\] then"
 position = 'after'
-match_indent = true
 payload = """
-    local prev_chosen_set = {}
-    local fallback_jokers = {}"""
+
+            local prev_chosen_set = {}
+            local fallback_jokers = {}"""
 # Fix bad logic if not enough choices for debuff
 [[patches]]
 [patches.regex]
@@ -309,31 +309,29 @@ end"""
 
 ## Blind:disable()
 [[patches]]
-[patches.pattern]
+[patches.regex]
 target = 'blind.lua'
-pattern = "if self.name == 'The Water' then"
-position = 'before'
+pattern = "elseif self.name == 'The Water' then"
+position = 'at'
 payload = """
-if self.name == 'Crimson Heart' then
-    for _, v in ipairs(G.jokers.cards) do
-        v.ability.crimson_heart_chosen = nil
-    end
-end"""
-match_indent = true
+elseif self.name == 'Crimson Heart' then
+        for _, v in ipairs(G.jokers.cards) do
+            v.ability.crimson_heart_chosen = nil
+        end
+    elseif self.name == 'The Water' then"""
 
 ## Blind:defeat()
 [[patches]]
-[patches.pattern]
+[patches.regex]
 target = 'blind.lua'
-pattern = "if self.name == 'The Manacle' and not self.disabled then"
-position = 'before'
+pattern = "elseif self.name == 'The Manacle' and not self.disabled then"
+position = 'at'
 payload = """
-if self.name == 'Crimson Heart' then
-    for _, v in ipairs(G.jokers.cards) do
-        v.ability.crimson_heart_chosen = nil
-    end
-end"""
-match_indent = true
+elseif self.name == 'Crimson Heart' then
+        for _, v in ipairs(G.jokers.cards) do
+            v.ability.crimson_heart_chosen = nil
+        end
+    elseif self.name == 'The Manacle' and not self.disabled then"""
 
 
 ## Fix Manacle's unnecessary card draw after positive G.hand:change_size()
@@ -351,7 +349,7 @@ payload = ""
 #
 
 ## create_UIBox_HUD
-[[patches]] 
+[[patches]]
 [patches.regex]
 target = "functions/UI_definitions.lua"
 pattern = '''
@@ -364,7 +362,7 @@ payload = '''
                             end,'''
 
 ## DynaText:update_text
-[[patches]] 
+[[patches]]
 [patches.pattern]
 target = "engine/text.lua"
 pattern = 'self.config.H = 0'
@@ -400,18 +398,6 @@ target = "card.lua"
 pattern = 'if G\.GAME\.blind then'
 position = "at"
 payload = "if G.GAME.blind and G.GAME.blind.in_blind then"
-
-# Blind:set_blind
-[[patches]]
-[patches.pattern]
-target = "blind.lua"
-match_indent = true
-pattern = "if not reset then"
-position = "after"
-payload = '''
-    if blind then
-        self.in_blind = true
-    end'''
 
 # end_round()
 [[patches]]
@@ -478,31 +464,6 @@ match_indent = true
 pattern = "for _, v in pairs(G.I.SPRITE) do"
 position = "at"
 payload = 'for k, v in pairs(G.I.SPRITE) do'
-
-##
-## Card:draw() - improved mod compatibility
-##
-# Add option for sprites to not be drawn 
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-match_indent = true
-pattern = '''
-if k ~= 'focused_ui' and k ~= "front" and k ~= "back" and k ~= "soul_parts" and k ~= "center" and k ~= 'floating_sprite' and k~= "shadow" and k~= "use_button" and k ~= 'buy_button' and k ~= 'buy_and_use_button' and k~= "debuff" and k ~= 'price' and k~= 'particles' and k ~= 'h_popup' then v:draw() end'''
-position = "at"
-payload = '''
-if not v.custom_draw and k ~= 'focused_ui' and k ~= "front" and k ~= "back" and k ~= "soul_parts" and k ~= "center" and k ~= 'floating_sprite' and k~= "shadow" and k~= "use_button" and k ~= 'buy_button' and k ~= 'buy_and_use_button' and k~= "debuff" and k ~= 'price' and k~= 'particles' and k ~= 'h_popup' then v:draw() end'''
-
-# This check is not necessary?
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-match_indent = true
-pattern = '''
-if self.edition or self.seal or self.ability.eternal or self.ability.rental or self.ability.perishable or self.sticker or ((self.sticker_run and self.sticker_run ~= 'NONE') and G.SETTINGS.run_stake_stickers) or (self.ability.set == 'Spectral') or self.debuff or self.greyed or (self.ability.name == 'The Soul') or (self.ability.set == 'Voucher') or (self.ability.set == 'Booster') or self.config.center.soul_pos or self.config.center.demo then'''
-position = "at"
-payload = '''
-if true then'''
 
 ## Make vanilla enhancement jokers work with extra enhancements
 
@@ -600,6 +561,19 @@ pattern = '''and \(G\.hand\.cards\[1\] or \(G\.hand\.config\.card_limit <= 0\)\)
 position = "at"
 payload = ''' '''
 
+# Fix prng calls on collection advancing seeds
+# Keep vanilla behaviour for to-do list
+[[patches]]
+[patches.pattern]
+target = "functions/misc_functions.lua"
+pattern = "if key == 'seed' then return math.random() end"
+position = "after"
+payload = """
+if G.SETTINGS.paused and key ~= 'to_do' then return math.random() end
+"""
+overwrite = true
+match_indent = true
+
 # Fixes Steam API not loading on unix
 [[patches]]
 [patches.pattern]
@@ -609,7 +583,7 @@ position = 'after'
 pattern = '--To control when steam communication happens, make sure to send updates to steam as little as possible'
 payload = '''local cwd = NFS.getWorkingDirectory()
 NFS.setWorkingDirectory(love.filesystem.getSourceBaseDirectory())
-''' 
+'''
 
 [[patches]]
 [patches.pattern]
@@ -618,7 +592,7 @@ match_indent = true
 position = 'before'
 pattern = '--Set up the render window and the stage for the splash screen, then enter the gameloop with :update'
 payload = '''NFS.setWorkingDirectory(cwd)
-''' 
+'''
 
 [[patches]]
 [patches.pattern]
@@ -647,3 +621,18 @@ payload = """local success, _st = pcall(require, 'luasteam')
 if success then st = _st else sendWarnMessage(_st); st = {} end"""
 overwrite = true
 match_indent = true
+
+# copy_card edition config
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+position = 'after'
+match_indent = true
+pattern = 'new_card:set_edition(other.edition or {}, nil, true)'
+payload = '''for k,v in pairs(other.edition or {}) do
+    if type(v) == 'table' then
+        new_card.edition[k] = copy_table(v)
+    else
+        new_card.edition[k] = v
+    end
+end'''

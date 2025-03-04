@@ -1,6 +1,6 @@
-LOVELY_INTEGRITY = 'cc5ce14cedc1c6e4d37db4db11e97b078bdd8322493ee0e9f65dd96ca38abf95'
+LOVELY_INTEGRITY = '402ce482ecbf510624ef787aa7f5fb2a24d509fbd45932662edf478505517b21'
 
-VERSION = '1.0.1n'
+VERSION = '1.0.1o'
 VERSION = VERSION..'-FULL'
 --check_version
 
@@ -204,28 +204,36 @@ function Game:set_globals()
                 'collab_TW',
                 'collab_CYP',
                 'collab_SK',
-                'collab_DS'
+                'collab_DS',
+                'collab_AC',
+                'collab_STP',
            },
             Hearts = {
               'default',
               'collab_AU',
               'collab_TBoI',
               'collab_CL',
-              'collab_D2'
+              'collab_D2',
+              'collab_CR',
+              'collab_BUG',
             },
             Clubs = {
               'default',
               'collab_VS',
               'collab_STS',
               'collab_PC',
-              'collab_WF'
+              'collab_WF',
+              'collab_FO',
+              'collab_DBD'
             },
             Diamonds = {
               'default',
               'collab_DTD',
               'collab_SV',
               'collab_EG',
-              'collab_XR'
+              'collab_XR',
+              'collab_C7',
+              'collab_R'
             }
           },
       }

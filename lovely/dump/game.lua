@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'dc99ccd4b0994835364e6a38b57cfca909d53388752f348e7a35f5910aca34af'
+LOVELY_INTEGRITY = '0c87146b99eb65bfc2c25bca23ebde7408f46348de3119d863af9d482d0c02a3'
 
 --Class
 Game = Object:extend()
@@ -258,6 +258,7 @@ function Game:start_up()
     end
 
     self:load_profile(G.SETTINGS.profile or 1)
+    Brainstorm.init()
 
     self.SETTINGS.QUEUED_CHANGE = {}
     self.SETTINGS.music_control = {desired_track = '', current_track = '', lerp = 1} 
@@ -1108,7 +1109,7 @@ function Game:set_language()
 
     local localization = love.filesystem.getInfo('localization/'..G.SETTINGS.language..'.lua') or love.filesystem.getInfo('localization/en-us.lua')
     if localization ~= nil then
-      self.localization = assert(loadstring(love.filesystem.read('localization/'..G.SETTINGS.language..'.lua') or love.filesystem.read('localization/en-us.lua')))()
+      self.localization = assert(loadstring(love.filesystem.read('localization/'..G.SETTINGS.language..'.lua') or love.filesystem.read('localization/en-us.lua'), '=[localization "'..G.SETTINGS.language..'.lua"]'))()
       init_localization()
     end
 end
@@ -1153,6 +1154,7 @@ function Game:set_render_settings()
         {name = 'collab_VS_2', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_VS_2.png",px=71,py=95},
         {name = 'collab_DTD_1', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_DTD_1.png",px=71,py=95},
         {name = 'collab_DTD_2', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_DTD_2.png",px=71,py=95},
+
         {name = 'collab_CYP_1', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_CYP_1.png",px=71,py=95},
         {name = 'collab_CYP_2', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_CYP_2.png",px=71,py=95},
         {name = 'collab_STS_1', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_STS_1.png",px=71,py=95},
@@ -1178,6 +1180,23 @@ function Game:set_render_settings()
         {name = 'collab_EG_2', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_EG_2.png",px=71,py=95},
         {name = 'collab_XR_1', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_XR_1.png",px=71,py=95},
         {name = 'collab_XR_2', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_XR_2.png",px=71,py=95},
+
+        {name = 'collab_CR_1', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_CR_1.png",px=71,py=95},
+        {name = 'collab_CR_2', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_CR_2.png",px=71,py=95},
+        {name = 'collab_BUG_1', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_BUG_1.png",px=71,py=95},
+        {name = 'collab_BUG_2', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_BUG_2.png",px=71,py=95},
+        {name = 'collab_FO_1', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_FO_1.png",px=71,py=95},
+        {name = 'collab_FO_2', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_FO_2.png",px=71,py=95},
+        {name = 'collab_DBD_1', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_DBD_1.png",px=71,py=95},
+        {name = 'collab_DBD_2', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_DBD_2.png",px=71,py=95},
+        {name = 'collab_C7_1', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_C7_1.png",px=71,py=95},
+        {name = 'collab_C7_2', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_C7_2.png",px=71,py=95},
+        {name = 'collab_R_1', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_R_1.png",px=71,py=95},
+        {name = 'collab_R_2', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_R_2.png",px=71,py=95},
+        {name = 'collab_AC_1', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_AC_1.png",px=71,py=95},
+        {name = 'collab_AC_2', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_AC_2.png",px=71,py=95},
+        {name = 'collab_STP_1', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_STP_1.png",px=71,py=95},
+        {name = 'collab_STP_2', path = "resources/textures/"..self.SETTINGS.GRAPHICS.texture_scaling.."x/collabs/collab_STP_2.png",px=71,py=95},
     }
     self.asset_images = {
         {name = "playstack_logo", path = "resources/textures/1x/playstack-logo.png", px=1417,py=1417},
@@ -2078,6 +2097,7 @@ function Game:init_game_object()
             hands = 1, 
             discards = 1,
             reroll_cost = 1,
+            free_rerolls = 0,
             temp_reroll_cost = nil,
             temp_handsize = nil,
             ante = 1,
@@ -2279,7 +2299,8 @@ function Game:start_run(args)
 
     if not saveTable then
         self.GAME.round_resets.blind_choices.Boss = get_new_boss()
-        self.GAME.current_round.voucher = G.SETTINGS.tutorial_progress and G.SETTINGS.tutorial_progress.forced_voucher or get_next_voucher_key()
+        local forced_voucher = (G.SETTINGS.tutorial_progress or {}).forced_voucher
+        self.GAME.current_round.voucher = forced_voucher and {forced_voucher, spawn = {[forced_voucher] = true }} or SMODS.get_next_vouchers()
         self.GAME.round_resets.blind_tags.Small = G.SETTINGS.tutorial_progress and G.SETTINGS.tutorial_progress.forced_tags and G.SETTINGS.tutorial_progress.forced_tags[1] or get_next_tag_key()
         self.GAME.round_resets.blind_tags.Big = G.SETTINGS.tutorial_progress and G.SETTINGS.tutorial_progress.forced_tags and G.SETTINGS.tutorial_progress.forced_tags[2] or get_next_tag_key()
     else
@@ -2628,6 +2649,9 @@ function Game:update(dt)
         self.C.EDITION[2] = 0.7+0.2*(1+math.sin(self.TIMERS.REAL*1.5 + 6))
         for k, v in pairs(SMODS.Rarities) do
             if v.gradient and type(v.gradient) == "function" then v:gradient(dt) end
+        end
+        for _,v in pairs(SMODS.Gradients) do
+           v:update(dt) 
         end
 
         
@@ -3253,13 +3277,15 @@ function Game:update_shop(dt)
                                         end
                                         G.load_shop_vouchers = nil
                                     else
-                                        if G.GAME.current_round.voucher and G.P_CENTERS[G.GAME.current_round.voucher] then
-                                            local card = Card(G.shop_vouchers.T.x + G.shop_vouchers.T.w/2,
-                                            G.shop_vouchers.T.y, G.CARD_W, G.CARD_H, G.P_CARDS.empty, G.P_CENTERS[G.GAME.current_round.voucher],{bypass_discovery_center = true, bypass_discovery_ui = true})
-                                            card.shop_voucher = true
-                                            create_shop_card_ui(card, 'Voucher', G.shop_vouchers)
-                                            card:start_materialize()
-                                            G.shop_vouchers:emplace(card)
+                                        local vouchers_to_spawn = 0
+                                        for _,_ in pairs(G.GAME.current_round.voucher.spawn) do vouchers_to_spawn = vouchers_to_spawn + 1 end
+                                        if vouchers_to_spawn < G.GAME.starting_params.vouchers_in_shop + (G.GAME.modifiers.extra_vouchers or 0) then
+                                            SMODS.get_next_vouchers(G.GAME.current_round.voucher)
+                                        end
+                                        for _, key in ipairs(G.GAME.current_round.voucher or {}) do
+                                            if G.P_CENTERS[key] and G.GAME.current_round.voucher.spawn[key] then
+                                                SMODS.add_voucher_to_shop(key)
+                                            end
                                         end
                                     end
                                     
@@ -3273,7 +3299,7 @@ function Game:update_shop(dt)
                                         end
                                         G.load_shop_booster = nil
                                     else
-                                        for i = 1, 2 do
+                                        for i=1, G.GAME.starting_params.boosters_in_shop + (G.GAME.modifiers.extra_boosters or 0) do
                                             G.GAME.current_round.used_packs = G.GAME.current_round.used_packs or {}
                                             if not G.GAME.current_round.used_packs[i] then
                                                 G.GAME.current_round.used_packs[i] = get_pack('shop_pack').key
@@ -3298,6 +3324,7 @@ function Game:update_shop(dt)
                                     end
                                 end
 
+                                if not nosave_shop then SMODS.calculate_context({starting_shop = true}) end
                                 G.CONTROLLER:snap_to({node = G.shop:get_UIE_by_ID('next_round_button')})
                                 if not nosave_shop then G.E_MANAGER:add_event(Event({ func = function() save_run(); return true end})) end
                                 return true

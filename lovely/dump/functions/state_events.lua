@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '495ffff8f90a24018a50fa012c8f95e9002e85a243bf36744fce28e7f4e4b9c9'
+LOVELY_INTEGRITY = '07093a5be903c577ae661a1cb13e351c5be3f797dde3adbe8dab2185cb46d64f'
 
 function win_game()
     if (not G.GAME.seeded and not G.GAME.challenge) or SMODS.config.seeded_unlocks then
@@ -196,7 +196,7 @@ function end_round()
                         elseif G.GAME.round_resets.blind == G.P_BLINDS.bl_big then
                             G.GAME.round_resets.blind_states.Big = 'Defeated'
                         else
-                            G.GAME.current_round.voucher = get_next_voucher_key()
+                            G.GAME.current_round.voucher = SMODS.get_next_vouchers()
                             G.GAME.round_resets.blind_states.Boss = 'Defeated'
                             for k, v in ipairs(G.playing_cards) do
                                 v.ability.played_this_ante = nil
@@ -248,8 +248,7 @@ function new_round()
                 v.ability.wheel_flipped = nil
             end
 
-            local chaos = find_joker('Chaos the Clown')
-            G.GAME.current_round.free_rerolls = #chaos
+            G.GAME.current_round.free_rerolls = G.GAME.round_resets.free_rerolls
             calculate_reroll_cost(true)
 
             G.GAME.round_bonus.next_hands = 0
@@ -306,7 +305,7 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
         local n = 0
         while n < #G.deck.cards do
             local card = G.deck.cards[#G.deck.cards-n]
-            limit = limit - 1 + (card.edition and card.edition.card_limit or 0)
+            limit = limit - 1 + (not card.debuff and card.edition and card.edition.card_limit or 0)
             if limit < 0 then break end
             n = n + 1
         end
@@ -336,7 +335,7 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
                                         hand_drawn = G.GAME.facing_blind and SMODS.drawn_cards,
                                         other_drawn = not G.GAME.facing_blind and SMODS.drawn_cards})
                 SMODS.drawn_cards = {}
-            end         
+            end
             return true
         end
     }))
@@ -571,12 +570,6 @@ G.FUNCS.evaluate_play = function(e)
     end
     -- TARGET: adding to hand effects
     scoring_hand = final_scoring_hand
-    local unscored_cards = {}
-    if SMODS.optional_features.cardareas.unscored then
-        for _, played_card in pairs(G.play.cards) do
-            if not SMODS.in_scoring(played_card, scoring_hand) then unscored_cards[#unscored_cards + 1] = played_card end
-        end
-    end
     delay(0.2)
     for i=1, #scoring_hand do
         --Highlight all the cards used in scoring and play a sound indicating highlight
@@ -619,7 +612,7 @@ G.FUNCS.evaluate_play = function(e)
         if modded then update_hand_text({sound = 'chips2', modded = modded}, {chips = hand_chips, mult = mult}) end
         delay(0.3)
         for _, v in ipairs(SMODS.get_card_areas('playing_cards')) do
-            SMODS.calculate_main_scoring({cardarea = v, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands}, v == G.play and scoring_hand or v == 'unscored' and unscored_cards or nil)
+            SMODS.calculate_main_scoring({cardarea = v, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands}, v == G.play and scoring_hand or nil)
             delay(0.3)
         end
         --+++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
@@ -665,7 +658,7 @@ G.FUNCS.evaluate_play = function(e)
                         for _, v in ipairs(post) do effects[#effects+1] = v end
                         if joker_eval.retriggers then
                             for rt = 1, #joker_eval.retriggers do
-                                local rt_eval, rt_post = eval_card(_card, {full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, [other_key] = _card, retrigger_joker = true})
+                                local rt_eval, rt_post = eval_card(_joker, {full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, [other_key] = _card, retrigger_joker = true})
                                 table.insert(effects, {joker_eval.retriggers[rt]})
                                 table.insert(effects, rt_eval)
                                 for _, v in ipairs(rt_post) do effects[#effects+1] = v end
@@ -694,7 +687,7 @@ G.FUNCS.evaluate_play = function(e)
 
         local cards_destroyed = {}
         for _,v in ipairs(SMODS.get_card_areas('playing_cards', 'destroying_cards')) do
-            SMODS.calculate_destroying_cards({ full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, cardarea = v }, cards_destroyed, v == G.play and scoring_hand or v == 'unscored' and unscored_cards or nil)
+            SMODS.calculate_destroying_cards({ full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, cardarea = v }, cards_destroyed, v == G.play and scoring_hand or nil)
         end
         
         -- context.remove_playing_cards calculations
