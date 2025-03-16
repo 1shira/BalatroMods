@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'bba4e3a14566b4c34acc2915cf1637d4cbec4c48408d81dc0c219e1a2182891a'
+LOVELY_INTEGRITY = '90b1d07ab8d39287199be8d21cffcffc5968271b48b011b464ae95e79edab216'
 
 --Class
 Back = Object:extend()
@@ -313,6 +313,17 @@ function Back:apply_to_run()
             end
         }))
     end
+    G.E_MANAGER:add_event(Event({
+    	func = function()
+    		G.E_MANAGER:add_event(Event({
+    			func = function()
+    				save_run()
+    				return true
+    			end
+    		}))
+    		return true
+    	end
+    }))
     if self.effect.config.randomize_rank_suit then
         G.GAME.starting_params.erratic_suits_and_ranks = true
     end
@@ -327,6 +338,9 @@ function Back:apply_to_run()
     end
     if self.effect.config.consumable_slot then
         G.GAME.starting_params.consumable_slots = G.GAME.starting_params.consumable_slots + self.effect.config.consumable_slot
+    end
+    if self.effect.config.boosters_in_shop then
+        G.GAME.starting_params.boosters_in_shop = self.effect.config.boosters_in_shop
     end
     if self.effect.config.no_interest then
         G.GAME.modifiers.no_interest = true

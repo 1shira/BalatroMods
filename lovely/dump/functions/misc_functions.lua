@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'ce267560ffb923b0877d512c00e4f203344192dcdfd769b88b834647a45a21ed'
+LOVELY_INTEGRITY = '24463bbdc9f94005feb2b5ab558c6c9fa27872833dd85c8a698f13aa9eb93a45'
 
 --Updates all display information for all displays for a given screenmode. Returns the key for the resolution option cycle
 --
@@ -281,6 +281,9 @@ function pseudorandom_element(_t, seed, args)
       if in_pool_func then
           keep = in_pool_func(v, args)
       end
+      if G.GAME and G.GAME.cry_banned_pcards and G.GAME.cry_banned_pcards[k] then
+      	keep = false
+      end
       if keep then
           keys[#keys+1] = {k = k,v = v}
       end
@@ -327,6 +330,7 @@ end
 
 function pseudoseed(key, predict_seed)
   if key == 'seed' then return math.random() end
+  if G.SETTINGS.paused and key ~= 'to_do' then return math.random() end
 
   if predict_seed then 
     local _pseed = pseudohash(key..(predict_seed or ''))
@@ -794,15 +798,18 @@ function modulate_sound(dt)
   --For ambient sound control
   G.SETTINGS.ambient_control = G.SETTINGS.ambient_control or {}
   G.ARGS.score_intensity = G.ARGS.score_intensity or {}
-  if type(G.GAME.current_round.current_hand.chips) ~= 'number' or type(G.GAME.current_round.current_hand.mult) ~= 'number' then
+  if not is_number(G.GAME.current_round.current_hand.chips) or not is_number(G.GAME.current_round.current_hand.mult) then
     G.ARGS.score_intensity.earned_score = 0
   else
     G.ARGS.score_intensity.earned_score = G.GAME.current_round.current_hand.chips*G.GAME.current_round.current_hand.mult
   end
   G.ARGS.score_intensity.required_score = G.GAME.blind and G.GAME.blind.chips or 0
+  if G.cry_flame_override and G.cry_flame_override['duration'] > 0 then
+  	G.cry_flame_override['duration'] = math.max(0, G.cry_flame_override['duration'] - dt)
+  end
   G.ARGS.score_intensity.flames = math.min(1, (G.STAGE == G.STAGES.RUN and 1 or 0)*(
     (G.ARGS.chip_flames and (G.ARGS.chip_flames.real_intensity + G.ARGS.chip_flames.change) or 0))/10)
-  G.ARGS.score_intensity.organ = G.video_organ or G.ARGS.score_intensity.required_score > 0 and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0
+  G.ARGS.score_intensity.organ = G.video_organ or to_big(G.ARGS.score_intensity.required_score) > to_big(0) and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0
 
   local AC = G.SETTINGS.ambient_control
   G.ARGS.ambient_sounds = G.ARGS.ambient_sounds or {
@@ -883,6 +890,10 @@ function count_of_suit(area, suit)
 end
 
 function prep_draw(moveable, scale, rotate, offset)
+if Big and G.STATE == G.STATES.MENU then moveable.VT.x = to_big(moveable.VT.x):to_number()
+moveable.VT.y = to_big(moveable.VT.y):to_number()
+moveable.VT.w = to_big(moveable.VT.w):to_number()
+moveable.VT.h = to_big(moveable.VT.h):to_number() end
     love.graphics.push()
     love.graphics.scale(G.TILESCALE*G.TILESIZE)
     love.graphics.translate(
@@ -1134,7 +1145,7 @@ end
 
 function check_and_set_high_score(score, amt)
   if not amt or type(amt) ~= 'number' then return end
-  if G.GAME.round_scores[score] and math.floor(amt) > G.GAME.round_scores[score].amt then
+  if G.GAME.round_scores[score] and math.floor(amt) > (G.GAME.round_scores[score].amt or 0) then
     G.GAME.round_scores[score].amt = math.floor(amt)
   end
   if  G.GAME.seeded  then return end
@@ -1570,6 +1581,29 @@ function save_with_action(action)
   G.action = nil
 end
 
+function cry_rollshiny()
+	local prob = 1
+	if next(SMODS.find_card('j_lucky_cat')) then prob = 3 end
+	if pseudorandom("cry_shiny") < prob / 4096 then
+		return 'shiny'
+	end
+	return 'normal'
+end
+
+function cry_rollshinybool()
+	if cry_rollshiny() == 'shiny' then 
+		return true
+	end
+	return false
+end
+function cry_prob(owned, den, rigged)
+	prob = G.GAME and G.GAME.probabilities.normal or 1
+	if rigged then
+		return den
+	else
+		if owned then return prob*owned else return prob end
+	end
+end
 function save_run()
   if G.F_NO_SAVING == true then return end
   local cardAreas = {}
@@ -1640,7 +1674,7 @@ function loc_colour(_c, _default)
           G.ARGS.LOC_COLOURS[v:lower()] = G.C.RARITY[v]
       end
       for _, v in ipairs(SMODS.ConsumableType.ctype_buffer) do
-          G.ARGS.LOC_COLOURS[v:lower()] = G.C.SECONDARY_SET[v] 
+          G.ARGS.LOC_COLOURS[v:lower()] = G.C.SECONDARY_SET[v]
       end
       for _, v in ipairs(SMODS.Suit.obj_buffer) do
           G.ARGS.LOC_COLOURS[v:lower()] = G.C.SUITS[v]
@@ -1817,6 +1851,19 @@ utf8.chars =
 	end
 
 function localize(args, misc_cat)
+if args and args.vars then
+    local reset = {}
+    for i, j in pairs(args.vars) do
+        if type(j) == 'table' then
+            if (j.new and type(j.new) == "function") and ((j.m and j.e) or (j.array and j.sign and (type(j.array) == "table"))) then
+                reset[i] = number_format(j)
+            end
+        end
+    end
+    for i, j in pairs(reset) do
+        args.vars[i] = j
+    end
+end
   if args and not (type(args) == 'table') then
     if misc_cat and G.localization.misc[misc_cat] then return G.localization.misc[misc_cat][args] or 'ERROR' end
     return G.localization.misc.dictionary[args] or 'ERROR'
@@ -1841,7 +1888,7 @@ function localize(args, misc_cat)
         for _, part in ipairs(lines) do
           local assembled_string = ''
           for _, subpart in ipairs(part.strings) do
-            assembled_string = assembled_string..(type(subpart) == 'string' and subpart or format_ui_value(args.vars[tonumber(subpart[1])]) or 'ERROR')
+            assembled_string = assembled_string..(type(subpart) == 'string' and subpart or Cryptid.pluralize(subpart[1], args.vars) or format_ui_value(args.vars[tonumber(subpart[1])]) or 'ERROR')
           end
           final_line = final_line..assembled_string
         end
@@ -1886,12 +1933,13 @@ function localize(args, misc_cat)
       for _, part in ipairs(lines) do
         local assembled_string = ''
         for _, subpart in ipairs(part.strings) do
-          assembled_string = assembled_string..(type(subpart) == 'string' and subpart or format_ui_value(args.vars[tonumber(subpart[1])]) or 'ERROR')
+          assembled_string = assembled_string..(type(subpart) == 'string' and subpart or Cryptid.pluralize(subpart[1], args.vars) or format_ui_value(args.vars[tonumber(subpart[1])]) or 'ERROR')
         end
         local desc_scale = G.LANG.font.DESCSCALE
         if G.F_MOBILE_UI then desc_scale = desc_scale*1.5 end
         if args.type == 'name' then
-          final_line[#final_line+1] = {n=G.UIT.O, config={
+          final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = part.control.B and args.vars.colours[tonumber(part.control.B)] or part.control.X and loc_colour(part.control.X) or nil, r = 0.05, padding = 0.03, res = 0.15}, nodes={}}
+          final_line[#final_line].nodes[1] = {n=G.UIT.O, config={
             object = DynaText({string = {assembled_string},
               colours = {(part.control.V and args.vars.colours[tonumber(part.control.V)]) or (part.control.C and loc_colour(part.control.C)) or args.text_colour or G.C.UI.TEXT_LIGHT},
               bump = true,
@@ -1912,7 +1960,8 @@ function localize(args, misc_cat)
           elseif part.control.E == '2' then
             _bump = true; _spacing = 1
           end
-          final_line[#final_line+1] = {n=G.UIT.O, config={
+          final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = part.control.B and args.vars.colours[tonumber(part.control.B)] or part.control.X and loc_colour(part.control.X) or nil, r = 0.05, padding = 0.03, res = 0.15}, nodes={}}
+          final_line[#final_line].nodes[1] = {n=G.UIT.O, config={
             object = DynaText({string = {assembled_string}, colours = {part.control.V and args.vars.colours[tonumber(part.control.V)] or loc_colour(part.control.C or nil)},
             float = _float,
             silent = _silent,
@@ -1921,16 +1970,16 @@ function localize(args, misc_cat)
             spacing = _spacing,
             scale = 0.32*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*desc_scale})
           }}
-        elseif part.control.X then
-          final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = loc_colour(part.control.X), r = 0.05, padding = 0.03, res = 0.15}, nodes={
+        elseif part.control.X or part.control.B then
+          final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = part.control.B and args.vars.colours[tonumber(part.control.B)] or loc_colour(part.control.X), r = 0.05, padding = 0.03, res = 0.15}, nodes={
               {n=G.UIT.T, config={
                 text = assembled_string,
-                colour = loc_colour(part.control.C or nil),
+                colour = part.control.V and args.vars.colours[tonumber(part.control.V)] or loc_colour(part.control.C or nil),
                 scale = 0.32*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*desc_scale}},
           }}
         else
           final_line[#final_line+1] = {n=G.UIT.T, config={
-          detailed_tooltip = part.control.T and (G.P_CENTERS[part.control.T] or G.P_TAGS[part.control.T]) or nil,
+          detailed_tooltip = part.control.T and Cryptid.get_center(part.control.T) or nil,
           text = assembled_string,
           shadow = args.shadow,
           colour = part.control.V and args.vars.colours[tonumber(part.control.V)] or not part.control.C and args.text_colour or loc_colour(part.control.C or nil, args.default_col),
@@ -2072,6 +2121,8 @@ return {
     consumable_slots = 2,
     no_faces = false,
     erratic_suits_and_ranks = false,
+    boosters_in_shop = 2,
+    vouchers_in_shop = 1,
   }
 end
 

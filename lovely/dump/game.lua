@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '4d3ad4a06af6c3434496cd6eba8dc31769263795c4d2dc7e0c0d0f20f63ff652'
+LOVELY_INTEGRITY = '150b9fc402a57ff5698ebb09bdb1ba685da852a94afb0df3ab97699e540d6d8c'
 
 --Class
 Game = Object:extend()
@@ -155,6 +155,13 @@ function Game:start_up()
         self.SETTINGS.GRAPHICS.texture_scaling = self.SETTINGS.GRAPHICS.texture_scaling > 1 and 2 or 1
     end
 
+    Cryptid.profile_prefix = Jen and "J" or "M"
+    if type(G.SETTINGS.profile) ~= "string" or G.SETTINGS.profile:sub(1, #Cryptid.profile_prefix) ~= Cryptid.profile_prefix then
+        G.SETTINGS.profile = Cryptid.profile_prefix .. "1"
+    end
+    for i = 1, 3 do
+        G.PROFILES[Cryptid.profile_prefix .. i] = {}
+    end
     self:load_profile(G.SETTINGS.profile or 1)
 
     self.SETTINGS.QUEUED_CHANGE = {}
@@ -210,6 +217,15 @@ function Game:start_up()
     self.SPEEDFACTOR = 1
     initSteamodded()
 
+    for i = 1, #G.CHALLENGES do
+        if (G.CHALLENGES[i].id == 'c_cry_rush_hour' or G.CHALLENGES[i].id == 'c_cry_rush_hour_ii' or G.CHALLENGES[i].id == 'c_cry_rush_hour_iii') and #G.CHALLENGES[i].restrictions.banned_other == 0 then
+            for k, v in pairs(G.P_BLINDS) do
+                if k ~= "bl_cry_clock" and k ~= "bl_cry_lavender_loop" and v.boss then
+                    G.CHALLENGES[i].restrictions.banned_other[#G.CHALLENGES[i].restrictions.banned_other+1] = {id = k, type = 'blind'}
+                end
+            end
+        end
+    end
     set_profile_progress()
     boot_timer('prep stage', 'splash prep',1)
     self:splash_screen()
@@ -593,11 +609,11 @@ function Game:init_item_prototypes()
 
         --Vouchers
 
-        v_overstock_norm =  {order = 1,     discovered = false, unlocked = true , available = true, cost = 10, name = "Overstock", pos = {x=0,y=0}, set = "Voucher", config = {}},
+        v_overstock_norm =  {order = 1,     discovered = false, unlocked = true , available = true, cost = 10, name = "Overstock", pos = {x=0,y=0}, set = "Voucher", config = {extra = 1}},
         v_clearance_sale=   {order = 3,     discovered = false, unlocked = true , available = true, cost = 10, name = "Clearance Sale", pos = {x=3,y=0}, set = "Voucher", config = {extra = 25}},
         v_hone=             {order = 5,     discovered = false, unlocked = true , available = true, cost = 10, name = "Hone", pos = {x=4,y=0}, set = "Voucher", config = {extra = 2}},
         v_reroll_surplus=   {order = 7,    discovered = false, unlocked = true , available = true, cost = 10, name = "Reroll Surplus", pos = {x=0,y=2}, set = "Voucher", config = {extra = 2}},
-        v_crystal_ball=     {order = 9,    discovered = false, unlocked = true , available = true, cost = 10, name = "Crystal Ball", pos = {x=2,y=2}, set = "Voucher", config = {extra = 3}},
+        v_crystal_ball=     {order = 9,    discovered = false, unlocked = true , available = true, cost = 10, name = "Crystal Ball", pos = {x=2,y=2}, set = "Voucher", config = {extra = 1}},
         v_telescope=        {order = 11,    discovered = false, unlocked = true , available = true, cost = 10, name = "Telescope", pos = {x=3,y=2}, set = "Voucher", config = {extra = 3}},
         v_grabber=          {order = 13,    discovered = false, unlocked = true , available = true, cost = 10, name = "Grabber", pos = {x=5,y=0}, set = "Voucher", config = {extra = 1}},
         v_wasteful=         {order = 15,    discovered = false, unlocked = true , available = true, cost = 10, name = "Wasteful", pos = {x=6,y=0}, set = "Voucher", config = {extra = 1}},
@@ -610,7 +626,7 @@ function Game:init_item_prototypes()
         v_directors_cut=    {order = 29,    discovered = false, unlocked = true , available = true, cost = 10, name = "Director's Cut", pos = {x=6,y=2}, set = "Voucher", config = {extra = 10}},
         v_paint_brush=      {order = 31,    discovered = false, unlocked = true , available = true, cost = 10, name = "Paint Brush", pos = {x=7,y=2}, set = "Voucher", config = {extra = 1}},
   
-        v_overstock_plus=   {order = 2,     discovered = false, unlocked = false, available = true, cost = 10, name = "Overstock Plus", pos = {x=0,y=1}, set = "Voucher", config = {}, requires = {'v_overstock_norm'},unlock_condition = {type = 'c_shop_dollars_spent', extra = 2500}},
+        v_overstock_plus=   {order = 2,     discovered = false, unlocked = false, available = true, cost = 10, name = "Overstock Plus", pos = {x=0,y=1}, set = "Voucher", config = {extra = 1}, requires = {'v_overstock_norm'},unlock_condition = {type = 'c_shop_dollars_spent', extra = 2500}},
         v_liquidation=      {order = 4,     discovered = false, unlocked = false, available = true, cost = 10, name = "Liquidation", pos = {x=3,y=1}, set = "Voucher", config = {extra = 50}, requires = {'v_clearance_sale'},unlock_condition = {type = 'run_redeem', extra = 10}},
         v_glow_up=          {order = 6,    discovered = false, unlocked = false, available = true,  cost = 10, name = "Glow Up", pos = {x=4,y=1}, set = "Voucher", config = {extra = 4}, requires = {'v_hone'},unlock_condition = {type = 'have_edition', extra = 5}},
         v_reroll_glut=      {order = 8,    discovered = false, unlocked = false, available = true,  cost = 10, name = "Reroll Glut", pos = {x=0,y=3}, set = "Voucher", config = {extra = 2}, requires = {'v_reroll_surplus'},unlock_condition = {type = 'c_shop_rerolls', extra = 100}},
@@ -618,10 +634,10 @@ function Game:init_item_prototypes()
         v_observatory=      {order = 12,    discovered = false, unlocked = false, available = true, cost = 10, name = "Observatory", pos = {x=3,y=3}, set = "Voucher", config = {extra = 1.5}, requires = {'v_telescope'},unlock_condition = {type = 'c_planetarium_used', extra = 25}},
         v_nacho_tong=       {order = 14,    discovered = false, unlocked = false, available = true, cost = 10, name = "Nacho Tong", pos = {x=5,y=1}, set = "Voucher", config = {extra = 1}, requires = {'v_grabber'},unlock_condition = {type = 'c_cards_played', extra = 2500}},
         v_recyclomancy=     {order = 16,    discovered = false, unlocked = false, available = true, cost = 10, name = "Recyclomancy", pos = {x=6,y=1}, set = "Voucher", config = {extra = 1}, requires = {'v_wasteful'},unlock_condition = {type = 'c_cards_discarded', extra = 2500}},
-        v_tarot_tycoon=     {order = 18,     discovered = false, unlocked = false, available = true,cost = 10, name = "Tarot Tycoon", pos = {x=1,y=1}, set = "Voucher", config = {extra = 32/4, extra_disp = 4}, requires = {'v_tarot_merchant'},unlock_condition = {type = 'c_tarots_bought', extra = 50}},
-        v_planet_tycoon=    {order = 20,     discovered = false, unlocked = false, available = true,cost = 10, name = "Planet Tycoon", pos = {x=2,y=1}, set = "Voucher", config = {extra = 32/4, extra_disp = 4}, requires = {'v_planet_merchant'},unlock_condition = {type = 'c_planets_bought', extra = 50}},
+        v_tarot_tycoon=     {order = 18,     discovered = false, unlocked = false, available = true,cost = 10, name = "Tarot Tycoon", pos = {x=1,y=1}, set = "Voucher", config = {extra = 32/9.6, extra_disp = 4}, requires = {'v_tarot_merchant'},unlock_condition = {type = 'c_tarots_bought', extra = 50}},
+        v_planet_tycoon=    {order = 20,     discovered = false, unlocked = false, available = true,cost = 10, name = "Planet Tycoon", pos = {x=2,y=1}, set = "Voucher", config = {extra = 32/9.6, extra_disp = 4}, requires = {'v_planet_merchant'},unlock_condition = {type = 'c_planets_bought', extra = 50}},
         v_money_tree=       {order = 22,    discovered = false, unlocked = false, available = true, cost = 10, name = "Money Tree", pos = {x=1,y=3}, set = "Voucher", config = {extra = 100}, requires = {'v_seed_money'},unlock_condition = {type = 'interest_streak', extra = 10}},
-        v_antimatter=       {order = 24,    discovered = false, unlocked = false, available = true, cost = 10, name = "Antimatter", pos = {x=7,y=1}, set = "Voucher", config = {extra = 15}, requires = {'v_blank'},unlock_condition = {type = 'blank_redeems', extra = 10}},
+        v_antimatter=       {order = 24,    discovered = false, unlocked = false, available = true, cost = 10, name = "Antimatter", pos = {x=7,y=1}, set = "Voucher", config = {extra = 1}, requires = {'v_blank'},unlock_condition = {type = 'blank_redeems', extra = 10}},
         v_illusion=         {order = 26,    discovered = false, unlocked = false, available = true, cost = 10, name = "Illusion", pos = {x=4,y=3}, set = "Voucher", config = {extra = 4}, requires = {'v_magic_trick'},unlock_condition = {type = 'c_playing_cards_bought', extra = 20}},
         v_petroglyph=       {order = 28,    discovered = false, unlocked = false, available = true, cost = 10, name = "Petroglyph", pos = {x=5,y=3}, set = "Voucher", config = {extra = 1}, requires = {'v_hieroglyph'},unlock_condition = {type = 'ante_up', ante = 12, extra = 12}},
         v_retcon=           {order = 30,    discovered = false, unlocked = false, available = true, cost = 10, name = "Retcon", pos = {x=6,y=3}, set = "Voucher", config = {extra = 10}, requires = {'v_directors_cut'},unlock_condition = {type = 'blind_discoveries', extra = 25}},
@@ -738,10 +754,19 @@ function Game:init_item_prototypes()
     -------------------------------------
     if not love.filesystem.getInfo(G.SETTINGS.profile..'') then love.filesystem.createDirectory( G.SETTINGS.profile..'' ) end
     if not love.filesystem.getInfo(G.SETTINGS.profile..'/'..'meta.jkr') then love.filesystem.append( G.SETTINGS.profile..'/'..'meta.jkr', 'return {}') end
+    if not love.filesystem.getInfo(G.SETTINGS.profile..'/'..'cryptidsave.jkr') then love.filesystem.append( G.SETTINGS.profile..'/'..'cryptidsave.jkr', 'return {}') end
 
     convert_save_to_meta()
 
     local meta = STR_UNPACK(get_compressed(G.SETTINGS.profile..'/'..'meta.jkr') or 'return {}')
+    local cryptidsave = STR_UNPACK(get_compressed(G.SETTINGS.profile..'/'..'cryptidsave.jkr') or 'return {}')
+    
+    if cryptidsave and cryptidsave.shinytags then
+    	Cryptid.shinytagdata = copy_table(cryptidsave.shinytags)
+    else
+    	-- populated later when tags actually exist
+    	Cryptid.shinytagdata = {}
+    end
     meta.unlocked = meta.unlocked or {}
     meta.discovered = meta.discovered or {}
     meta.alerted = meta.alerted or {}
@@ -1006,7 +1031,7 @@ function Game:set_language()
 
     local localization = love.filesystem.getInfo('localization/'..G.SETTINGS.language..'.lua') or love.filesystem.getInfo('localization/en-us.lua')
     if localization ~= nil then
-      self.localization = assert(loadstring(love.filesystem.read('localization/'..G.SETTINGS.language..'.lua') or love.filesystem.read('localization/en-us.lua')))()
+      self.localization = assert(loadstring(love.filesystem.read('localization/'..G.SETTINGS.language..'.lua') or love.filesystem.read('localization/en-us.lua'), '=[localization "'..G.SETTINGS.language..'.lua"]'))()
       init_localization()
     end
 end
@@ -1167,7 +1192,7 @@ function Game:delete_run()
         self.load_shop_vouchers = nil
         if self.buttons then self.buttons:remove(); self.buttons = nil end
         if self.deck_preview then self.deck_preview:remove(); self.deck_preview = nil end
-        if self.shop then self.shop:remove(); self.shop = nil end
+        if self.shop and not G.GAME.USING_CODE then self.shop:remove(); self.shop = nil end
         if self.blind_select then self.blind_select:remove(); self.blind_select = nil end
         if self.booster_pack then self.booster_pack:remove(); self.booster_pack = nil end
         if self.MAIN_MENU_UI then self.MAIN_MENU_UI:remove(); self.MAIN_MENU_UI = nil end
@@ -1261,6 +1286,7 @@ function Game:prep_stage(new_stage, new_state, new_game_obj)
         self.CONTROLLER.locks[k] = nil
     end
     if new_game_obj then self.GAME = self:init_game_object() end
+    if Talisman and Talisman.igo then self.GAME = Talisman.igo(self.GAME) end
     self.STAGE = new_stage or self.STAGES.MAIN_MENU
     self.STATE = new_state or self.STATES.MENU
     self.STATE_COMPLETE = false
@@ -1446,6 +1472,25 @@ function Game:splash_screen()
             G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.2,func = (function()
                 local SC_scale = 1.2
                 SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_joker'])
+                if true then --Cryptid.enabled["Menu"] then
+                	if false then --Cryptid.enabled["M Jokers"] then
+                 		local mcard = {}
+                			for k, _ in pairs(Cryptid.M_jokers) do
+                				if G.P_CENTERS[k] then
+                					mcard[#mcard + 1] = k
+                				end
+                			end
+                 		local option = math.random(#mcard)
+                   		local chosenoption = mcard[option]
+                       		if chosenoption == "j_cry_biggestm" or chosenoption == "j_cry_reverse" then --These don't render properly; replace these with loopy instead
+                			SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_cry_loopy'],{bypass_discovery_center = true, bypass_discovery_ui = true})
+                   		else
+                     			SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS[chosenoption],{bypass_discovery_center = true, bypass_discovery_ui = true})
+                     		end
+                  	else
+                   		SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_jolly'],{bypass_discovery_center = true, bypass_discovery_ui = true})
+                	end
+                end
                 SC.T.y = G.ROOM.T.h/2 - SC_scale*G.CARD_H/2
                 SC.ambient_tilt = 1
                 SC.states.drag.can = false
@@ -1475,6 +1520,7 @@ function Game:splash_screen()
                 local card = Card(  card_pos.x + G.ROOM.T.w/2 - G.CARD_W*card_size/2,
                                     card_pos.y + G.ROOM.T.h/2 - G.CARD_H*card_size/2,
                                     card_size*G.CARD_W, card_size*G.CARD_H, pseudorandom_element(G.P_CARDS), G.P_CENTERS.c_base)
+                if true --[[Cryptid.enabled["Menu"]--]] then card:set_ability(Cryptid.random_consumable('cry_splash',{"no_grc"},nil,nil,true), true, nil) end
                 if math.random() > 0.8 then card.sprite_facing = 'back'; card.facing = 'back' end
                 card.no_shadow = true
                 card.states.hover.can = false
@@ -1619,6 +1665,8 @@ function Game:main_menu(change_context) --True if main menu is accessed from the
     local replace_card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS.S_A, G.P_CENTERS.c_base)
     self.title_top:emplace(replace_card)
 
+    replace_card:set_edition(G.P_CENTERS.e_cry_glitched and 'e_cry_glitched' or 'e_negative',true,true)
+    replace_card:set_seal('Gold', true, true)
     replace_card.states.visible = false
     replace_card.no_ui = true
     replace_card.ambient_tilt = 0.0
@@ -1712,11 +1760,25 @@ function Game:main_menu(change_context) --True if main menu is accessed from the
         check_for_unlock({type = 'career_stat', statname = k})
     end
     check_for_unlock({type = 'blind_discoveries'})
+    if change_context ~= "splash" then
+        if not (G.ACHIEVEMENTS and G.ACHIEVEMENTS['ach_cry_used_crash'] and G.ACHIEVEMENTS['ach_cry_used_crash'].earned) then check_for_unlock({type = 'ach_cry_used_crash'}) end
+        if not (G.ACHIEVEMENTS and G.ACHIEVEMENTS['ach_cry_traffic_jam'] and G.ACHIEVEMENTS['ach_cry_traffic_jam'].earned) then check_for_unlock({type = 'win_challenge_startup'}) end
+        if not (G.ACHIEVEMENTS and G.ACHIEVEMENTS['ach_cry_perfectly_balanced'] and G.ACHIEVEMENTS['ach_cry_perfectly_balanced'].earned) then check_for_unlock({type = 'win_stake_startup'}) end
+    end
 
     G.E_MANAGER:add_event(Event({
         blockable = false,
         func = function()
             set_discover_tallies()
+            for i = 1, #G.CHALLENGES do
+                if (G.CHALLENGES[i].id == 'c_cry_rush_hour' or G.CHALLENGES[i].id == 'c_cry_rush_hour_ii' or G.CHALLENGES[i].id == 'c_cry_rush_hour_iii') and #G.CHALLENGES[i].restrictions.banned_other == 0 then
+                    for k, v in pairs(G.P_BLINDS) do
+                        if k ~= "bl_cry_clock" and k ~= "bl_cry_lavender_loop" and v.boss then
+                            G.CHALLENGES[i].restrictions.banned_other[#G.CHALLENGES[i].restrictions.banned_other+1] = {id = k, type = 'blind'}
+                        end
+                    end
+                end
+            end
             set_profile_progress()
             G.REFRESH_ALERTS = true
         return true
@@ -1800,6 +1862,8 @@ function Game:demo_cta() --True if main menu is accessed from the splash screen,
     local replace_card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS.S_A, G.P_CENTERS.c_base)
     self.title_top:emplace(replace_card)
 
+    replace_card:set_edition(G.P_CENTERS.e_cry_glitched and 'e_cry_glitched' or 'e_negative',true,true)
+    replace_card:set_seal('Gold', true, true)
     replace_card.states.visible = false
     replace_card.no_ui = true
     replace_card.ambient_tilt = 0.0
@@ -1918,6 +1982,10 @@ function Game:init_game_object()
         pseudorandom = {},
         starting_deck_size = 52,
         ecto_minus = 1,
+        cry_bonusvouchercount = 0,
+        cry_bonusvouchersused = {},
+        cry_percrate = {tarot = 100, planet = 100},
+        cry_banished_keys = {},
         pack_size = 2,
         skips = 0,
         STOP_USE = 0,
@@ -1937,8 +2005,15 @@ function Game:init_game_object()
         unused_discards = 0,
         perishable_rounds = 5,
         rental_rate = 3,
+        cry_voucher_perishable_rounds = 8,
+        cry_voucher_rental_rate = 2,
+        cry_consumeable_rental_rate = 2,
+        cry_voucher_banana_odds = 12,
+        cry_consumeable_banana_odds = 4,
+        cry_pinned_consumeables = 0,
+        cry_shop_joker_price_modifier = 1,
         blind =  nil,
-        chips = 0,
+        chips = to_big(0),
         chips_text = '0',
         voucher_text = '',
         dollars = 0,
@@ -1958,16 +2033,21 @@ function Game:init_game_object()
         used_vouchers = {},
         current_round = {
             current_hand = {
-                chips = 0,
+                chips = to_big(0),
                 chip_text = '0',
                 mult = 0,
                 mult_text = '0',
                 chip_total = 0,
                 chip_total_text = '',
+                                cry_asc_num = 0,
+                                cry_asc_num_text = '',
                 handname = "",
                 hand_level = ''
             },
             used_packs = {},
+            cry_bonusvouchers = {},
+            cry_voucher_stickers = {eternal = false, perishable = false, rental = false, pinned = false, banana = false},
+            cry_voucher_edition = {},
             cards_flipped = 0,
             round_text = 'Round ',
             idol_card = {suit = 'Spades', rank = 'Ace'},
@@ -1991,9 +2071,11 @@ function Game:init_game_object()
             hands = 1, 
             discards = 1,
             reroll_cost = 1,
+            free_rerolls = 0,
             temp_reroll_cost = nil,
             temp_handsize = nil,
             ante = 1,
+            ante_disp = number_format(1),
             blind_ante = 1,
             blind_states = {Small = 'Select', Big = 'Upcoming', Boss = 'Upcoming'},
             loc_blind_states = {Small = '', Big = '', Boss = ''},
@@ -2049,6 +2131,7 @@ function Game:start_run(args)
     local selected_back = saveTable and saveTable.BACK.name or (args.challenge and args.challenge.deck and args.challenge.deck.type) or (self.GAME.viewed_back and self.GAME.viewed_back.name) or self.GAME.selected_back and self.GAME.selected_back.name or 'Red Deck'
     selected_back = get_deck_from_name(selected_back)
     self.GAME = saveTable and saveTable.GAME or self:init_game_object()
+    if Talisman and Talisman.igo then self.GAME = Talisman.igo(self.GAME) end
     Handy.UI.init()
     self.GAME.modifiers = self.GAME.modifiers or {}
     self.GAME.stake = args.stake or self.GAME.stake or 1
@@ -2084,6 +2167,11 @@ function Game:start_run(args)
                     G.E_MANAGER:add_event(Event({
                         func = function()
                             local _joker = add_joker(v.id, v.edition, k ~= 1)
+                            if v.stickers then
+                            	for i, _v in ipairs(v.stickers) do
+                            		SMODS.Stickers[_v]:apply(_joker, true)
+                            	end
+                            end
                             if v.eternal then _joker:set_eternal(true) end
                             if v.pinned then _joker.pinned = true end
                         return true
@@ -2181,6 +2269,16 @@ function Game:start_run(args)
 
     for k, v in pairs(self.GAME.pseudorandom) do if v == 0 then self.GAME.pseudorandom[k] = pseudohash(k..self.GAME.pseudorandom.seed) end end
     self.GAME.pseudorandom.hashed_seed = pseudohash(self.GAME.pseudorandom.seed)
+    if G.GAME.modifiers.cry_misprint_min and not args.savetext then
+        for k, v in pairs(G.GAME.hands) do
+            v.chips = to_big(cry_format(v.chips * Cryptid.log_random(pseudoseed('cry_misprint'),G.GAME.modifiers.cry_misprint_min,G.GAME.modifiers.cry_misprint_max),"%.2g"))
+            v.mult = to_big(cry_format(v.mult * Cryptid.log_random(pseudoseed('cry_misprint'),G.GAME.modifiers.cry_misprint_min,G.GAME.modifiers.cry_misprint_max),"%.2g"))
+            v.l_chips = cry_format(v.l_chips * Cryptid.log_random(pseudoseed('cry_misprint'),G.GAME.modifiers.cry_misprint_min,G.GAME.modifiers.cry_misprint_max),"%.2g")
+            v.l_mult = cry_format(v.l_mult * Cryptid.log_random(pseudoseed('cry_misprint'),G.GAME.modifiers.cry_misprint_min,G.GAME.modifiers.cry_misprint_max),"%.2g")
+            v.s_chips = v.chips
+            v.s_mult = v.mult
+        end
+    end
 
     G:save_settings()
 
@@ -2189,8 +2287,17 @@ function Game:start_run(args)
     end
 
     if not saveTable then
+        if G.GAME.modifiers.cry_big_boss_rate and pseudorandom('cry_big_boss') < G.GAME.modifiers.cry_big_boss_rate then
+            self.GAME.round_resets.blind_choices.Big = get_new_boss()
+        elseif G.GAME.modifiers.cry_rush_hour_ii then
+            self.GAME.round_resets.blind_choices.Small = get_new_boss()
+            self.GAME.round_resets.blind_choices.Big = get_new_boss()
+        else
+            self.GAME.round_resets.blind_choices.Big = 'bl_big'
+        end
         self.GAME.round_resets.blind_choices.Boss = get_new_boss()
-        self.GAME.current_round.voucher = G.SETTINGS.tutorial_progress and G.SETTINGS.tutorial_progress.forced_voucher or get_next_voucher_key()
+        local forced_voucher = (G.SETTINGS.tutorial_progress or {}).forced_voucher
+        self.GAME.current_round.voucher = forced_voucher and {forced_voucher, spawn = {[forced_voucher] = true }} or SMODS.get_next_vouchers()
         self.GAME.round_resets.blind_tags.Small = G.SETTINGS.tutorial_progress and G.SETTINGS.tutorial_progress.forced_tags and G.SETTINGS.tutorial_progress.forced_tags[1] or get_next_tag_key()
         self.GAME.round_resets.blind_tags.Big = G.SETTINGS.tutorial_progress and G.SETTINGS.tutorial_progress.forced_tags and G.SETTINGS.tutorial_progress.forced_tags[2] or get_next_tag_key()
     else
@@ -2247,22 +2354,31 @@ function Game:start_run(args)
     }
 
 
+    if not G.GAME.modifiers.cry_beta then
     self.consumeables = CardArea(
         0, 0,
         CAI.consumeable_W,
         CAI.consumeable_H, 
-        {card_limit = self.GAME.starting_params.consumable_slots, type = 'joker', highlight_limit = 1})
+        {card_limit = self.GAME.starting_params.consumable_slots, type = 'joker', highlight_limit = 1e100})
 
     self.jokers = CardArea(
         0, 0,
         CAI.joker_W,
         CAI.joker_H, 
-        {card_limit = self.GAME.starting_params.joker_slots, type = 'joker', highlight_limit = 1})
+        {card_limit = self.GAME.starting_params.joker_slots, type = 'joker', highlight_limit = 1e100})
 
+    else
+    self.jokers = CardArea(
+        0, 0,
+        CAI.joker_W+CAI.consumeable_W,
+        CAI.joker_H,
+        {card_limit = self.GAME.starting_params.joker_slots+self.GAME.starting_params.consumable_slots-1, type = 'joker', highlight_limit = 1e100})
+    self.consumeables = self.jokers
+    end
     self.discard = CardArea(
         0, 0,
         CAI.discard_W,CAI.discard_H,
-        {card_limit = 500, type = 'discard'})
+        {card_limit = 1e308, type = 'discard'})
     self.vouchers = CardArea(
         G.discard.T.x, G.discard.T.y,
         G.discard.T.w, G.discard.T.h,
@@ -2399,6 +2515,11 @@ function Game:start_run(args)
             card_from_control(v)
         end
 
+        if G.GAME.modifiers.cry_ccd then
+            for k, v in pairs(G.playing_cards) do
+                v:set_ability(Cryptid.random_consumable('cry_ccd',{"no_doe", "no_grc"}, nil, nil, true), true, nil)
+            end
+        end
         self.GAME.starting_deck_size = #G.playing_cards
     end
 
@@ -2413,7 +2534,8 @@ function Game:start_run(args)
         reset_mail_rank()
         self.GAME.current_round.ancient_card.suit = nil
         reset_ancient_card()
-        reset_castle_card()        for _, mod in ipairs(SMODS.mod_list) do
+        reset_castle_card()        
+        for _, mod in ipairs(SMODS.mod_list) do
         	if mod.reset_game_globals and type(mod.reset_game_globals) == 'function' then
         		mod.reset_game_globals(true)
         	end
@@ -2456,7 +2578,7 @@ function Game:start_run(args)
         for k, v in ipairs(tags) do
             local _tag = Tag('tag_uncommon')
             _tag:load(v)
-            add_tag(_tag)
+            add_tag(_tag, nil, true)
         end
     else
         G.GAME.blind:set_blind(nil, nil, true)
@@ -2540,8 +2662,18 @@ function Game:update(dt)
         for k, v in pairs(SMODS.Rarities) do
             if v.gradient and type(v.gradient) == "function" then v:gradient(dt) end
         end
+        for _,v in pairs(SMODS.Gradients) do
+           v:update(dt) 
+        end
 
         
+        if not G.showshinytags then G.showshinytags = false end
+        if not G.showshinytags_b then G.showshinytags_b = false end
+        
+        if G.showshinytags ~= G.showshinytags_b then
+        	G.showshinytags_b = G.showshinytags
+        	G.FUNCS.your_collection_tags_page()
+        end
         self.E_MANAGER:update(self.real_dt)
                     timer_checkpoint('e_manager', 'update')
 
@@ -2577,6 +2709,23 @@ function Game:update(dt)
         end
 
 
+        if G.GAME.USING_RUN then
+        	if not (self.STATE == self.STATES.STANDARD_PACK or self.STATE == self.STATES.BUFFOON_PACK or self.STATE == self.STATES.PLANET_PACK or self.STATE == self.STATES.TAROT_PACK or self.STATE == self.STATES.SPECTRAL_PACK or self.STATE == self.STATES.SMODS_BOOSTER_OPENED) then -- do you are have stupid
+        		self.STATE = self.STATES.SHOP
+        	end
+        	if G.GAME.blind then G.GAME.blind:change_colour() end	-- aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        	if G.load_cry_runarea then
+        		G.cry_runarea = CardArea(
+        			G.discard.T.x,
+        			G.discard.T.y,
+        			G.discard.T.w,
+        			G.discard.T.h,
+        			{ type = "discard", card_limit = 1e100 }
+        		)
+        		G.cry_runarea:load(G.load_cry_runarea)
+        		G.load_cry_runarea = nil
+        	end
+        end
         if self.STATE == self.STATES.SELECTING_HAND then
             if (not G.hand.cards[1]) and G.deck.cards[1] then 
                 G.STATE = G.STATES.DRAW_TO_HAND
@@ -2615,7 +2764,12 @@ function Game:update(dt)
         end
 
         if G.STATE == G.STATES.SMODS_BOOSTER_OPENED then
-            SMODS.OPENED_BOOSTER.config.center:update_pack(dt)
+            if not SMODS.OPENED_BOOSTER then
+            	G.STATE = G.STATES.SHOP
+            	print('Error: SMODS.OPENED_BOOSTER is nil. Game recovered by setting game state to shop.')
+            else
+            	SMODS.OPENED_BOOSTER.config.center:update_pack(dt)
+            end
         end
         
         if self.STATE == self.STATES.TAROT_PACK then
@@ -2723,6 +2877,13 @@ function Game:update(dt)
     end
     
     --Save every 10 seconds, unless forced or paused/unpaused
+    if not Cryptid.member_count_delay then Cryptid.member_count_delay = 0 end
+    if (Cryptid.member_count_delay > 5) or not Cryptid.member_count then	-- it doesn't need to update this frequently? but it also doesn't need to be higher tbh...
+    	if Cryptid.update_member_count then Cryptid.update_member_count() end	-- i honestly hate nil checks like this, wish there was a shorthand
+    	Cryptid.member_count_delay = 0
+    else
+    	Cryptid.member_count_delay = Cryptid.member_count_delay + dt
+    end
     if G.FILE_HANDLER and G.FILE_HANDLER and G.FILE_HANDLER.update_queued and (
         G.FILE_HANDLER.force or 
         G.FILE_HANDLER.last_sent_stage ~= G.STAGE or
@@ -2753,6 +2914,7 @@ function Game:update(dt)
             if G.FILE_HANDLER.run then
                 G.SAVE_MANAGER.channel:push({
                     type = 'save_run',
+                    talisman = Talisman.config_file.break_infinity,
                     save_table = G.ARGS.save_run,
                     profile_num = G.SETTINGS.profile})
                 G.SAVED_GAME = nil
@@ -2984,7 +3146,7 @@ love.graphics.pop()
         G.SHADERS['CRT']:send('time',400 + G.TIMERS.REAL)
         G.SHADERS['CRT']:send('noise_fac',0.001*G.SETTINGS.GRAPHICS.crt/100)
         G.SHADERS['CRT']:send('crt_intensity', 0.16*G.SETTINGS.GRAPHICS.crt/100)
-        G.SHADERS['CRT']:send('glitch_intensity', 0)--0.1*G.SETTINGS.GRAPHICS.crt/100 + (G.screenwipe_amt) + 1)
+        G.SHADERS['CRT']:send('glitch_intensity', glitched_intensity or 0)
         G.SHADERS['CRT']:send('scanlines', G.CANVAS:getPixelHeight()*0.75/G.CANV_SCALE)
         G.SHADERS['CRT']:send('mouse_screen_pos', G.video_control and {love.graphics.getWidth( )/2, love.graphics.getHeight( )/2} or {G.ARGS.eased_cursor_pos.sx, G.ARGS.eased_cursor_pos.sy})
         G.SHADERS['CRT']:send('screen_scale', G.TILESCALE*G.TILESIZE)
@@ -3099,7 +3261,7 @@ function Game:update_selecting_hand(dt)
         end_round()
     end
 
-    if self.shop then self.shop:remove(); self.shop = nil end
+    if self.shop and not G.GAME.USING_CODE then self.shop:remove(); self.shop = nil end
     if not G.STATE_COMPLETE then
         G.STATE_COMPLETE = true
         if #G.hand.cards < 1 and #G.deck.cards < 1 then
@@ -3114,7 +3276,7 @@ end
 function Game:update_shop(dt)
     if not G.STATE_COMPLETE then
         stop_use()
-        ease_background_colour_blind(G.STATES.SHOP)
+        if not G.GAME.USING_RUN then ease_background_colour_blind(G.STATES.SHOP) end
         local shop_exists = not not G.shop
         G.shop = G.shop or UIBox{
             definition = G.UIDEF.shop(),
@@ -3122,6 +3284,7 @@ function Game:update_shop(dt)
         }
             G.E_MANAGER:add_event(Event({
                 func = function()
+                    if not G.shop then return true end
                     G.shop.alignment.offset.y = -5.3
                     G.shop.alignment.offset.x = 0
                     G.E_MANAGER:add_event(Event({
@@ -3164,17 +3327,36 @@ function Game:update_shop(dt)
                                         end
                                         G.load_shop_vouchers = nil
                                     else
-                                        if G.GAME.current_round.voucher and G.P_CENTERS[G.GAME.current_round.voucher] then
-                                            local card = Card(G.shop_vouchers.T.x + G.shop_vouchers.T.w/2,
-                                            G.shop_vouchers.T.y, G.CARD_W, G.CARD_H, G.P_CARDS.empty, G.P_CENTERS[G.GAME.current_round.voucher],{bypass_discovery_center = true, bypass_discovery_ui = true})
-                                            card.shop_voucher = true
-                                            create_shop_card_ui(card, 'Voucher', G.shop_vouchers)
-                                            card:start_materialize()
-                                            G.shop_vouchers:emplace(card)
+                                        local vouchers_to_spawn = 0
+                                        for _,_ in pairs(G.GAME.current_round.voucher.spawn) do vouchers_to_spawn = vouchers_to_spawn + 1 end
+                                        if vouchers_to_spawn < G.GAME.starting_params.vouchers_in_shop + (G.GAME.modifiers.extra_vouchers or 0) then
+                                            SMODS.get_next_vouchers(G.GAME.current_round.voucher)
+                                        end
+                                        for _, key in ipairs(G.GAME.current_round.voucher or {}) do
+                                            if G.P_CENTERS[key] and G.GAME.current_round.voucher.spawn[key] then
+                                                SMODS.add_voucher_to_shop(key)
+                                            end
                                         end
                                     end
                                     
 
+                                    if G.GAME.events.ev_cry_choco10 then
+                                        local add = true
+                                        for k, v in pairs(G.shop_vouchers.cards) do		-- G.load_shop_vouchers is already set to nil here, just do a normal check
+                                            if v.ability.cry_antique then add = false end
+                                        end
+                                        if add then
+                                            local card = create_card('Joker', G.jokers, true, nil, nil, nil, nil, 'cry_antique')
+                                            Cryptid.misprintize(card)
+                                            card.misprint_cost_fac = 50/card.cost
+                                            card:set_cost()
+                                            create_shop_card_ui(card, 'Voucher', G.shop_vouchers)
+                                            card:start_materialize()
+                                            card.ability.cry_antique = true
+                                            G.shop_vouchers.config.card_limit = G.shop_vouchers.config.card_limit + 1
+                                            G.shop_vouchers:emplace(card)
+                                        end
+                                    end
                                     if G.load_shop_booster then 
                                         nosave_shop = true
                                         G.shop_booster:load(G.load_shop_booster)
@@ -3184,7 +3366,7 @@ function Game:update_shop(dt)
                                         end
                                         G.load_shop_booster = nil
                                     else
-                                        for i = 1, 2 do
+                                        for i=1, G.GAME.starting_params.boosters_in_shop + (G.GAME.modifiers.extra_boosters or 0) do
                                             G.GAME.current_round.used_packs = G.GAME.current_round.used_packs or {}
                                             if not G.GAME.current_round.used_packs[i] then
                                                 G.GAME.current_round.used_packs[i] = get_pack('shop_pack').key
@@ -3192,8 +3374,16 @@ function Game:update_shop(dt)
 
                                             if G.GAME.current_round.used_packs[i] ~= 'USED' then 
                                                 local card = Card(G.shop_booster.T.x + G.shop_booster.T.w/2,
-                                                G.shop_booster.T.y, G.CARD_W*1.27, G.CARD_H*1.27, G.P_CARDS.empty, G.P_CENTERS[G.GAME.current_round.used_packs[i]], {bypass_discovery_center = true, bypass_discovery_ui = true})
+                                                G.shop_booster.T.y, G.CARD_W*(G.P_CENTERS[G.GAME.current_round.used_packs[i]].set == 'Booster' and 1.27 or 1), G.CARD_H*(G.P_CENTERS[G.GAME.current_round.used_packs[i]].set == 'Booster' and 1.27 or 1), G.P_CARDS.empty, G.P_CENTERS[G.GAME.current_round.used_packs[i]], {bypass_discovery_center = true, bypass_discovery_ui = true})
+                                                Cryptid.misprintize(card)
+                                                if G.GAME.modifiers.cry_enable_flipped_in_shop and pseudorandom('cry_flip_pack'..G.GAME.round_resets.ante) > 0.7 then
+                                                    card.cry_flipped = true
+                                                end
                                                 create_shop_card_ui(card, 'Booster', G.shop_booster)
+                                                local stickers = Cryptid.next_voucher_stickers(true)	-- don't mind the name
+                                                for k, v in pairs(stickers) do
+                                                	card.ability[k] = v
+                                                end
                                                 card.ability.booster_pos = i
                                                 card:start_materialize()
                                                 G.shop_booster:emplace(card)
@@ -3209,6 +3399,7 @@ function Game:update_shop(dt)
                                     end
                                 end
 
+                                if not nosave_shop then SMODS.calculate_context({starting_shop = true}) end
                                 G.CONTROLLER:snap_to({node = G.shop:get_UIE_by_ID('next_round_button')})
                                 if not nosave_shop then G.E_MANAGER:add_event(Event({ func = function() save_run(); return true end})) end
                                 return true
@@ -3227,15 +3418,17 @@ function Game:update_play_tarot(dt)
 end
 
 function Game:update_hand_played(dt)
+G.GAME.chips = (G.GAME.chips or 0)
+G.GAME.blind.chips = (G.GAME.blind.chips or math.huge)
     if self.buttons then self.buttons:remove(); self.buttons = nil end
-    if self.shop then self.shop:remove(); self.shop = nil end
+    if self.shop and not G.GAME.USING_CODE then self.shop:remove(); self.shop = nil end
 
     if not G.STATE_COMPLETE then
         G.STATE_COMPLETE = true
         G.E_MANAGER:add_event(Event({
             trigger = 'immediate',
             func = function()
-        if G.GAME.chips - G.GAME.blind.chips >= 0 or G.GAME.current_round.hands_left < 1 then
+        if to_big(G.GAME.chips) >= to_big(G.GAME.blind.chips) or G.GAME.current_round.hands_left < 1 then
             G.STATE = G.STATES.NEW_ROUND
         else
             G.STATE = G.STATES.DRAW_TO_HAND
@@ -3248,8 +3441,11 @@ function Game:update_hand_played(dt)
 end
 
 function Game:update_draw_to_hand(dt)
+if G.GAME.selected_back and (G.GAME.selected_back.name == 'cry--Negative Deck' or G.GAME.selected_back.name == 'cry-Antimatter') and G.hand.config.card_limit <= 0 then	-- 'cry--Negative Deck'... sure
+	G.hand.config.card_limit = 1
+end
     if self.buttons then self.buttons:remove(); self.buttons = nil end
-    if self.shop then self.shop:remove(); self.shop = nil end
+    if self.shop and not G.GAME.USING_CODE then self.shop:remove(); self.shop = nil end
 
     if not G.STATE_COMPLETE then
         G.STATE_COMPLETE = true
@@ -3284,7 +3480,7 @@ end
 
 function Game:update_new_round(dt)
     if self.buttons then self.buttons:remove(); self.buttons = nil end
-    if self.shop then self.shop:remove(); self.shop = nil end
+    if self.shop and not G.GAME.USING_CODE then self.shop:remove(); self.shop = nil end
 
     if not G.STATE_COMPLETE then
         G.STATE_COMPLETE = true
@@ -3294,7 +3490,7 @@ end
 
 function Game:update_blind_select(dt)
     if self.buttons then self.buttons:remove(); self.buttons = nil end
-    if self.shop then self.shop:remove(); self.shop = nil end
+    if self.shop and not G.GAME.USING_CODE then self.shop:remove(); self.shop = nil end
 
     if not G.STATE_COMPLETE then
         stop_use()
@@ -3338,7 +3534,7 @@ end
 
 function Game:update_round_eval(dt)
     if self.buttons then self.buttons:remove(); self.buttons = nil end
-    if self.shop then self.shop:remove(); self.shop = nil end
+    if self.shop and not G.GAME.USING_CODE then self.shop:remove(); self.shop = nil end
 
      if not G.STATE_COMPLETE and not G.MULTIPLAYER_GAME.prevent_eval then
         G.MULTIPLAYER_GAME.prevent_eval = true
@@ -3350,6 +3546,7 @@ function Game:update_round_eval(dt)
                 G.GAME.facing_blind = nil
                 save_run()
                 ease_background_colour_blind(G.STATES.ROUND_EVAL)
+                if G.GAME.events.ev_cry_choco6 and G.round_eval then return true end
                 G.round_eval = UIBox{
                     definition = create_UIBox_round_evaluation(),
                     config = {align="bm", offset = {x=0,y=G.ROOM.T.y + 19},major = G.hand, bond = 'Weak'}

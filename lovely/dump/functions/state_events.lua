@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'df13d1fd284c2949e92cea87bc66ba11ecaf53aeeb102200a5ad7059daa4303a'
+LOVELY_INTEGRITY = '87d59687895ceac346cb41a14edf67c8165d9b92a865ec3102b3ceb9bd2e1d0d'
 
 function win_game()
     if (not G.GAME.seeded and not G.GAME.challenge) or SMODS.config.seeded_unlocks then
@@ -96,7 +96,10 @@ function end_round()
         local game_won = false
         G.RESET_BLIND_STATES = true
         G.RESET_JIGGLES = true
-            if G.GAME.chips - G.GAME.blind.chips >= 0 then
+        if G.GAME.current_round.semicolon then
+            game_over = false
+        end
+            if to_big(G.GAME.chips) >= to_big(G.GAME.blind.chips) then
                 game_over = false
             end
             -- context.end_of_round calculations
@@ -104,7 +107,12 @@ function end_round()
             SMODS.calculate_context({end_of_round = true, game_over = game_over })
             if SMODS.saved then game_over = false end
             -- TARGET: main end_of_round evaluation
-            if G.GAME.round_resets.ante == G.GAME.win_ante and G.GAME.blind:get_type() == 'Boss' then
+            local i = 1
+            while i <= #G.jokers.cards do
+                local gone = G.jokers.cards[i]:calculate_banana()
+                if not gone then i = i + 1 end
+            end
+            if G.GAME.round_resets.ante >= G.GAME.win_ante and G.GAME.blind_on_deck == 'Boss' then
                 game_won = true
                 G.GAME.won = true
             end
@@ -122,7 +130,7 @@ function end_round()
                     discover_card(G.GAME.blind.config.blind)
                 end
 
-                if G.GAME.blind:get_type() == 'Boss' then
+                if G.GAME.blind_on_deck == 'Boss' then
                     local _handname, _played, _order = 'High Card', -1, 100
                     for k, v in pairs(G.GAME.hands) do
                         if v.played > _played or (v.played == _played and _order > v.order) then 
@@ -170,8 +178,38 @@ function end_round()
 
 
 
+                local i = 1
+                while i <= #G.hand.cards do
+                    local gone = G.hand.cards[i]:calculate_banana()
+                    if not gone then i = i + 1 end
+                end
+                for i = 1, #G.discard.cards do
+                    G.discard.cards[i]:calculate_perishable()
+                end
+                i = 1
+                while i <= #G.deck.cards do
+                    G.deck.cards[i]:calculate_perishable()
+                    local gone = G.deck.cards[i]:calculate_banana()
+                    if not gone then i = i + 1 end
+                end
+                if G.GAME.used_vouchers.v_cry_double_down then
+                    local function update_dbl(area)
+                        for i = 1, #area.cards do
+                            if area.cards[i].dbl_side then
+                                --tweak to do deck effects with on the flip side
+                                Cryptid.misprintize(area.cards[i].dbl_side, {min = 1.5, max = 1.5}, nil, true)
+                                card_eval_status_text(area.cards[i], "extra", nil, nil, nil, { message = localize("k_upgrade_ex") })
+                            end
+                        end
+                    end
+                    update_dbl(G.jokers)
+                    update_dbl(G.consumeables)
+                    update_dbl(G.hand)
+                    update_dbl(G.discard)
+                    update_dbl(G.deck)
+                end
                 G.FUNCS.draw_from_hand_to_discard()
-                if G.GAME.blind:get_type() == 'Boss' then
+                if G.GAME.blind_on_deck == 'Boss' then
                     G.GAME.voucher_restock = nil
                     if G.GAME.modifiers.set_eternal_ante and (G.GAME.round_resets.ante == G.GAME.modifiers.set_eternal_ante) then 
                         for k, v in ipairs(G.jokers.cards) do
@@ -181,7 +219,7 @@ function end_round()
                     if G.GAME.modifiers.set_joker_slots_ante and (G.GAME.round_resets.ante == G.GAME.modifiers.set_joker_slots_ante) then 
                         G.jokers.config.card_limit = 0
                     end
-                    delay(0.4); ease_ante(1); delay(0.4); check_for_unlock({type = 'ante_up', ante = G.GAME.round_resets.ante + 1})
+                    delay(0.4); ease_ante(G.GAME.blind and G.GAME.blind:cry_calc_ante_gain() or 1); Cryptid.apply_ante_tax(); delay(0.4); check_for_unlock({type = 'ante_up', ante = G.GAME.round_resets.ante + 1})
                 end
                 G.FUNCS.draw_from_discard_to_deck()
                 G.E_MANAGER:add_event(Event({
@@ -191,12 +229,15 @@ function end_round()
                         G.STATE = G.STATES.ROUND_EVAL
                         G.STATE_COMPLETE = false
 
-                        if G.GAME.round_resets.blind == G.P_BLINDS.bl_small then
+                        if G.GAME.blind_on_deck == 'Small' then
                             G.GAME.round_resets.blind_states.Small = 'Defeated'
-                        elseif G.GAME.round_resets.blind == G.P_BLINDS.bl_big then
+                        elseif G.GAME.blind_on_deck == 'Big' then
                             G.GAME.round_resets.blind_states.Big = 'Defeated'
                         else
-                            G.GAME.current_round.voucher = get_next_voucher_key()
+                            G.GAME.current_round.voucher = SMODS.get_next_vouchers()
+                            if G.GAME.modifiers.cry_no_vouchers then
+                                very_fair_quip = pseudorandom_element(G.localization.misc.very_fair_quips, pseudoseed("cry_very_fair"))
+                            end
                             G.GAME.round_resets.blind_states.Boss = 'Defeated'
                             for k, v in ipairs(G.playing_cards) do
                                 v.ability.played_this_ante = nil
@@ -205,11 +246,19 @@ function end_round()
 
                         if G.GAME.round_resets.temp_handsize then G.hand:change_size(-G.GAME.round_resets.temp_handsize); G.GAME.round_resets.temp_handsize = nil end
                         if G.GAME.round_resets.temp_reroll_cost then G.GAME.round_resets.temp_reroll_cost = nil; calculate_reroll_cost(true) end
+                        for _, v in pairs(find_joker("cry-loopy")) do
+                        	if v.ability.extra.retrigger ~= 0 then
+                        		v.ability.extra.retrigger = 0
+                        		card_eval_status_text(v, 'extra', nil, nil, nil, {message = localize("k_reset"), colour = G.C.GREEN})
+                        	end
+                        end
+                        SMODS.calculate_context{end_of_round2 = true}
 
                         reset_idol_card()
                         reset_mail_rank()
                         reset_ancient_card()
-                        reset_castle_card()                        for _, mod in ipairs(SMODS.mod_list) do
+                        reset_castle_card()                        
+                        for _, mod in ipairs(SMODS.mod_list) do
                         	if mod.reset_game_globals and type(mod.reset_game_globals) == 'function' then
                         		mod.reset_game_globals(false)
                         	end
@@ -237,6 +286,7 @@ function new_round()
             G.GAME.current_round.hands_left = (math.max(1, G.GAME.round_resets.hands + G.GAME.round_bonus.next_hands))
             G.GAME.current_round.hands_played = 0
             G.GAME.current_round.discards_used = 0
+            G.GAME.current_round.any_hand_drawn = nil
             G.GAME.current_round.reroll_cost_increase = 0
             G.GAME.current_round.used_packs = {}
 
@@ -248,19 +298,18 @@ function new_round()
                 v.ability.wheel_flipped = nil
             end
 
-            local chaos = find_joker('Chaos the Clown')
-            G.GAME.current_round.free_rerolls = #chaos
+            G.GAME.current_round.free_rerolls = G.GAME.round_resets.free_rerolls
             calculate_reroll_cost(true)
 
             G.GAME.round_bonus.next_hands = 0
             G.GAME.round_bonus.discards = 0
 
             local blhash = ''
-            if G.GAME.round_resets.blind == G.P_BLINDS.bl_small then
+            if G.GAME.blind_on_deck == 'Small' then
                 G.GAME.round_resets.blind_states.Small = 'Current'
                 G.GAME.current_boss_streak = 0
                 blhash = 'S'
-            elseif G.GAME.round_resets.blind == G.P_BLINDS.bl_big then
+            elseif G.GAME.blind_on_deck == 'Big' then
                 G.GAME.round_resets.blind_states.Big = 'Current'
                 G.GAME.current_boss_streak = 0
                 blhash = 'B'
@@ -271,6 +320,38 @@ function new_round()
             G.GAME.subhash = (G.GAME.round_resets.ante)..(blhash)
 
             G.GAME.blind:set_blind(G.GAME.round_resets.blind)
+            if G.GAME.modifiers.cry_card_each_round then
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        local front = pseudorandom_element(G.P_CARDS, pseudoseed('cry_horizon'))
+                        G.playing_card = (G.playing_card and G.playing_card + 1) or 1
+                        local edition = G.P_CENTERS.c_base
+                        local card = Card(G.play.T.x + G.play.T.w/2, G.play.T.y, G.CARD_W, G.CARD_H, front, G.P_CENTERS.c_base, {playing_card = G.playing_card})
+                        card:start_materialize()
+                        if G.GAME.selected_back.effect.config.cry_force_edition and G.GAME.selected_back.effect.config.cry_force_edition ~= "random" then
+                            local edition = {}
+                            edition[G.GAME.selected_back.effect.config.cry_force_edition] = true
+                            card:set_edition(edition, true, true);
+                        end
+                        G.play:emplace(card)
+                        table.insert(G.playing_cards, card)
+                        playing_card_joker_effects({true})
+                        return true
+                    end}))
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        G.deck.config.card_limit = G.deck.config.card_limit + 1
+                        return true
+                    end}))
+                draw_card(G.play,G.deck, 90,'up', nil)
+            end
+            if G.GAME.modifiers.cry_conveyor and #G.jokers.cards>0 then
+                local duplicated_joker = copy_card(G.jokers.cards[#G.jokers.cards])
+                duplicated_joker:add_to_deck()
+                G.jokers:emplace(duplicated_joker)
+                G.jokers.cards[1]:start_dissolve()
+            end
+            G.GAME.current_round.semicolon = false
             
             SMODS.calculate_context({setting_blind = true, blind = G.GAME.round_resets.blind})
             
@@ -283,6 +364,7 @@ function new_round()
                     G.STATE = G.STATES.DRAW_TO_HAND
                     G.deck:shuffle('nr'..G.GAME.round_resets.ante)
                     G.deck:hard_set_T()
+if G.SCORING_COROUTINE then return false end 
                     G.STATE_COMPLETE = false
                     return true
                 end
@@ -292,6 +374,12 @@ function new_round()
         }))
 end
 
+G.FUNCS.draw_from_hand_to_run = function(e)
+	local hand_count = #G.hand.cards
+	for i=1, hand_count do --draw cards from deck
+		draw_card(G.hand, G.cry_runarea, i*100/hand_count,'down', nil, nil,  0.08)
+	end
+end
 G.FUNCS.draw_from_deck_to_hand = function(e)
     if not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED) and
         G.hand.config.card_limit <= 0 and #G.hand.cards == 0 then 
@@ -305,11 +393,14 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
         local n = 0
         while n < #G.deck.cards do
             local card = G.deck.cards[#G.deck.cards-n]
-            limit = limit - 1 + (card.edition and card.edition.card_limit or 0)
+            limit = limit - 1 + (not card.debuff and card.edition and card.edition.card_limit or 0)
             if limit < 0 then break end
             n = n + 1
         end
         hand_space = n
+    end
+    if G.GAME.modifiers.cry_forced_draw_amount and (G.GAME.current_round.hands_played > 0 or G.GAME.current_round.discards_used > 0) then
+    	hand_space = math.min(#G.deck.cards, G.GAME.modifiers.cry_forced_draw_amount)
     end
     if G.GAME.blind.name == 'The Serpent' and
         not G.GAME.blind.disabled and
@@ -319,6 +410,7 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
     end
     delay(0.3)
     SMODS.drawn_cards = {}
+    if not G.GAME.USING_RUN then
     for i=1, hand_space do --draw cards from deckL
         if G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK then 
             draw_card(G.deck,G.hand, i*100/hand_space,'up', true)
@@ -331,14 +423,20 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
         delay = 0.4,
         func = function()
             if #SMODS.drawn_cards > 0 then
-                SMODS.calculate_context({first_hand_drawn = G.GAME.facing_blind and G.GAME.current_round.hands_played == 0 and G.GAME.current_round.discards_used == 0,
+                SMODS.calculate_context({first_hand_drawn = not G.GAME.current_round.any_hand_drawn and G.GAME.facing_blind,
                                         hand_drawn = G.GAME.facing_blind and SMODS.drawn_cards,
                                         other_drawn = not G.GAME.facing_blind and SMODS.drawn_cards})
                 SMODS.drawn_cards = {}
-            end         
+                if G.GAME.facing_blind then G.GAME.current_round.any_hand_drawn = true end
+            end
             return true
         end
     }))
+else
+	for i = 1, #G.cry_runarea.cards do
+		draw_card(G.cry_runarea,G.hand, i*100/#G.cry_runarea.cards,'up', true)
+	end
+end
 end
 
 G.FUNCS.discard_cards_from_highlighted = function(e, hook)
@@ -407,6 +505,7 @@ G.FUNCS.discard_cards_from_highlighted = function(e, hook)
             G.E_MANAGER:add_event(Event({
                 trigger = 'immediate',
                 func = function()
+if G.SCORING_COROUTINE then return false end 
                     G.STATE_COMPLETE = false
                     return true
                 end
@@ -484,6 +583,7 @@ G.FUNCS.play_cards_from_highlighted = function(e)
                     trigger = 'after',
                     delay = 0.1,
                     func = function()
+                        if G.SCORING_COROUTINE then return false end 
                         check_for_unlock({type = 'play_all_hearts'})
                         G.FUNCS.draw_from_play_to_discard()
                         G.GAME.hands_played = G.GAME.hands_played + 1
@@ -494,6 +594,7 @@ G.FUNCS.play_cards_from_highlighted = function(e)
                 G.E_MANAGER:add_event(Event({
                     trigger = 'immediate',
                     func = function()
+if G.SCORING_COROUTINE then return false end 
                         G.STATE_COMPLETE = false
                         return true
                     end
@@ -538,6 +639,9 @@ G.FUNCS.evaluate_play = function(e)
     local text,disp_text,poker_hands,scoring_hand,non_loc_disp_text = G.FUNCS.get_poker_hand_info(G.play.cards)
     
     G.GAME.hands[text].played = G.GAME.hands[text].played + 1
+    if G.GAME.current_round.current_hand.cry_asc_num > (G.GAME.cry_exploit_override and 1 or 0) then
+    	G.GAME.cry_asc_played = G.GAME.cry_asc_played and G.GAME.cry_asc_played+1 or 1
+    end
     G.GAME.hands[text].played_this_round = G.GAME.hands[text].played_this_round + 1
     G.GAME.last_hand_played = text
     set_hand_usage(text)
@@ -567,12 +671,6 @@ G.FUNCS.evaluate_play = function(e)
     end
     -- TARGET: adding to hand effects
     scoring_hand = final_scoring_hand
-    local unscored_cards = {}
-    if SMODS.optional_features.cardareas.unscored then
-        for _, played_card in pairs(G.play.cards) do
-            if not SMODS.in_scoring(played_card, scoring_hand) then unscored_cards[#unscored_cards + 1] = played_card end
-        end
-    end
     delay(0.2)
     for i=1, #scoring_hand do
         --Highlight all the cards used in scoring and play a sound indicating highlight
@@ -584,11 +682,11 @@ G.FUNCS.evaluate_play = function(e)
 
     if G.GAME.current_round.current_hand.handname ~= disp_text then delay(0.3) end
     update_hand_text({sound = G.GAME.current_round.current_hand.handname ~= disp_text and 'button' or nil, volume = 0.4, immediate = true, nopulse = nil,
-                delay = G.GAME.current_round.current_hand.handname ~= disp_text and 0.4 or 0}, {handname=disp_text, level=G.GAME.hands[text].level, mult = G.GAME.hands[text].mult, chips = G.GAME.hands[text].chips})
+                                delay = G.GAME.current_round.current_hand.handname ~= disp_text and 0.4 or 0}, {handname=disp_text, level=G.GAME.hands[text].level, mult = Cryptid.ascend(G.GAME.hands[text].mult), chips = Cryptid.ascend(G.GAME.hands[text].chips)})
 
     if not G.GAME.blind:debuff_hand(G.play.cards, poker_hands, text) then
-        mult = mod_mult(G.GAME.hands[text].mult)
-        hand_chips = mod_chips(G.GAME.hands[text].chips)
+                mult = mod_mult(Cryptid.ascend(G.GAME.hands[text].mult))
+                hand_chips = mod_chips(Cryptid.ascend(G.GAME.hands[text].chips))
 
         check_for_unlock({type = 'hand', handname = text, disp_text = non_loc_disp_text, scoring_hand = scoring_hand, full_hand = G.play.cards})
 
@@ -605,8 +703,8 @@ G.FUNCS.evaluate_play = function(e)
         
         -- TARGET: effects before scoring starts
 
-        mult = mod_mult(G.GAME.hands[text].mult)
-        hand_chips = mod_chips(G.GAME.hands[text].chips)
+                mult = mod_mult(Cryptid.ascend(G.GAME.hands[text].mult))
+                hand_chips = mod_chips(Cryptid.ascend(G.GAME.hands[text].chips))
 
         local modded = false
 
@@ -615,7 +713,7 @@ G.FUNCS.evaluate_play = function(e)
         if modded then update_hand_text({sound = 'chips2', modded = modded}, {chips = hand_chips, mult = mult}) end
         delay(0.3)
         for _, v in ipairs(SMODS.get_card_areas('playing_cards')) do
-            SMODS.calculate_main_scoring({cardarea = v, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands}, v == G.play and scoring_hand or v == 'unscored' and unscored_cards or nil)
+            SMODS.calculate_main_scoring({cardarea = v, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands}, v == G.play and scoring_hand or nil)
             delay(0.3)
         end
         --+++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
@@ -661,7 +759,7 @@ G.FUNCS.evaluate_play = function(e)
                         for _, v in ipairs(post) do effects[#effects+1] = v end
                         if joker_eval.retriggers then
                             for rt = 1, #joker_eval.retriggers do
-                                local rt_eval, rt_post = eval_card(_card, {full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, [other_key] = _card, retrigger_joker = true})
+                                local rt_eval, rt_post = eval_card(_joker, {full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, [other_key] = _card, retrigger_joker = true})
                                 table.insert(effects, {joker_eval.retriggers[rt]})
                                 table.insert(effects, rt_eval)
                                 for _, v in ipairs(rt_post) do effects[#effects+1] = v end
@@ -690,7 +788,7 @@ G.FUNCS.evaluate_play = function(e)
 
         local cards_destroyed = {}
         for _,v in ipairs(SMODS.get_card_areas('playing_cards', 'destroying_cards')) do
-            SMODS.calculate_destroying_cards({ full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, cardarea = v }, cards_destroyed, v == G.play and scoring_hand or v == 'unscored' and unscored_cards or nil)
+            SMODS.calculate_destroying_cards({ full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, cardarea = v }, cards_destroyed, v == G.play and scoring_hand or nil)
         end
         
         -- context.remove_playing_cards calculations
@@ -746,13 +844,17 @@ G.FUNCS.evaluate_play = function(e)
     end
     G.E_MANAGER:add_event(Event({
         trigger = 'after',delay = 0.4,
-        func = (function()  update_hand_text({delay = 0, immediate = true}, {mult = 0, chips = 0, chip_total = math.floor(hand_chips*mult), level = '', handname = ''});play_sound('button', 0.9, 0.6);return true end)
+        func = (function()  update_hand_text({delay = 0, immediate = true}, {mult = 0, chips = 0, chip_total = G.GAME.blind.cry_cap_score and G.GAME.blind:cry_cap_score(math.floor(hand_chips*mult)) or math.floor(hand_chips*mult), level = '', handname = ''});play_sound('button', 0.9, 0.6);return true end)
       }))
+          G.E_MANAGER:add_event(Event({
+            trigger = 'immediate',
+            func = (function() G.GAME.current_round.current_hand.cry_asc_num = 0;G.GAME.current_round.current_hand.cry_asc_num_text = '';return true end)
+          }))
       check_and_set_high_score('hand', hand_chips*mult)
 
       check_for_unlock({type = 'chip_score', chips = math.floor(hand_chips*mult)})
    
-    if hand_chips*mult > 0 then 
+    if to_big(hand_chips)*mult > to_big(0) then
         delay(0.8)
         G.E_MANAGER:add_event(Event({
         trigger = 'immediate',
@@ -764,7 +866,7 @@ G.FUNCS.evaluate_play = function(e)
       blocking = false,
       ref_table = G.GAME,
       ref_value = 'chips',
-      ease_to = G.GAME.chips + math.floor(hand_chips*mult),
+      ease_to = G.GAME.chips + (G.GAME.blind.cry_cap_score and G.GAME.blind:cry_cap_score(math.floor(hand_chips*mult)) or math.floor(hand_chips*mult)),
       delay =  0.5,
       func = (function(t) return math.floor(t) end)
     }))
@@ -787,6 +889,12 @@ G.FUNCS.evaluate_play = function(e)
     SMODS.calculate_context({full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, after = true})
     
     -- TARGET: effects after hand evaluation
+    G.E_MANAGER:add_event(Event({
+    	func = function()
+    		G.GAME.cry_exploit_override = nil
+    		return true
+    	end
+    }))
 
     G.E_MANAGER:add_event(Event({
         trigger = 'immediate',
@@ -851,7 +959,7 @@ G.FUNCS.evaluate_round = function()
     local pitch = 0.95
     local dollars = 0
 
-    if G.GAME.chips - G.GAME.blind.chips >= 0 then
+    if to_big(G.GAME.chips) >= to_big(G.GAME.blind.chips) then
         add_round_eval_row({dollars = G.GAME.blind.dollars, name='blind1', pitch = pitch})
         pitch = pitch + 0.06
         dollars = dollars + G.GAME.blind.dollars
@@ -909,7 +1017,20 @@ G.FUNCS.evaluate_round = function()
             dollars = dollars + ret.dollars
         end
     end
-    if G.GAME.dollars >= 5 and not G.GAME.modifiers.no_interest then
+    if to_big(G.GAME.dollars) >= to_big(5) and not G.GAME.modifiers.no_interest and G.GAME.cry_payload then
+        add_round_eval_row({bonus = true, payload = G.GAME.cry_payload, name='interest_payload', pitch = pitch, dollars = G.GAME.interest_amount*G.GAME.cry_payload*math.min(math.floor(G.GAME.dollars/5), G.GAME.interest_cap/5)})
+        pitch = pitch + 0.06
+        if not G.GAME.seeded and not G.GAME.challenge then
+            if G.GAME.interest_amount*math.min(math.floor(G.GAME.dollars/5), G.GAME.interest_cap/5) == G.GAME.interest_amount*G.GAME.interest_cap/5 then
+                G.PROFILES[G.SETTINGS.profile].career_stats.c_round_interest_cap_streak = G.PROFILES[G.SETTINGS.profile].career_stats.c_round_interest_cap_streak + 1
+            else
+                G.PROFILES[G.SETTINGS.profile].career_stats.c_round_interest_cap_streak = 0
+            end
+        end
+        check_for_unlock({type = 'interest_streak'})
+        dollars = dollars + G.GAME.interest_amount*G.GAME.cry_payload*math.min(math.floor(G.GAME.dollars/5), G.GAME.interest_cap/5)
+        G.GAME.cry_payload = nil
+    elseif to_big(G.GAME.dollars) >= to_big(5) and not G.GAME.modifiers.no_interest then
         add_round_eval_row({bonus = true, name='interest', pitch = pitch, dollars = G.GAME.interest_amount*math.min(math.floor(G.GAME.dollars/5), G.GAME.interest_cap/5)})
         pitch = pitch + 0.06
         if (not G.GAME.seeded and not G.GAME.challenge) or SMODS.config.seeded_unlocks then
@@ -956,6 +1077,7 @@ G.FUNCS.evaluate_round = function()
         }))
     end
     add_round_eval_row({name = 'bottom', dollars = dollars})
+    Talisman.dollars = dollars
 end
 
 G.FUNCS.tutorial_controller = function()

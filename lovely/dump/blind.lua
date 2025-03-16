@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '33f240e1343c2c8dfe6d9ab49cc52c558e1094d77bc082ffe7c65374c91de27c'
+LOVELY_INTEGRITY = '23945b73643b7134f9931e4b6932d8f2b2779f89a84ef2018650a8d6245a9b85'
 
 --class
 Blind = Moveable:extend()
@@ -84,9 +84,6 @@ end
 
 function Blind:set_blind(blind, reset, silent)
     if not reset then
-        if blind then
-            self.in_blind = true
-        end
         self.config.blind = blind or {}
         self.name = blind and blind.name or ''
         self.dollars = blind and blind.dollars or 0
@@ -166,7 +163,13 @@ function Blind:set_blind(blind, reset, silent)
         self.config.h_popup_config ={align="tm", offset = {x=0,y=-0.1},parent = self}
     end
 
-    if self.name == 'The Eye' and not reset then
+    if blind then
+        self.in_blind = true
+    end
+    local obj = self.config.blind
+    if not reset and obj.set_blind and type(obj.set_blind) == 'function' then
+        obj:set_blind()
+    elseif self.name == 'The Eye' and not reset then
         self.hands = {
             ["Flush Five"] = false,
             ["Flush House"] = false,
@@ -181,25 +184,19 @@ function Blind:set_blind(blind, reset, silent)
             ["Pair"] = false,
             ["High Card"] = false,
         }
-    end
-    if self.name == 'The Mouth' and not reset then
+    elseif self.name == 'The Mouth' and not reset then
         self.only_hand = false
-    end
-    if self.name == 'The Fish' and not reset then 
+    elseif self.name == 'The Fish' and not reset then 
         self.prepped = nil
-    end
-    if self.name == 'The Water' and not reset then 
+    elseif self.name == 'The Water' and not reset then 
         self.discards_sub = G.GAME.current_round.discards_left
         ease_discard(-self.discards_sub)
-    end
-    if self.name == 'The Needle' and not reset then 
+    elseif self.name == 'The Needle' and not reset then 
         self.hands_sub = G.GAME.round_resets.hands - 1
         ease_hands_played(-self.hands_sub)
-    end
-    if self.name == 'The Manacle' and not reset then
+    elseif self.name == 'The Manacle' and not reset then
         G.hand:change_size(-1)
-    end
-    if self.name == 'Amber Acorn' and not reset and #G.jokers.cards > 0 then
+    elseif self.name == 'Amber Acorn' and not reset and #G.jokers.cards > 0 then
         G.jokers:unhighlight_all()
         for k, v in ipairs(G.jokers.cards) do
             v:flip()
@@ -216,15 +213,6 @@ function Blind:set_blind(blind, reset, silent)
         end
     end
 
-    if not reset then
-        if blind then
-            self.in_blind = true
-        end
-        local obj = self.config.blind
-        if obj.set_blind and type(obj.set_blind) == 'function' then
-            obj:set_blind()
-        end
-    end
     --add new debuffs
     for _, v in ipairs(G.playing_cards) do
         self:debuff_card(v)
@@ -366,13 +354,11 @@ function Blind:defeat(silent)
     local obj = self.config.blind
     if obj.defeat and type(obj.defeat) == 'function' then
         obj:defeat()
-    end
-    if self.name == 'Crimson Heart' then
+    elseif self.name == 'Crimson Heart' then
         for _, v in ipairs(G.jokers.cards) do
             v.ability.crimson_heart_chosen = nil
         end
-    end
-    if self.name == 'The Manacle' and not self.disabled then
+    elseif self.name == 'The Manacle' and not self.disabled then
         G.hand:change_size(1)
     end
 end
@@ -395,16 +381,13 @@ function Blind:disable()
     local obj = self.config.blind
     if obj.disable and type(obj.disable) == 'function' then
         obj:disable()
-    end
-    if self.name == 'Crimson Heart' then
+    elseif self.name == 'Crimson Heart' then
         for _, v in ipairs(G.jokers.cards) do
             v.ability.crimson_heart_chosen = nil
         end
-    end
-    if self.name == 'The Water' then 
+    elseif self.name == 'The Water' then 
         ease_discard(self.discards_sub)
-    end
-    if self.name == 'The Wheel' or self.name == 'The House' or self.name == 'The Mark' or self.name == 'The Fish' then 
+    elseif self.name == 'The Wheel' or self.name == 'The House' or self.name == 'The Mark' or self.name == 'The Fish' then 
         for i = 1, #G.hand.cards do
             if G.hand.cards[i].facing == 'back' then
                 G.hand.cards[i]:flip()
@@ -413,32 +396,26 @@ function Blind:disable()
         for k, v in pairs(G.playing_cards) do
             v.ability.wheel_flipped = nil
         end
-    end
-    if self.name == 'The Needle' then 
+    elseif self.name == 'The Needle' then 
         ease_hands_played(self.hands_sub)
-    end
-    if self.name == 'The Wall' then 
+    elseif self.name == 'The Wall' then 
         self.chips = self.chips/2
         self.chip_text = number_format(self.chips)
-    end
-    if self.name == 'Cerulean Bell' then 
+    elseif self.name == 'Cerulean Bell' then 
         for k, v in ipairs(G.playing_cards) do
             v.ability.forced_selection = nil
         end
-    end
-    if self.name == 'The Manacle' then 
+    elseif self.name == 'The Manacle' then 
         G.hand:change_size(1)
-    end
-    if self.name == 'The Serpent' then
-    end
-    if self.name == 'Violet Vessel' then 
+    elseif self.name == 'The Serpent' then
+    elseif self.name == 'Violet Vessel' then 
         self.chips = self.chips/3
         self.chip_text = number_format(self.chips)
     end
     G.E_MANAGER:add_event(Event({
         trigger = 'immediate',
         func = function()
-        if self.boss and G.GAME.chips - G.GAME.blind.chips >= 0 then
+        if self.boss and to_big(G.GAME.chips) - G.GAME.blind.chips >= to_big(0) then
             G.STATE = G.STATES.NEW_ROUND
             G.STATE_COMPLETE = false
         end
@@ -507,8 +484,7 @@ function Blind:press_play()
     local obj = self.config.blind
     if obj.press_play and type(obj.press_play) == 'function' then
         return obj:press_play()
-    end
-    if self.name == "The Hook" then
+    elseif self.name == 'The Hook' then
         G.E_MANAGER:add_event(Event({ func = function()
             local any_selected = nil
             local _cards = {}
@@ -529,17 +505,14 @@ function Blind:press_play()
         self.triggered = true
         delay(0.7)
         return true
-    end
-    if self.name == 'Crimson Heart' then 
+    elseif self.name == 'Crimson Heart' then 
         if G.jokers.cards[1] then
             self.triggered = true
             self.prepped = true
         end
-    end
-    if self.name == 'The Fish' then
+    elseif self.name == 'The Fish' then
         self.prepped = true
-    end
-    if self.name == "The Tooth" then
+    elseif self.name == 'The Tooth' then
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
         for i = 1, #G.play.cards do
             G.E_MANAGER:add_event(Event({func = function() G.play.cards[i]:juice_up(); return true end })) 
@@ -557,8 +530,7 @@ function Blind:modify_hand(cards, poker_hands, text, mult, hand_chips)
     local obj = self.config.blind
     if obj.modify_hand and type(obj.modify_hand) == 'function' then
         return obj:modify_hand(cards, poker_hands, text, mult, hand_chips)
-    end
-    if self.name == "The Flint" then
+    elseif self.name == 'The Flint' then
         self.triggered = true
         return math.max(math.floor(mult*0.5 + 0.5), 1), math.max(math.floor(hand_chips*0.5 + 0.5), 0), true
     end
@@ -577,6 +549,10 @@ function Blind:debuff_hand(cards, hand, handname, check)
             self.triggered = true
             return true
         end
+        	if self.name == "The Psychic" and #cards > 5 then
+        		self.triggered = true
+             		return true
+        	end
         if self.debuff.h_size_ge and #cards < self.debuff.h_size_ge then
             self.triggered = true
             return true
@@ -585,14 +561,13 @@ function Blind:debuff_hand(cards, hand, handname, check)
             self.triggered = true
             return true
         end
-        if self.name == "The Eye" then
+        if self.name == 'The Eye' then
             if self.hands[handname] then
                 self.triggered = true
                 return true
             end
             if not check then self.hands[handname] = true end
-        end
-        if self.name == "The Mouth" then
+        elseif self.name == 'The Mouth' then
             if self.only_hand and self.only_hand ~= handname then
                 self.triggered = true
                 return true
@@ -602,15 +577,14 @@ function Blind:debuff_hand(cards, hand, handname, check)
     end
     if self.name == 'The Arm' then 
         self.triggered = false
-        if G.GAME.hands[handname].level > 1 then
+        if to_big(G.GAME.hands[handname].level) > to_big(1) then
             self.triggered = true
             if not check then
                 level_up_hand(self.children.animatedSprite, handname, nil, -1)
                 self:wiggle()
             end
         end 
-    end
-    if self.name == 'The Ox' then 
+    elseif self.name == 'The Ox' then 
         self.triggered = false
         if handname == G.GAME.current_round.most_played_poker_hand then
             self.triggered = true
@@ -627,7 +601,7 @@ function Blind:drawn_to_hand()
         local obj = self.config.blind
         if obj.drawn_to_hand and type(obj.drawn_to_hand) == 'function' then
             obj:drawn_to_hand()
-        end        if self.name == 'Cerulean Bell' then
+        elseif self.name == 'Cerulean Bell' then
             local any_forced = nil
             for k, v in ipairs(G.hand.cards) do
                 if v.ability.forced_selection then
@@ -640,8 +614,7 @@ function Blind:drawn_to_hand()
                 forced_card.ability.forced_selection = true
                 G.hand:add_to_highlighted(forced_card)
             end
-        end
-        if self.name == 'Crimson Heart' and self.prepped and G.jokers.cards[1] then
+        elseif self.name == 'Crimson Heart' and self.prepped and G.jokers.cards[1] then
             local prev_chosen_set = {}
             local fallback_jokers = {}
             local jokers = {}
@@ -682,14 +655,11 @@ function Blind:stay_flipped(area, card)
         if area == G.hand then
             if self.name == 'The Wheel' and pseudorandom(pseudoseed('wheel')) < G.GAME.probabilities.normal/7 then
                 return true
-            end
-            if self.name == 'The House' and G.GAME.current_round.hands_played == 0 and G.GAME.current_round.discards_used == 0 then
+            elseif self.name == 'The House' and G.GAME.current_round.hands_played == 0 and G.GAME.current_round.discards_used == 0 then
                 return true
-            end
-            if self.name == 'The Mark' and card:is_face(true) then
+            elseif self.name == 'The Mark' and card:is_face(true) then
                 return true
-            end
-            if self.name == 'The Fish' and self.prepped then 
+            elseif self.name == 'The Fish' and self.prepped then 
                 return true
             end
         end
@@ -699,7 +669,7 @@ end
 function Blind:debuff_card(card, from_blind)
     local obj = self.config.blind
     if not self.disabled and obj.recalc_debuff and type(obj.recalc_debuff) == 'function' then
-        if obj:recalc_debuff(card, from_blind) then 
+        if obj:recalc_debuff(card, from_blind) then
             card:set_debuff(true)
             if card.debuff then card.debuffed_by_blind = true end
         else
@@ -707,8 +677,8 @@ function Blind:debuff_card(card, from_blind)
         end
         return
     elseif not self.disabled and obj.debuff_card and type(obj.debuff_card) == 'function' then
-        sendWarnMessage(("Blind object %s has debuff_card function, recalc_debuff is preferred"):format(obj.key), obj.set)
-        if obj:debuff_card(card, from_blind) then 
+        -- sendWarnMessage(("Blind object %s has debuff_card function, recalc_debuff is preferred"):format(obj.key), obj.set)
+        if obj:debuff_card(card, from_blind) then
             card:set_debuff(true)
             if card.debuff then card.debuffed_by_blind = true end
         else
@@ -749,8 +719,7 @@ function Blind:debuff_card(card, from_blind)
             if card.debuff then card.debuffed_by_blind = true end
             return
         end
-    end
-    if self.name == 'Verdant Leaf' and not self.disabled and card.area ~= G.jokers then card:set_debuff(true); if card.debuff then card.debuffed_by_blind = true end; return end
+    elseif self.name == 'Verdant Leaf' and not self.disabled and card.area ~= G.jokers then card:set_debuff(true); if card.debuff then card.debuffed_by_blind = true end; return end
     card:set_debuff(false)
 end
 

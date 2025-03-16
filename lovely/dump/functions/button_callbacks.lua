@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '342046b689dd87acb8d53f7bf71e203cf79102c780359956ea557178d3384f06'
+LOVELY_INTEGRITY = 'a33d98f45dbd6f9f100ede8b627bb5011b1b9901af8e28f75bae2d29530170dd'
 
 --Moves the tutorial to the next step in queue
 --
@@ -55,7 +55,7 @@ end
 ---@param e {}
 --**e** Is the UIE that called this function
 G.FUNCS.can_buy = function(e)
-    if (e.config.ref_table.cost > G.GAME.dollars - G.GAME.bankrupt_at) and (e.config.ref_table.cost > 0) then
+    if (to_big(e.config.ref_table.cost) > to_big(G.GAME.dollars) - to_big(G.GAME.bankrupt_at)) and (e.config.ref_table.cost > 0) then
         e.config.colour = G.C.UI.BACKGROUND_INACTIVE
         e.config.button = nil
     else
@@ -77,7 +77,7 @@ end
 ---@param e {}
 --**e** Is the UIE that called this function
 G.FUNCS.can_buy_and_use = function(e)
-    if (((e.config.ref_table.cost > G.GAME.dollars - G.GAME.bankrupt_at) and (e.config.ref_table.cost > 0)) or (not e.config.ref_table:can_use_consumeable())) then
+    if (((to_big(e.config.ref_table.cost) > to_big(G.GAME.dollars) - to_big(G.GAME.bankrupt_at)) and (e.config.ref_table.cost > 0)) or (not e.config.ref_table:can_use_consumeable())) then
         e.UIBox.states.visible = false
         e.config.colour = G.C.UI.BACKGROUND_INACTIVE
         e.config.button = nil
@@ -96,7 +96,7 @@ end
 ---@param e {}
 --**e** Is the UIE that called this function
 G.FUNCS.can_redeem = function(e)
-  if e.config.ref_table.cost > G.GAME.dollars - G.GAME.bankrupt_at then
+  if to_big(e.config.ref_table.cost) > to_big(G.GAME.dollars) - to_big(G.GAME.bankrupt_at) then
       e.config.colour = G.C.UI.BACKGROUND_INACTIVE
       e.config.button = nil
   else
@@ -111,7 +111,7 @@ end
 ---@param e {}
 --**e** Is the UIE that called this function
 G.FUNCS.can_open = function(e)
-  if (e.config.ref_table.cost) > 0 and (e.config.ref_table.cost > G.GAME.dollars - G.GAME.bankrupt_at) then
+  if (e.config.ref_table.cost) > 0 and (to_big(e.config.ref_table.cost) > to_big(G.GAME.dollars) - to_big(G.GAME.bankrupt_at)) then
       e.config.colour = G.C.UI.BACKGROUND_INACTIVE
       e.config.button = nil
   else
@@ -203,13 +203,13 @@ G.FUNCS.can_continue = function(e)
       if not G.SAVED_GAME then 
         G.SAVED_GAME = get_compressed(G.SETTINGS.profile..'/'..'save.jkr')
         if G.SAVED_GAME ~= nil then G.SAVED_GAME = STR_UNPACK(G.SAVED_GAME) end
-        if G.SAVED_GAME == nil then 
+        if G.SAVED_GAME == nil then
             e.config.colour = G.C.UI.BACKGROUND_INACTIVE
             e.config.button = nil
             return _can_continue
         end
       end
-      if not G.SAVED_GAME.VERSION or G.SAVED_GAME.VERSION < '0.9.2' then
+      if not G.SAVED_GAME or not G.SAVED_GAME.VERSION or G.SAVED_GAME.VERSION < '0.9.2' then
         e.config.colour = G.C.UI.BACKGROUND_INACTIVE
         e.config.button = nil
       else
@@ -1455,6 +1455,7 @@ G.FUNCS.language_selection = function(e)
 end
 
 G.FUNCS.your_collection = function(e)
+if Cryptid.update_member_count then Cryptid.update_member_count() end
   G.SETTINGS.paused = true
   G.FUNCS.overlay_menu{
     definition = create_UIBox_your_collection(),
@@ -1582,6 +1583,7 @@ G.FUNCS.usage = function(e)
 end
 
 G.FUNCS.setup_run = function(e)
+	G.cry_edeck_select = nil
   G.SETTINGS.paused = true
   G.FUNCS.overlay_menu{
     definition = G.UIDEF.run_setup((e.config.id == 'from_game_over' or e.config.id == 'from_game_won' or e.config.id == 'challenge_list') and e.config.id),
@@ -1677,6 +1679,7 @@ G.FUNCS.profile_select = function(e)
   G.focused_profile = G.SETTINGS.profile
 
   for i = 1, 3 do
+  i = Cryptid.profile_prefix .. i
     if i ~= G.focused_profile and love.filesystem.getInfo(i..'/'..'profile.jkr') then G:load_profile(i) end
   end
   G:load_profile(G.focused_profile)
@@ -1935,7 +1938,7 @@ G.FUNCS.hand_mult_UI_set = function(e)
     G.GAME.current_round.current_hand.mult_text = new_mult_text
     e.config.object.scale = scale_number(G.GAME.current_round.current_hand.mult, 0.9, 1000)
     e.config.object:update_text()
-    if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.max(0,math.floor(math.log10(type(G.GAME.current_round.current_hand.mult) == 'number' and G.GAME.current_round.current_hand.mult or 1)))) end
+    if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.min(2,math.max(0,math.floor(math.log10(is_number(G.GAME.current_round.current_hand.mult) and G.GAME.current_round.current_hand.mult or 1))))) end
   end
 end
 
@@ -1945,12 +1948,12 @@ G.FUNCS.hand_chip_UI_set = function(e)
       G.GAME.current_round.current_hand.chip_text = new_chip_text
       e.config.object.scale = scale_number(G.GAME.current_round.current_hand.chips, 0.9, 1000)
       e.config.object:update_text()
-      if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.max(0,math.floor(math.log10(type(G.GAME.current_round.current_hand.chips) == 'number' and G.GAME.current_round.current_hand.chips or 1)))) end
+      if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.min(2,math.max(0,math.floor(math.log10(is_number(G.GAME.current_round.current_hand.chips) and G.GAME.current_round.current_hand.chips or 1))))) end
     end
 end
 
 G.FUNCS.hand_chip_total_UI_set = function(e)
-  if G.GAME.current_round.current_hand.chip_total < 1 then
+  if to_big(G.GAME.current_round.current_hand.chip_total) < to_big(1) then
     G.GAME.current_round.current_hand.chip_total_text = ''
   else
     local new_chip_total_text = number_format(G.GAME.current_round.current_hand.chip_total)
@@ -1958,7 +1961,7 @@ G.FUNCS.hand_chip_total_UI_set = function(e)
       e.config.object.scale = scale_number(G.GAME.current_round.current_hand.chip_total, 0.95, 100000000)
       
       G.GAME.current_round.current_hand.chip_total_text = new_chip_total_text
-      if not G.ARGS.hand_chip_total_UI_set or G.ARGS.hand_chip_total_UI_set <  G.GAME.current_round.current_hand.chip_total then 
+      if not G.ARGS.hand_chip_total_UI_set or to_big(G.ARGS.hand_chip_total_UI_set) < to_big(G.GAME.current_round.current_hand.chip_total) then
          G.FUNCS.text_super_juice(e, math.floor(math.log10(G.GAME.current_round.current_hand.chip_total)))
       end
       G.ARGS.hand_chip_total_UI_set = G.GAME.current_round.current_hand.chip_total
@@ -2033,7 +2036,7 @@ G.FUNCS.flame_handler = function(e)
       local _F = G.ARGS[v.arg_tab]
       local exptime = math.exp(-0.4*G.real_dt)
       
-      if G.ARGS.score_intensity.earned_score >= G.ARGS.score_intensity.required_score and G.ARGS.score_intensity.required_score > 0 then
+      if to_big(G.ARGS.score_intensity.earned_score) >= to_big(G.ARGS.score_intensity.required_score) and to_big(G.ARGS.score_intensity.required_score) > to_big(0) then
         _F.intensity = ((G.pack_cards and not G.pack_cards.REMOVED) or (G.TAROT_INTERRUPT)) and 0 or math.max(0., math.log(G.ARGS.score_intensity.earned_score, 5)-2)
       else
         _F.intensity = 0
@@ -2043,7 +2046,10 @@ G.FUNCS.flame_handler = function(e)
       if _F.intensity_vel < 0 then _F.intensity_vel = _F.intensity_vel*(1 - 10*G.real_dt) end
       _F.intensity_vel = (1-exptime)*(_F.intensity - _F.real_intensity)*G.real_dt*25 + exptime*_F.intensity_vel
       _F.real_intensity = math.max(0, _F.real_intensity + _F.intensity_vel)
+      
+      _F.real_intensity = (G.cry_flame_override and G.cry_flame_override['duration'] > 0) and ((_F.real_intensity + G.cry_flame_override['intensity'])/2) or _F.real_intensity
       _F.change = (_F.change or 0)*(1 - 4.*G.real_dt) + ( 4.*G.real_dt)*(_F.real_intensity < _F.intensity - 0.0 and 1 or 0)*_F.real_intensity
+      _F.change = (G.cry_flame_override and G.cry_flame_override['duration'] > 0) and ((_F.change + G.cry_flame_override['intensity'])/2) or _F.change
     end
   end
 end
@@ -2061,7 +2067,7 @@ G.FUNCS.hand_text_UI_set = function(e)
 end
 
   G.FUNCS.can_play = function(e)
-    if #G.hand.highlighted <= 0 or G.GAME.blind.block_play or #G.hand.highlighted > 5 then 
+    if #G.hand.highlighted <= (G.GAME.blind and G.GAME.blind.name == 'cry-Sapphire Stamp' and not G.GAME.blind.disabled and 1 or 0) or G.GAME.blind.block_play then
         e.config.colour = G.C.UI.BACKGROUND_INACTIVE
         e.config.button = nil
     else
@@ -2089,7 +2095,7 @@ end
   end
 
   G.FUNCS.can_reroll = function(e)
-    if ((G.GAME.dollars-G.GAME.bankrupt_at) - G.GAME.current_round.reroll_cost < 0) and G.GAME.current_round.reroll_cost ~= 0 then 
+    if ((to_big(G.GAME.dollars)-to_big(G.GAME.bankrupt_at)) - to_big(G.GAME.current_round.reroll_cost) < to_big(0)) and G.GAME.current_round.reroll_cost ~= 0 then
         e.config.colour = G.C.UI.BACKGROUND_INACTIVE
         e.config.button = nil
         --e.children[1].children[1].config.shadow = false
@@ -2125,7 +2131,9 @@ end
   end
 
   G.FUNCS.can_select_card = function(e)
-    if e.config.ref_table.ability.set ~= 'Joker' or (e.config.ref_table.edition and e.config.ref_table.edition.negative) or #G.jokers.cards < G.jokers.config.card_limit then 
+    local card = e.config.ref_table
+    local card_limit = card.edition and card.edition.card_limit or 0
+    if card.ability.set ~= 'Joker' or #G.jokers.cards < G.jokers.config.card_limit + card_limit then
         e.config.colour = G.C.GREEN
         e.config.button = 'use_card'
     else
@@ -2233,9 +2241,15 @@ end
         end
     end
     if not card.from_area then card.from_area = card.area end
+    local cry_muse = false
+    if card.ability.cry_multiuse and not (card.ability.cry_multiuse <= 1) then
+    	cry_muse = true
+    	dont_dissolve = true
+    end
     if card.area and (not nc or card.area == G.pack_cards) then card.area:remove_card(card) end
     
     if select_to then
+        card:add_to_deck()
         G[select_to]:emplace(card)
         if card.config.center.on_select and type(card.config.center.on_select) == 'function' then
             card.config.center:on_select(card)
@@ -2304,12 +2318,36 @@ end
                 G.TAROT_INTERRUPT=nil
                 G.CONTROLLER.locks.use = false
 
+                if cry_muse then
+                	card.ability.cry_multiuse = card.ability.cry_multiuse - 1
+                	card.ability.extra_value = -1 * math.max(1, math.floor(card.cost/2))
+                	card:set_cost()
+                	delay(0.4)
+                
+                	-- i make my own card eval status text :D
+                
+                	card:juice_up()
+                	play_sound('generic1')
+                	attention_text({
+                		text = format_ui_value(card.ability.cry_multiuse),
+                		scale = 1.1,
+                		hold = 0.6,
+                		major = card,
+                		backdrop_colour = G.C.SECONDARY_SET[card.config.center.set],
+                		align = 'bm',
+                		offset = {x = 0, y = 0.2}
+                	})
+                
+                	delay(0.8)
+                	local _area = area ~= G.pack_cards and area or G.consumeables
+                	draw_card(G.play, _area, 1, 'up', true, card, nil, true)
+                end
                 if (prev_state == G.STATES.TAROT_PACK or prev_state == G.STATES.PLANET_PACK or
                   prev_state == G.STATES.SPECTRAL_PACK or prev_state == G.STATES.STANDARD_PACK or
                   prev_state == G.STATES.SMODS_BOOSTER_OPENED or
                   prev_state == G.STATES.BUFFOON_PACK) and G.booster_pack then
                   if nc and area == G.pack_cards and not select_to then G.pack_cards:remove_card(card); G.consumeables:emplace(card) end
-                  if area == G.consumeables then
+                  if area == G.consumeables or area == G.hand then
                     G.booster_pack.alignment.offset.y = G.booster_pack.alignment.offset.py
                     G.booster_pack.alignment.offset.py = nil
                   elseif G.GAME.pack_choices and G.GAME.pack_choices > 1 then
@@ -2338,7 +2376,7 @@ end
                     G.round_eval.alignment.offset.py = nil
                   end
                   if nc and not area then G.consumeables:emplace(card) end
-                  if area and area.cards[1] then 
+                  if area and area.cards and area.cards[1] then
                     G.E_MANAGER:add_event(Event({func = function()
                       G.E_MANAGER:add_event(Event({func = function()
                         G.CONTROLLER.interrupt.focus = nil
@@ -2419,7 +2457,7 @@ end
   end
 
 G.FUNCS.shop_voucher_empty = function(e)
-  if (G.shop_vouchers and G.shop_vouchers.cards and (G.shop_vouchers.cards[1] or G.GAME.current_round.voucher)) then
+    if (G.shop_vouchers and G.shop_vouchers.cards and G.shop_vouchers.cards[1]) then
     e.states.visible = false
   elseif G.SETTINGS.language ~= 'en-us' then 
     e.states.visible = false
@@ -2530,6 +2568,7 @@ end
         func = function()
           G.shop.alignment.offset.y = G.ROOM.T.y + 29
           G.SHOP_SIGN.alignment.offset.y = -15
+          if G.GAME.oldbpfactor then G.GAME.oldbpfactor = math.max(G.GAME.oldbpfactor - G.GAME.oldbpfactor/8, 1) end
           return true
         end
       })) 
@@ -2628,7 +2667,11 @@ end
     delay(0.2*delayfac)
     G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.2*delayfac,
     func = function()
-      G.FUNCS.draw_from_hand_to_deck()
+      if not G.GAME.USING_RUN then
+      	G.FUNCS.draw_from_hand_to_deck()
+      else
+      	G.FUNCS.draw_from_hand_to_run()
+      end
       G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.2*delayfac,
           func = function()
                 if G.shop and G.shop.alignment.offset.py then 
@@ -2795,8 +2838,8 @@ end
       }))
     local _tag = e.UIBox:get_UIE_by_ID('tag_container')
     G.GAME.skips = (G.GAME.skips or 0) + 1
-    if _tag then 
-      add_tag(_tag.config.ref_table)
+    if _tag and not G.GAME.events.ev_cry_choco2 then 
+      add_tag( next(SMODS.find_card('j_cry_kittyprinter')) and Tag('tag_cry_cat') or _tag.config.ref_table, true)
       local skipped, skip_to = G.GAME.blind_on_deck or 'Small', 
       G.GAME.blind_on_deck == 'Small' and 'Big' or G.GAME.blind_on_deck == 'Big' and 'Boss' or 'Boss'
       G.GAME.round_resets.blind_states[skipped] = 'Skipped'
@@ -2822,7 +2865,7 @@ end
   end
 
   G.FUNCS.reroll_boss_button = function(e)
-    if ((G.GAME.dollars-G.GAME.bankrupt_at) - 10 >= 0) and
+    if ((to_big(G.GAME.dollars)-to_big(G.GAME.bankrupt_at)) - to_big(Cryptid.cheapest_boss_reroll()) >= to_big(0)) and
       (G.GAME.used_vouchers["v_retcon"] or
       (G.GAME.used_vouchers["v_directors_cut"] and not G.GAME.round_resets.boss_rerolled)) then 
         e.config.colour = G.C.RED
@@ -2840,7 +2883,7 @@ end
   G.FUNCS.reroll_boss = function(e) 
   if not G.blind_select_opts then
       G.GAME.round_resets.boss_rerolled = true
-      if not G.from_boss_tag then ease_dollars(-10) end
+      if not G.from_boss_tag then ease_dollars(-Cryptid.cheapest_boss_reroll()) end
       G.from_boss_tag = nil
       G.GAME.round_resets.blind_choices.Boss = get_new_boss()
       for i = 1, #G.GAME.tags do
@@ -2850,7 +2893,7 @@ end
   end
     stop_use()
     G.GAME.round_resets.boss_rerolled = true
-    if not G.from_boss_tag then ease_dollars(-10) end
+    if not G.from_boss_tag then ease_dollars(-Cryptid.cheapest_boss_reroll()) end
     G.from_boss_tag = nil
     G.CONTROLLER.locks.boss_reroll = true
     G.E_MANAGER:add_event(Event({
@@ -2996,7 +3039,7 @@ if Handy.insta_cash_out.is_skipped and e.config.button then return end
         play_sound("coin7")
         G.VIBRATION = G.VIBRATION + 1
       end
-      ease_chips(0)
+      ease_chips(to_big(0))
       if G.GAME.round_resets.blind_states.Boss == 'Defeated' then 
         G.GAME.round_resets.blind_ante = G.GAME.round_resets.ante
         G.GAME.round_resets.blind_tags.Small = get_next_tag_key()
