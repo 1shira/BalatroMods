@@ -18,4 +18,4 @@ multi - Less mods, more stable, includes the multiplayer mod
 
 none- Empty folder for when you want to play Vanilla
 
-insanity - Cryptid mods, a few decks and extra stakes, includes multiplayer, hasn't crashed on me yet
+insanity - Cryptid mod, a few decks and extra stakes, includes multiplayer, hasn't crashed on me yet
