@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '0c87146b99eb65bfc2c25bca23ebde7408f46348de3119d863af9d482d0c02a3'
+LOVELY_INTEGRITY = '9672535b46eee8aaecc3a2586276009e9943300cb1783cfff8b1c9042c0c8e66'
 
 --Class
 Game = Object:extend()
@@ -2523,7 +2523,8 @@ function Game:start_run(args)
         reset_mail_rank()
         self.GAME.current_round.ancient_card.suit = nil
         reset_ancient_card()
-        reset_castle_card()        for _, mod in ipairs(SMODS.mod_list) do
+        reset_castle_card()        
+        for _, mod in ipairs(SMODS.mod_list) do
         	if mod.reset_game_globals and type(mod.reset_game_globals) == 'function' then
         		mod.reset_game_globals(true)
         	end
@@ -2598,6 +2599,7 @@ function Game:update(dt)
     if not G.SETTINGS.tutorial_complete then G.FUNCS.tutorial_controller() end
                 timer_checkpoint('tallies', 'update')
     modulate_sound(dt)
+    SMODS.enh_cache:clear()
                 timer_checkpoint('sounds', 'update')
     update_canvas_juice(dt)
                 timer_checkpoint('canvas and juice', 'update')
@@ -2667,7 +2669,7 @@ function Game:update(dt)
                             {n=G.UIT.O, config={object = DynaText({scale = 0.7, string = localize('ph_unscored_hand'), maxw = 9, colours = {G.C.WHITE},float = true, shadow = true, silent = true, pop_in = 0, pop_in_rate = 6})}},
                         }},
                         {n=G.UIT.R, config = {align = 'cm', maxw = 1}, nodes={
-                            {n=G.UIT.O, config={object = DynaText({scale = 0.6, string = G.GAME.blind:get_loc_debuff_text(), maxw = 9, colours = {G.C.WHITE},float = true, shadow = true, silent = true, pop_in = 0, pop_in_rate = 6})}},
+                            {n=G.UIT.O, config={object = DynaText({scale = 0.6, string = SMODS.debuff_text or G.GAME.blind:get_loc_debuff_text(), maxw = 9, colours = {G.C.WHITE},float = true, shadow = true, silent = true, pop_in = 0, pop_in_rate = 6})}},
                         }}
                     }}, 
                     config = {
@@ -2678,7 +2680,11 @@ function Game:update(dt)
                   }
                   self.boss_warning_text.attention_text = true
                   self.boss_warning_text.states.collide.can = false
-                  G.GAME.blind.children.animatedSprite:juice_up(0.05, 0.02)
+                  if SMODS.hand_debuff_source then
+                      SMODS.hand_debuff_source:juice_up(0.05, 0.1)
+                  else
+                      G.GAME.blind.children.animatedSprite:juice_up(0.05, 0.02)
+                  end
                   play_sound('chips1', math.random()*0.1 + 0.55, 0.12)
             end
         else

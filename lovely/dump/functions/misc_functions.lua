@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '6c48b0d99a37eec7f58792dece1f2761b67d9b1378ca43201d1e6d08d5da48ff'
+LOVELY_INTEGRITY = '401e74be6464d3d716c89313834b8cf3e1d301dc4998d0bf1f58bd5899e09195'
 
 --Updates all display information for all displays for a given screenmode. Returns the key for the resolution option cycle
 --
@@ -1345,6 +1345,7 @@ function set_consumeable_usage(card)
               trigger = 'immediate',
               func = function()
                 G.GAME.last_tarot_planet = card.config.center_key
+                G.GAME.paperback.last_tarot_energized = card.ability and card.ability.paperback_energized
                   return true
               end
             }))
@@ -1618,6 +1619,13 @@ end
 
 function loc_colour(_c, _default)
   G.ARGS.LOC_COLOURS = G.ARGS.LOC_COLOURS or {
+    paperback_light_suit = G.C.PAPERBACK_LIGHT_SUIT,
+    paperback_dark_suit = G.C.PAPERBACK_DARK_SUIT,
+    paperback_stars = G.C.SUITS.paperback_Stars or G.C.PAPERBACK_STARS_LC,
+    paperback_crowns = G.C.SUITS.paperback_Crowns or G.C.PAPERBACK_CROWNS_LC,
+    paperback_minor_arcana = G.C.PAPERBACK_MINOR_ARCANA,
+    paperback_black = G.C.PAPERBACK_BLACK,
+    paperback_pink = G.C.PAPERBACK_PINK,
     red = G.C.RED,
     mult = G.C.MULT,
     blue = G.C.BLUE,
@@ -1643,6 +1651,9 @@ function loc_colour(_c, _default)
   }
       for _, v in ipairs(SMODS.Rarity.obj_buffer) do
           G.ARGS.LOC_COLOURS[v:lower()] = G.C.RARITY[v]
+      end
+      for _, v in ipairs(SMODS.Gradient.obj_buffer) do
+          G.ARGS.LOC_COLOURS[v:lower()] = SMODS.Gradients[v]
       end
       for _, v in ipairs(SMODS.ConsumableType.ctype_buffer) do
           G.ARGS.LOC_COLOURS[v:lower()] = G.C.SECONDARY_SET[v]
@@ -1896,7 +1907,8 @@ function localize(args, misc_cat)
         local desc_scale = G.LANG.font.DESCSCALE
         if G.F_MOBILE_UI then desc_scale = desc_scale*1.5 end
         if args.type == 'name' then
-          final_line[#final_line+1] = {n=G.UIT.O, config={
+          final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = part.control.B and args.vars.colours[tonumber(part.control.B)] or part.control.X and loc_colour(part.control.X) or nil, r = 0.05, padding = 0.03, res = 0.15}, nodes={}}
+          final_line[#final_line].nodes[1] = {n=G.UIT.O, config={
             object = DynaText({string = {assembled_string},
               colours = {(part.control.V and args.vars.colours[tonumber(part.control.V)]) or (part.control.C and loc_colour(part.control.C)) or args.text_colour or G.C.UI.TEXT_LIGHT},
               bump = true,
@@ -1917,7 +1929,8 @@ function localize(args, misc_cat)
           elseif part.control.E == '2' then
             _bump = true; _spacing = 1
           end
-          final_line[#final_line+1] = {n=G.UIT.O, config={
+          final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = part.control.B and args.vars.colours[tonumber(part.control.B)] or part.control.X and loc_colour(part.control.X) or nil, r = 0.05, padding = 0.03, res = 0.15}, nodes={}}
+          final_line[#final_line].nodes[1] = {n=G.UIT.O, config={
             object = DynaText({string = {assembled_string}, colours = {part.control.V and args.vars.colours[tonumber(part.control.V)] or loc_colour(part.control.C or nil)},
             float = _float,
             silent = _silent,
@@ -1926,11 +1939,11 @@ function localize(args, misc_cat)
             spacing = _spacing,
             scale = 0.32*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*desc_scale})
           }}
-        elseif part.control.X then
-          final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = loc_colour(part.control.X), r = 0.05, padding = 0.03, res = 0.15}, nodes={
+        elseif part.control.X or part.control.B then
+          final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = part.control.B and args.vars.colours[tonumber(part.control.B)] or loc_colour(part.control.X), r = 0.05, padding = 0.03, res = 0.15}, nodes={
               {n=G.UIT.T, config={
                 text = assembled_string,
-                colour = loc_colour(part.control.C or nil),
+                colour = part.control.V and args.vars.colours[tonumber(part.control.V)] or loc_colour(part.control.C or nil),
                 scale = 0.32*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*desc_scale}},
           }}
         else

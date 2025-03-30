@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'cbab9e0283634c266f4b5c3eb6c8f51996b49a2ee6cb48b280159f50a24bda8d'
+LOVELY_INTEGRITY = '21eff21b39e89b063945e126954e9f55c1da453a32e76dd4a281d6821e7f2a02'
 
 --class
 Blind = Moveable:extend()
@@ -525,7 +525,7 @@ function Blind:press_play()
     end
 end
 
-function Blind:modify_hand(cards, poker_hands, text, mult, hand_chips)
+function Blind:modify_hand(cards, poker_hands, text, mult, hand_chips, scoring_hand)
     if self.disabled then return mult, hand_chips, false end
     local obj = self.config.blind
     if obj.modify_hand and type(obj.modify_hand) == 'function' then
@@ -642,11 +642,11 @@ function Blind:drawn_to_hand()
     self.prepped = nil
 end
 
-function Blind:stay_flipped(area, card)
+function Blind:stay_flipped(area, card, from_area)
     if not self.disabled then
         local obj = self.config.blind
         if obj.stay_flipped and type(obj.stay_flipped) == 'function' then
-            return obj:stay_flipped(area, card)
+            return obj:stay_flipped(area, card, from_area)
         end
         if area == G.hand then
             if self.name == 'The Wheel' and pseudorandom(pseudoseed('wheel')) < G.GAME.probabilities.normal/7 then

@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'fb51bac9dd84dd0a2fddda8ef2091443017f6dc10f93b3b6e0ceeaa3212d14c5'
+LOVELY_INTEGRITY = 'cdd9e89d1533b1bf1a37702011981b84779de0c008ea531fc48249b0906557b3'
 
 --Class
 CardArea = Moveable:extend()
@@ -608,7 +608,7 @@ function CardArea:draw_card_from(area, stay_flipped, discarded_only)
                 if area == G.discard then
                     card.T.r = 0
                 end
-                local stay_flipped = G.GAME and G.GAME.blind and G.GAME.blind:stay_flipped(self, card)
+                local stay_flipped = G.GAME and G.GAME.blind and G.GAME.blind:stay_flipped(self, card, area)
                 if (self == G.hand) and G.GAME.modifiers.flipped_cards then
                     if pseudorandom(pseudoseed('flipped_card')) < 1/G.GAME.modifiers.flipped_cards then
                         stay_flipped = true

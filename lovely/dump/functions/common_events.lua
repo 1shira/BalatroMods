@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '9bfca26e561c7b7b747fe936ce98f68ad26f7ea33005a47f5df181f40a2410ac'
+LOVELY_INTEGRITY = '0e8b0fb773a190f9f382a4d27bef6969a921d3a0b3c977b841b02af38e4343d3'
 
 function set_screen_positions()
     if G.STAGE == G.STAGES.RUN then
@@ -402,7 +402,7 @@ function draw_card(from, to, percent, dir, sort, card, delay, mute, stay_flipped
             if card then 
                 if from then card = from:remove_card(card) end
                 if card then drawn = true end
-                local stay_flipped = G.GAME and G.GAME.blind and G.GAME.blind:stay_flipped(to, card)
+                local stay_flipped = G.GAME and G.GAME.blind and G.GAME.blind:stay_flipped(to, card, from)
                 if G.GAME.modifiers.flipped_cards and to == G.hand then
                     if pseudorandom(pseudoseed('flipped_card')) < 1/G.GAME.modifiers.flipped_cards then
                         stay_flipped = true
@@ -582,8 +582,8 @@ function update_hand_text(config, vals)
 end
 
 function eval_card(card, context)
-    if card.ability.set ~= 'Joker' and card.debuff then return {}, {} end
     context = context or {}
+    if not card:can_calculate(context.ignore_debuff) then return {}, {} end
     local ret = {}
 
     if context.repetition_only then
@@ -770,9 +770,9 @@ function eval_card(card, context)
         local jokers, triggered = card:calculate_joker(context)
         if jokers == true then jokers = { remove = true } end
         if type(jokers) ~= 'table' then jokers = nil end
-        if (jokers and not jokers.no_retrigger) or triggered then
+        if jokers or triggered then
             ret.jokers = jokers
-            if not (context.retrigger_joker_check or context.retrigger_joker) then
+            if not (context.retrigger_joker_check or context.retrigger_joker) and not (jokers and jokers.no_retrigger) then
                 local retriggers = SMODS.calculate_retriggers(card, context, ret)
                 if next(retriggers) then
                     ret.retriggers = retriggers
@@ -2328,6 +2328,14 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
                 add = in_pool and (add or pool_opts.override_base_checks)
             end
             if add and not G.GAME.banned_keys[v.key] then 
+                -- If the selected deck is the Paper deck and this key is a Paperback Joker, add copies of it
+                -- to the pool, so that it is more common to get
+                if (G.GAME.selected_back_key or {}).key == 'b_paperback_paper' and v.key:find('j_paperback_') then
+                  for i = 1, 2 do
+                    _pool[#_pool + 1] = v.key
+                    _pool_size = _pool_size + 1
+                  end
+                end
                 _pool[#_pool + 1] = v.key
                 _pool_size = _pool_size + 1
             else
@@ -2433,9 +2441,9 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
     local front = ((_type=='Base' or _type == 'Enhanced') and pseudorandom_element(G.P_CARDS, pseudoseed('front'..(key_append or '')..G.GAME.round_resets.ante))) or nil
 
     local card = Card(area.T.x + area.T.w/2, area.T.y, G.CARD_W, G.CARD_H, front, center,
-    {bypass_discovery_center = area==G.shop_jokers or area == G.pack_cards or area == G.shop_vouchers or (G.shop_demo and area==G.shop_demo) or area==G.jokers or area==G.consumeables,
-     bypass_discovery_ui = area==G.shop_jokers or area == G.pack_cards or area==G.shop_vouchers or (G.shop_demo and area==G.shop_demo),
-     discover = area==G.jokers or area==G.consumeables, 
+    {bypass_discovery_center = SMODS.bypass_create_card_discovery_center or area==G.shop_jokers or area == G.pack_cards or area == G.shop_vouchers or (G.shop_demo and area==G.shop_demo) or area==G.jokers or area==G.consumeables,
+     bypass_discovery_ui = SMODS.bypass_create_card_discovery_center or area==G.shop_jokers or area == G.pack_cards or area==G.shop_vouchers or (G.shop_demo and area==G.shop_demo),
+     discover = SMODS.bypass_create_card_discover or area==G.jokers or area==G.consumeables, 
      bypass_back = G.GAME.selected_back.pos})
     if card.ability.consumeable and not skip_materialize then card:start_materialize() end
     for k, v in ipairs(SMODS.Sticker.obj_buffer) do
@@ -2475,6 +2483,7 @@ function copy_card(other, new_card, card_scale, playing_card, strip_edition)
     new_card:set_ability(other.config.center)
     new_card.ability.type = other.ability.type
     new_card:set_base(other.config.card)
+    PB_UTIL.remove_paperclip(new_card)
     for k, v in pairs(other.ability) do
         if type(v) == 'table' then 
             new_card.ability[k] = copy_table(v)
@@ -2801,6 +2810,28 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
     end
 
     local cfg = (card and card.ability) or _c['config']
+    -- Add the tooltip for Basic Joker Energy if the card is marked by it
+    if card and card.ability and card.ability.paperback_energized then
+      info_queue[#info_queue + 1] = {
+        set = 'Other',
+        key = 'paperback_energized'
+      }
+    end
+    
+    -- Add tooltips for items removed from the pool by the paperback config
+    if (card and card.config and card.config.center and card.config.center.paperback) or (_c and _c.paperback) then
+      local config = (_c and _c.paperback) or card.config.center.paperback
+    
+      for _, v in ipairs(config.requirements or {}) do
+        if not PB_UTIL.config[v.setting] and first_pass then
+          info_queue[#info_queue + 1] = {
+            set = v.set or 'Other',
+            key = v.tooltip,
+            vars = v.vars or {}
+          }
+        end
+      end
+    end
     if _c.set == 'Other' then
         localize{type = 'other', key = _c.key, nodes = desc_nodes, vars = specific_vars or _c.vars}
     elseif card_type == 'Locked' then

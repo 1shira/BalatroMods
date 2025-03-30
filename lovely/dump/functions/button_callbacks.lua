@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '2ffa91d693933c12db44473c7cfe2b19b6c85ff2b5954ce93b43e17e828364e2'
+LOVELY_INTEGRITY = '3e63b36cfb98351a619a487e118e3c368ef1cd73e756d83a8cf7c9d3188ecb88'
 
 --Moves the tutorial to the next step in queue
 --
@@ -2238,6 +2238,7 @@ end
     if card.area and (not nc or card.area == G.pack_cards) then card.area:remove_card(card) end
     
     if select_to then
+        card:add_to_deck()
         G[select_to]:emplace(card)
         if card.config.center.on_select and type(card.config.center.on_select) == 'function' then
             card.config.center:on_select(card)
@@ -2322,8 +2323,8 @@ end
                     G.GAME.pack_choices = G.GAME.pack_choices - 1
                   else
                       G.CONTROLLER.interrupt.focus = true
-                      if prev_state == G.STATES.TAROT_PACK then inc_career_stat('c_tarot_reading_used', 1) end
-                      if prev_state == G.STATES.PLANET_PACK then inc_career_stat('c_planetarium_used', 1) end
+                      if prev_state == G.STATES.SMODS_BOOSTER_OPENED and booster_obj.name:find('Arcana') then inc_career_stat('c_tarot_reading_used', 1) end
+                      if prev_state == G.STATES.SMODS_BOOSTER_OPENED and booster_obj.name:find('Celestial') then inc_career_stat('c_planetarium_used', 1) end
                       G.FUNCS.end_consumeable(nil, delay_fac)
                   end
                 else
@@ -2908,6 +2909,7 @@ end
     stop_use()
     G.CONTROLLER.locks.shop_reroll = true
     if G.CONTROLLER:save_cardarea_focus('shop_jokers') then G.CONTROLLER.interrupt.focus = true end
+    local reroll_cost = G.GAME.current_round.reroll_cost
     if G.GAME.current_round.reroll_cost > 0 then 
       inc_career_stat('c_shop_dollars_spent', G.GAME.current_round.reroll_cost)
       inc_career_stat('c_shop_rerolls', 1)
@@ -2949,7 +2951,7 @@ end
             G.CONTROLLER.interrupt.focus = false
             G.CONTROLLER.locks.shop_reroll = false
             G.CONTROLLER:recall_cardarea_focus('shop_jokers')
-            SMODS.calculate_context({reroll_shop = true})
+            SMODS.calculate_context({reroll_shop = true, cost = reroll_cost})
             return true
           end
         }))

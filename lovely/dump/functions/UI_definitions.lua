@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '8de412da8ed0146d28d2c9648c79dd7b0d99994e58be878a61e603a68792b161'
+LOVELY_INTEGRITY = '17b8c3848c88424fa461168544d4923dc1bd484a4ca0d7369d675a935a54c421'
 
 --Create a global UIDEF that contains all UI definition functions\
 --As a rule, these contain functions that return a table T representing the definition for a UIBox
@@ -1142,7 +1142,12 @@ end
       if AUT.badges then
         for k, v in ipairs(AUT.badges) do
           if v == 'negative_consumable' or v == 'negative_playing_card' then v = 'negative' end
+          local pb_key = PB_UTIL.has_paperclip(card)
+          if pb_key and v == pb_key then
+            badges[#badges + 1] = create_badge(localize(v, "labels"), get_badge_colour(v), SMODS.Stickers[pb_key].badge_text_colour)
+          else
           badges[#badges + 1] = create_badge(localize(v, "labels"), get_badge_colour(v))
+          end
         end
       end      if AUT.card_type ~= 'Locked' and AUT.card_type ~= 'Undiscovered' then
           SMODS.create_mod_badges(card.config.center, badges)
@@ -1152,6 +1157,12 @@ end
           end
           if card.config and card.config.tag then
               SMODS.create_mod_badges(SMODS.Tags[card.config.tag.key], badges)
+          end
+          if PB_UTIL and card and card.ability then
+            local key = PB_UTIL.has_paperclip(card)
+            if key then
+              SMODS.create_mod_badges(SMODS.Stickers[key], badges)
+            end
           end
           badges.mod_set = nil
       end

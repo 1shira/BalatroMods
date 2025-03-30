@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '07093a5be903c577ae661a1cb13e351c5be3f797dde3adbe8dab2185cb46d64f'
+LOVELY_INTEGRITY = '4bdc8f528f6ef4a3aebc94dbf1ba028ceb02f4e672e60cf7d852445fcc470bc4'
 
 function win_game()
     if (not G.GAME.seeded and not G.GAME.challenge) or SMODS.config.seeded_unlocks then
@@ -209,7 +209,8 @@ function end_round()
                         reset_idol_card()
                         reset_mail_rank()
                         reset_ancient_card()
-                        reset_castle_card()                        for _, mod in ipairs(SMODS.mod_list) do
+                        reset_castle_card()                        
+                        for _, mod in ipairs(SMODS.mod_list) do
                         	if mod.reset_game_globals and type(mod.reset_game_globals) == 'function' then
                         		mod.reset_game_globals(false)
                         	end
@@ -237,6 +238,7 @@ function new_round()
             G.GAME.current_round.hands_left = (math.max(1, G.GAME.round_resets.hands + G.GAME.round_bonus.next_hands))
             G.GAME.current_round.hands_played = 0
             G.GAME.current_round.discards_used = 0
+            G.GAME.current_round.any_hand_drawn = nil
             G.GAME.current_round.reroll_cost_increase = 0
             G.GAME.current_round.used_packs = {}
 
@@ -331,10 +333,11 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
         delay = 0.4,
         func = function()
             if #SMODS.drawn_cards > 0 then
-                SMODS.calculate_context({first_hand_drawn = G.GAME.facing_blind and G.GAME.current_round.hands_played == 0 and G.GAME.current_round.discards_used == 0,
+                SMODS.calculate_context({first_hand_drawn = not G.GAME.current_round.any_hand_drawn and G.GAME.facing_blind,
                                         hand_drawn = G.GAME.facing_blind and SMODS.drawn_cards,
                                         other_drawn = not G.GAME.facing_blind and SMODS.drawn_cards})
                 SMODS.drawn_cards = {}
+                if G.GAME.facing_blind then G.GAME.current_round.any_hand_drawn = true end
             end
             return true
         end
@@ -557,18 +560,19 @@ G.FUNCS.evaluate_play = function(e)
         end
         local effects = {}
         SMODS.calculate_context({modify_scoring_hand = true, other_card =  G.play.cards[i], full_hand = G.play.cards, scoring_hand = scoring_hand}, effects)
-        SMODS.trigger_effects(effects, G.play.cards[i])
-        for _, eval in pairs(effects) do
-            if type(eval) == 'table' then
-                for key, eval2 in pairs(eval) do
-                    if key == 'add_to_hand' or (type(eval2) == 'table' and eval2.add_to_hand) then splashed = true end
-                    if key == 'remove_from_hand' or (type(eval2) == 'table' and eval2.remove_from_hand) then unsplashed = true end
-                end
-            end
-        end
+        local flags = SMODS.trigger_effects(effects, G.play.cards[i])
+        if flags.add_to_hand then splashed = true end
+    	if flags.remove_from_hand then unsplashed = true end
         if splashed and not unsplashed then table.insert(final_scoring_hand, G.play.cards[i]) end
     end
     -- TARGET: adding to hand effects
+    SMODS.calculate_context {
+      paperback = {
+        modify_final_hand = true,
+        scoring_hand = final_scoring_hand,
+        full_hand = G.play.cards
+      }
+    }
     scoring_hand = final_scoring_hand
     delay(0.2)
     for i=1, #scoring_hand do
@@ -607,7 +611,7 @@ G.FUNCS.evaluate_play = function(e)
 
         local modded = false
 
-        mult, hand_chips, modded = G.GAME.blind:modify_hand(G.play.cards, poker_hands, text, mult, hand_chips)
+        mult, hand_chips, modded = G.GAME.blind:modify_hand(G.play.cards, poker_hands, text, mult, hand_chips, scoring_hand)
         mult, hand_chips = mod_mult(mult), mod_chips(hand_chips)
         if modded then update_hand_text({sound = 'chips2', modded = modded}, {chips = hand_chips, mult = mult}) end
         delay(0.3)
@@ -667,14 +671,33 @@ G.FUNCS.evaluate_play = function(e)
                     end
                 end
             end
+            for _, _area in ipairs(SMODS.get_card_areas('individual')) do
+                local other_key = 'other_unknown'
+                if _card.ability.set == 'Joker' then other_key = 'other_joker' end
+                if _card.ability.consumeable then other_key = 'other_consumeable' end
+                if _card.ability.set == 'Voucher' then other_key = 'other_voucher' end
+                -- TARGET: add context.other_something identifier to your cards
+                local _eval,post = SMODS.eval_individual(_area, {full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, [other_key] = _card, other_main = _card })
+                if next(_eval) then
+                    _eval.individual.juice_card = _area.scored_card
+                    table.insert(effects, _eval)
+                    for _, v in ipairs(post) do effects[#effects+1] = v end
+                    if _eval.retriggers then
+                        for rt = 1, #_eval.retriggers do
+                            local rt_eval, rt_post = SMODS.eval_individual(_area, {full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, [other_key] = _card, retrigger_joker = true})
+                            table.insert(effects, {_eval.retriggers[rt]})
+                            table.insert(effects, rt_eval)
+                            for _, v in ipairs(rt_post) do effects[#effects+1] = v end
+                        end
+                    end
+                end
+            end
 
             -- calculate edition multipliers
             local eval = eval_card(_card, {cardarea = G.jokers, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, edition = true, post_joker = true})
             if eval.edition then effects[#effects+1] = eval end
 
             SMODS.trigger_effects(effects, _card)
-            local deck_effect = G.GAME.selected_back:trigger_effect({full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, other_joker = _card.ability.set == 'Joker' and _card or false, other_consumeable = _card.ability.set ~= 'Joker' and _card or false})
-            if deck_effect then SMODS.calculate_effect(deck_effect, G.deck.cards[1] or G.deck) end
         end end
 
         -- context.final_scoring_step calculations
@@ -724,7 +747,7 @@ G.FUNCS.evaluate_play = function(e)
         G.E_MANAGER:add_event(Event({
             trigger = 'immediate',
             func = (function()
-                SMODS.juice_up_blind()
+                if SMODS.hand_debuff_source then SMODS.hand_debuff_source:juice_up(0.3,0) else SMODS.juice_up_blind() end
                 G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.06*G.SETTINGS.GAMESPEED, blockable = false, blocking = false, func = function()
                     play_sound('tarot2', 0.76, 0.4);return true end}))
                 play_sound('tarot2', 1, 0.4)
