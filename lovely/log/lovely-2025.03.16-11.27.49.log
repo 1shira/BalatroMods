@@ -1,0 +1,706 @@
+INFO - [♥] Lovely 0.7.1
+INFO - [♥] Game directory is at "E:\\shira\\.local\\share\\Steam\\steamapps\\common\\Balatro"
+INFO - [♥] Writing logs to "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\lovely\\log"
+INFO - [♥] Using mod directory at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods"
+WARN - [♥] Unknown key `patches.0.?.match_indent` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\BalatroMultiplayer-0.1.8.3\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.1.?.match_indent` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\BalatroMultiplayer-0.1.8.3\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.9.?.match_indent` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\BalatroMultiplayer-0.1.8.3\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.10.?.match_indent` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\BalatroMultiplayer-0.1.8.3\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.13.?.match_indent` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\BalatroMultiplayer-0.1.8.3\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.15.?.match_indent` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\HandyBalatro\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.15.?.overwrite` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\HandyBalatro\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.49.?.match_indent` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\Talisman\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.52.?.match_indent` found in patch file at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\Talisman\\lovely.toml", ignoring it
+INFO - [♥] Cleaning up dumps directory at "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods\\lovely\\dump"
+INFO - [♥] Initialization complete in 40ms
+WARN - [♥] Pattern 'G.ARGS.score_intensity.organ = G.video_organ or G.ARGS.score_intensity.required_score > 0 and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0' on target 'main.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if type(G.GAME.current_round.current_hand.chips) ~= \'number\' or type(G.GAME.current_round.current_hand.mult) ~= \'number\' then' on target 'main.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+INFO - [♥] Applied 22 patches to 'main.lua'
+INFO - [♥] Applied 2 patches to 'engine/string_packer.lua'
+INFO - [♥] Applied 6 patches to 'engine/controller.lua'
+INFO - [♥] Applied 15 patches to 'back.lua'
+INFO - [♥] Applied 7 patches to 'tag.lua'
+INFO - [♥] Applied 2 patches to 'engine/moveable.lua'
+INFO - [♥] Applied 2 patches to 'engine/sprite.lua'
+INFO - [♥] Applied 2 patches to 'engine/animatedsprite.lua'
+WARN - [♥] Pattern 'assembled_string = assembled_string..(type(subpart) == \'string\' and subpart or args.vars[tonumber(subpart[1])] or \'ERROR\')' on target 'functions/misc_functions.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+INFO - [♥] Applied 51 patches to 'functions/misc_functions.lua'
+INFO - [♥] Applied 44 patches to 'game.lua'
+INFO - [♥] Applied 1 patch to 'globals.lua'
+INFO - [♥] Applied 6 patches to 'engine/ui.lua'
+WARN - [♥] Pattern '{n=G.UIT.T, config={text = G.GAME.hands[handname].chips, scale = 0.45, colour = G.C.UI.TEXT_LIGHT}},' on target 'functions/UI_definitions.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern '{n=G.UIT.T, config={text = G.GAME.hands[handname].mult, scale = 0.45, colour = G.C.UI.TEXT_LIGHT}}' on target 'functions/UI_definitions.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+INFO - [♥] Applied 85 patches to 'functions/UI_definitions.lua'
+WARN - [♥] Pattern 'if effects[ii].card then' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if effects.jokers.Xmult_mod then mult = mod_mult(mult*effects.jokers.Xmult_mod);extras.mult = true  end' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if effect.Xmult_mod then mult = mod_mult(mult*effect.Xmult_mod);extras.mult = true  end' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if effects[ii].message then' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern '--calculate the card edition effects' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if effects[ii].edition.p_dollars_mod then' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if edition_effects.jokers.x_mult_mod then' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+INFO - [♥] Applied 50 patches to 'functions/state_events.lua'
+WARN - [♥] Pattern 'if num_dollars > 60 then' on target 'functions/common_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'func = (function() if eval_func(card) then if not first or first then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)' on target 'functions/common_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+INFO - [♥] Applied 130 patches to 'functions/common_events.lua'
+INFO - [♥] Applied 57 patches to 'functions/button_callbacks.lua'
+WARN - [♥] Pattern 'function Card:calculate_seal(context)\n    if self.debuff then return nil end' on target 'card.lua' for pattern patch from smods-1.0.0-beta-0312b\lovely\can_calculate.toml resulted in no matches
+WARN - [♥] Pattern 'function Card:calculate_joker(context)\n    if self.debuff then return nil end\n    if self.ability.set == \"Planet\" and not self.debuff then' on target 'card.lua' for pattern patch from smods-1.0.0-beta-0312b\lovely\can_calculate.toml resulted in no matches
+WARN - [♥] Pattern 'if G.GAME.blind then G.E_MANAGER:add_event(Event({ func = function() G.GAME.blind:set_blind(nil, true, nil); return true end })) end' on target 'card.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'x_mult = center.config.Xmult or 1,' on target 'card.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+INFO - [♥] Applied 154 patches to 'card.lua'
+INFO - [♥] Applied 8 patches to 'cardarea.lua'
+INFO - [♥] Applied 36 patches to 'blind.lua'
+INFO - [♥] Applied 5 patches to 'engine/text.lua'
+INFO - [G] Failed to connect to the debug server
+INFO - [G] 2025-03-16 11:27:51 :: DEBUG :: DebugConsole :: Steamodded Debug Socket started !
+INFO - [♥] Applied 9 patches to 'engine/sound_manager.lua'
+INFO - [♥] Applied 3 patches to 'engine/save_manager.lua'
+INFO - [♥] Applied 2 patches to 'engine/string_packer.lua'
+INFO - [G] 2025-03-16 11:27:52 :: INFO  :: DefaultLogger :: Valid JSON file found
+INFO - [G] 2025-03-16 11:27:52 :: TRACE :: Loader :: Processing Mod file (Legacy header): AbsoluteDeck.lua
+INFO - [G] 2025-03-16 11:27:52 :: TRACE :: Loader :: Saving Mod Info: AbsoluteDeck
+INFO - [G] 2025-03-16 11:27:52 :: TRACE :: Loader :: Processing Mod file (Legacy header): JokerOnlyDeck.lua
+INFO - [G] 2025-03-16 11:27:52 :: TRACE :: Loader :: Saving Mod Info: JokerOnlyDeck
+INFO - [G] 2025-03-16 11:27:52 :: TRACE :: Loader :: Processing Mod file (Legacy header): PactDeck.lua
+INFO - [G] 2025-03-16 11:27:52 :: TRACE :: Loader :: Saving Mod Info: PactDeck
+INFO - [G] 2025-03-16 11:27:52 :: TRACE :: Loader :: Processing Mod file (Legacy header): PauperDeck.lua
+INFO - [G] 2025-03-16 11:27:52 :: TRACE :: Loader :: Saving Mod Info: pauperdeck
+INFO - [G] 2025-03-16 11:27:52 :: TRACE :: Loader :: Processing Mod file (Legacy header): UltimateRandom.lua
+INFO - [G] 2025-03-16 11:27:52 :: TRACE :: Loader :: Saving Mod Info: UltimateRandomDeck
+INFO - [G] 2025-03-16 11:27:52 :: INFO  :: DefaultLogger :: Valid JSON file found
+INFO - [G] 2025-03-16 11:27:52 :: TRACE :: Loader :: Processing Mod file (Legacy header): steamodded.lua
+INFO - [G] 2025-03-16 11:27:52 :: WARN  :: Loader :: Duplicate Mod ID: Handy
+INFO - [G] 2025-03-16 11:27:52 :: INFO  :: DefaultLogger :: Valid JSON file found
+INFO - [G] 2025-03-16 11:27:52 :: TRACE :: Loader :: Processing Mod file (Legacy header): AntonosStake.lua
+INFO - [G] line not found
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] line not found
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] 2025-03-16 11:27:52 :: ERROR :: StackTrace :: Oops! The game crashed
+[SMODS _ "src/utils.lua"]:562: bad argument #1 to 'match' (string expected, got nil)
+Stack Traceback
+===============
+(1) Lua local 'handler' at file 'main.lua:612'
+	Local variables:
+	 msg = string: "[SMODS _ \"src/utils.lua\"]:562: bad argument #1 to 'match' (string expected, got nil)"
+	 (*temporary) = Lua function '?' (defined at line 31 of chunk [SMODS _ "src/logging.lua"])
+	 (*temporary) = string: "Oops! The game crashed\
+"
+(2) LÖVE function at file 'boot.lua:352' (best guess)
+	Local variables:
+	 errhand = Lua function '?' (defined at line 598 of chunk main.lua)
+	 handler = Lua function '?' (defined at line 598 of chunk main.lua)
+(3) field C function 'match'
+(4) Lua global 'V' at Steamodded file 'src/utils.lua:562' 
+	Local variables:
+	 _ = table: 0x0410b978  {is_valid:function: 0x0410ba68}
+	 str = string: "Beta 1.0"
+	 _ = nil
+	 _ = nil
+	 major = nil
+	 minorFull = nil
+	 minor = nil
+	 patchFull = nil
+	 patch = nil
+	 rev = nil
+(5) Lua field 'handle' at Steamodded file 'src/loader.lua:70' 
+	Local variables:
+	 x = string: "Beta 1.0"
+(6) Lua upvalue 'processDirectory' at Steamodded file 'src/loader.lua:313' 
+	Local variables:
+	 directory = string: "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods/Stakes/Scaling-Ante-Stakes-main"
+	 depth = number: 3
+	 isDirLovely = boolean: false
+	 (for generator) = C function: builtin#6
+	 (for state) = table: 0x08e7e000  {1:AntonosStake.lua, 2:README.md, 3:assets}
+	 (for control) = number: 1
+	 _ = number: 1
+	 filename = string: "AntonosStake.lua"
+	 file_path = string: "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods/Stakes/Scaling-Ante-Stakes-main/AntonosStake.lua"
+	 file_type = string: "file"
+	 file_content = string: "--- STEAMODDED HEADER\
+--- MOD_NAME: Antonos Stakes\
+--- MOD_ID: AntonosStake\
+--- PREFIX: AntonosStake\
+--- MOD_AUTHOR: [Antonos]\
+--- MOD_DESCRIPTION: (REQUIRES Talisman) Adds simple stakes that increase ante scaling. Recommended for crazy modpacks. You can change each stake's ante scaling in the AntonosStake.lua\
+--- BADGE_COLOUR: 00FF00\
+--- VERSION: Beta 1.0\
+--- PRIORITY: -1\
+--- DEPENDENCIES: [Talisman>=2.0.0-beta5]\
+\
+\
+\
+SMODS.Atlas({\
+    key = 'A_stakes',\
+    path = 'A_chips.png',\
+    px = '29',\
+    py = '29'\
+})\
+\
+SMODS.Atlas({\
+    key = 'A_morestakes',\
+    path = 'A_morechips.png',\
+    px = '29',\
+    py = '29'\
+})\
+\
+SMODS.Atlas({\
+    key = 'A_crazystakes',\
+    path = 'A_crazychips.png',\
+    px = '29',\
+    py = '29'\
+})\
+\
+SMODS.Atlas({\
+    key = 'stickers',\
+    path = 'A_stickers.png',\
+    px = 71,\
+    py = 95\
+})\
+\
+SMODS.Atlas({\
+    key = 'morestickers',\
+    path = 'A_morestickers.png',\
+    px = 71,\
+    py = 95\
+})\
+\
+SMODS.Atlas({\
+    key = 'crazystickers',\
+    path = 'A_crazystickers.png',\
+    px = 71,\
+    py = 95\
+})\
+\
+\
+SMODS.Stake({\
+    key = \"A_white\",\
+    applied_stakes = {},\
+    above_stake = 'gold',\
+    unlocked_stake = \"AntonosStake_A_red\",\
+    atlas = 'A_stakes',\
+    pos = {x = 0, y = 0},\
+    sticker_pos = {x = 1, y = 0},\
+    sticker_atlas = 'stickers',\
+    loc_txt = {\
+        name = \"Increased Ante White Stake\",\
+        text = {\
+            \"Required score scales\",\
+            \"faster for each {C:attention}Ante by 12.5%\",\
+            \"{s:0.8,C:inactive}(Vanilla Disabled){}\",\
+        }\
+    },    \
+\
+    modifiers = function()\
+        G.GAME.modifiers.scaling = (G.GAME.modifiers.scaling or 1) + 1\
+    end,\
+}\
+)\
+\
+SMODS.Stake {\
+    name = \"Increased Ante Red Stake\",\
+    key = \"A_red\",\
+    above_stake = 'AntonosStake_A_white',\
+    unlocked_stake = \"AntonosStake_A_green\",\
+    applied_stakes = { \"AntonosStake_A_white\" },\
+    atlas = 'A_stakes',\
+    sticker_atlas = 'stickers',\
+    pos = { x = 1, y = 0 },\
+    sticker_pos = { x = 2, y = 0 },\
+    modifiers = function()\
+        G.GAME.modifiers.scaling = (G.GAME.modifiers.scaling or 1) + 2\
+    end,\
+    colour = G.C.RED,\
+    loc_txt = {\
+        name = \"Increased Ante Red Stake\",\
+        text = {\
+            \"Required score scales\",\
+            \"faster for each {C:attention}Ante by 25%\",\
+            \"{s:0.8,C:inactive}(Vanilla Disabled){}\",\
+        }\
+    }\
+}\
+\
+SMODS.Stake {\
+    name = \"Increased Ante Green Stake\",\
+    key = \"A_green\",\
+    above_stake = 'AntonosStake_A_red',\
+    unlocked_stake = \"AntonosStake_A_black\",\
+    applied_stakes = { \"AntonosStake_A_red\" },\
+    atlas = 'A_stakes',\
+    sticker_atlas = 'stickers',\
+    pos = { x = 2, y = 0 },\
+    sticker_pos = { x = 3, y = 0 },\
+    modifiers = function()\
+        G.GAME.modifiers.scaling = (G.GAME.modifiers.scaling or 1) + 1\
+    end,\
+    colour = G.C.GREEN,\
+    loc_txt = {\
+        name = \"Increased Ante Green Stake\",\
+        text = {\
+            \"Required score scales\",\
+            \"faster for each {C:attention}Ante by 12.5%\",\
+            \"{s:0.8,C:inactive}(Vanilla Disabled){}\",\
+        }\
+    }\
+}\
+\
+SMODS.Stake {\
+    name = \"Increased Ante Black Stake\",\
+    key = \"A_black\",\
+    above_stake = 'AntonosStake_A_green',\
+    unlocked_stake = \"AntonosStake_A_blue\",\
+    applied_stakes = { \"AntonosStake_A_green\" },\
+    atlas = 'A_stakes',\
+    sticker_atlas = 'stickers',\
+    pos = { x = 4, y = 0 },\
+    sticker_pos = { x = 0, y = 1 },\
+    modifiers = function()\
+        G.GAME.modifiers.scaling = (G.GAME.modifiers.scaling or 1) + 2\
+    end,\
+    colour = G.C.BLACK,\
+    loc_txt = {\
+        name = \"Increased Ante Black Stake\",\
+        text = {\
+            \"Required score scales\",\
+            \"faster for each {C:attention}Ante by 25%\",\
+            \"{s:0.8,C:inactive}(Vanilla Disabled){}\",\
+        }\
+    }\
+}\
+\
+SMODS.Stake {\
+    name = \"Increased Ante Gold Stake\",\
+    key = \"A_gold\",\
+    above_stake = 'AntonosStake_A_black',\
+    unlocked_stake = \"AntonosStake_A_death\",\
+    applied_stakes = { \"AntonosStake_A_black\" },\
+    atlas = 'A_stakes',\
+    sticker_atlas = 'stickers',\
+    shiny = true,\
+    pos = { x = 2, y = 1 },\
+    sticker_pos = { x = 3, y = 1 },\
+    modifiers = function()\
+        G.GAME.modifiers.scaling = (G.GAME.modifiers.scaling or 1) + 2\
+    end,\
+    colour = G.C.GOLD,\
+    loc_txt = {\
+    name = \"Increased Ante Gold Stake\",\
+    text = {\
+        \"Required score scales\",\
+        \"faster for each {C:attention}Ante by 25%\",\
+        \"{s:0.8,C:inactive}(Vanilla Disabled){}\",\
+    }\
+}\
+}\
+\
+SMODS.Stake {\
+    name = \"Increased Ante Death Stake\",\
+    key = \"A_death\",\
+    above_stake = 'AntonosStake_A_gold',\
+    applied_stakes = { \"AntonosStake_A_gold\" },\
+    atlas = 'A_stakes',\
+    sticker_atlas = 'stickers',\
+    shiny = false,\
+    pos = { x = 4, y = 1 },\
+    sticker_pos = { x = 4, y = 1 },\
+    modifiers = function()\
+        G.GAME.modifiers.scaling = (G.GAME.modifiers.scaling or 1) + 4\
+    end,\
+    colour = G.C.WHITE,\
+    loc_txt = {\
+    name = \"Increased Ante Death Stake\",\
+    text = {\
+        \"Required score scales\",\
+        \"faster for each {C:attention}Ante by 50%\",\
+        \"{s:0.8,C:inactive}(Vanilla Disabled){}\",\
+    }\
+}\
+}\
+\
+---------------------------------------------------------------------------------------------------------------------------------------------------------------\
+\
+SMODS.Stake({\
+    key = \"A_morewhite\",\
+    applied_stakes = {},\
+    above_stake = 'gold',\
+    unlocked_stake = \"AntonosStake_A_morered\",\
+    atlas = 'A_morestakes',\
+    pos = {x = 0, y = 0},\
+    sticker_pos = {x = 1, y = 0},\
+    sticker_atlas = 'morestickers',\
+    loc_txt = {\
+        name = \"More Ante White Stake\",\
+        text = {\
+            \"Increases the ante\",\
+            \"required to win the game by 2\",\
+            \"{s:0.8,C:inactive}(Vanilla Disabled){}\",\
+        }\
+    },    \
+\
+    modifiers = function()\
+        G.GAME.win_ante = (G.GAME.win_ante or 1) + 2\
+    end,\
+}\
+)\
+\
+SMODS.Stake {\
+    name = \"More Ante Red Stake\",\
+    key = \"A_morered\",\
+    above_stake = 'AntonosStake_A_morewhite',\
+    unlocked_stake = \"AntonosStake_A_moregreen\",\
+    applied_stakes = { \"AntonosStake_A_morewhite\" },\
+    atlas = 'A_morestakes',\
+    sticker_atlas = 'morestickers',\
+    pos = { x = 1, y = 0 },\
+    sticker_pos = { x = 2, y = 0 },\
+    modifiers = function()\
+        G.GAME.win_ante = (G.GAME.win_ante or 1) + 2\
+    end,\
+    colour = G.C.RED,\
+    loc_txt = {\
+        name = \"More Ante Red Stake\",\
+        text = {\
+            \"Increases the ante\",\
+            \"required to win the game by 2\",\
+            \"{s:0.8,C:inactive}(Vanilla Disabled){}\",\
+        }\
+    }\
+}\
+\
+SMODS.Stake {\
+    name = \"More Ante Green Stake\",\
+    key = \"A_moregreen\",\
+    above_stake = 'AntonosStake_A_morered',\
+    unlocked_stake = \"AntonosStake_A_moreblack\",\
+    applied_stakes = { \"AntonosStake_A_morered\" },\
+    atlas = 'A_morestakes',\
+    sticker_atlas = 'morestickers',\
+    pos = { x = 2, y = 0 },\
+    sticker_pos = { x = 3, y = 0 },\
+    modifiers = function()\
+        G.GAME.win_ante = (G.GAME.win_ante or 1) + 2\
+    end,\
+    colour = G.C.GREEN,\
+    loc_txt = {\
+        name = \"More Ante Green Stake\",\
+        text = {\
+            \"Increases the ante\",\
+            \"required to win the game by 2\",\
+            \"{s:0.8,C:inactive}(Vanilla Disabled){}\",\
+        }\
+    }\
+}\
+\
+SMODS.Stake {\
+    name = \"More Ante Black Stake\",\
+    key = \"A_moreblack\",\
+    above_stake = 'AntonosStake_A_moregreen',\
+    unlocked_stake = \"AntonosStake_A_moreblue\",\
+    applied_stakes = { \"AntonosStake_A_moregreen\" },\
+    atlas = 'A_morestakes',\
+    sticker_atlas = 'morestickers',\
+    pos = { x = 4, y = 0 },\
+    sticker_pos = { x = 0, y = 1 },\
+    modifiers = function()\
+        G.GAME.win_ante = (G.GAME.win_ante or 1) + 2\
+    end,\
+    colour = G.C.BLACK,\
+    loc_txt = {\
+        name = \"More Ante Black Stake\",\
+        text = {\
+            \"Increases the ante\",\
+            \"required to win the game by 2\",\
+            \"{s:0.8,C:inactive}(Vanilla Disabled){}\",\
+        }\
+    }\
+}\
+\
+SMODS.Stake {\
+    name = \"More Ante Gold Stake\",\
+    key = \"A_moregold\",\
+    above_stake = 'AntonosStake_A_moreblack',\
+    unlocked_stake = \"AntonosStake_A_moredeath\",\
+    applied_stakes = { \"AntonosStake_A_moreblack\" },\
+    atlas = 'A_morestakes',\
+    sticker_atlas = 'morestickers',\
+    shiny = true,\
+    pos = { x = 2, y = 1 },\
+    sticker_pos = { x = 3, y = 1 },\
+    modifiers = function()\
+        G.GAME.win_ante = (G.GAME.win_ante or 1) + 2\
+    end,\
+    colour = G.C.GOLD,\
+    loc_txt = {\
+    name = \"More Ante Gold Stake\",\
+    text = {\
+        \"Increases the ante\",\
+        \"required to win the game by 2\",\
+        \"{s:0.8,C:inactive}(Vanilla Disabled){}\",\
+    }\
+}\
+}\
+\
+SMODS.Stake {\
+    name = \"More Ante Death Stake\",\
+    key = \"A_moredeath\",\
+    above_stake = 'AntonosStake_A_moregold',\
+    applied_stakes = { \"AntonosStake_A_moregold\" },\
+    atlas = 'A_morestakes',\
+    sticker_atlas = 'morestickers',\
+    shiny = false,\
+    pos = { x = 4, y = 1 },\
+    sticker_pos = { x = 4, y = 1 },\
+    modifiers = function()\
+        G.GAME.win_ante = (G.GAME.win_ante or 1) + 3\
+    end,\
+    colour = G.C.GOLD,\
+    loc_txt = {\
+    name = \"More Ante Death Stake\",\
+    text = {\
+        \"Increases the ante\",\
+        \"required to win the game by 3\",\
+        \"{s:0.8,C:inactive}(Vanilla Disabled){}\",\
+    }\
+}\
+}\
+\
+---------------------------------------------------------------------------------------------------------------------\
+\
+SMODS.Stake({\
+    key = \"A_crazywhite\",\
+    applied_stakes = {},\
+    above_stake = 'gold',\
+    unlocked_stake = \"AntonosStake_A_crazyred\",\
+    atlas = 'A_crazystakes',\
+    pos = {x = 0, y = 0},\
+    sticker_pos = {x = 1, y = 0},\
+    sticker_atlas = 'crazystickers',\
+    loc_txt = {\
+        name = \"Crazy White Stake\",\
+        text = {\
+            \"Increases the ante\",\
+            \"required to win the game by 1\",\
+            \"Required score scales\",\
+            \"faster for each {C:attention}Ante by 12.5%\",\
+        }\
+    },    \
+\
+    modifiers = function()\
+        G.GAME.win_ante = (G.GAME.win_ante or 1) + 1\
+        G.GAME.modifiers.scaling = (G.GAME.modifiers.scaling or 1) + 1\
+    end,\
+}\
+)\
+\
+SMODS.Stake {\
+    name = \"Crazy Red Stake\",\
+    key = \"A_crazyred\",\
+    above_stake = 'AntonosStake_A_crazywhite',\
+    unlocked_stake = \"AntonosStake_A_crazygreen\",\
+    applied_stakes = { \"AntonosStake_A_crazywhite\" },\
+    atlas = 'A_crazystakes',\
+    sticker_atlas = 'crazystickers',\
+    pos = { x = 1, y = 0 },\
+    sticker_pos = { x = 2, y = 0 },\
+    modifiers = function()\
+        G.GAME.win_ante = (G.GAME.win_ante or 1) + 2\
+        G.GAME.modifiers.scaling = (G.GAME.modifiers.scaling or 1) + 1\
+    end,\
+    colour = G.C.RED,\
+    loc_txt = {\
+        name = \"Crazy Red Stake\",\
+        text = {\
+            \"Increases the ante\",\
+            \"required to win the game by 2\",\
+            \"Required score scales\",\
+            \"faster for each {C:attention}Ante by 12.5%\",\
+        }\
+    }\
+}\
+\
+SMODS.Stake {\
+    name = \"Crazy Green Stake\",\
+    key = \"A_crazygreen\",\
+    above_stake = 'AntonosStake_A_crazyred',\
+    unlocked_stake = \"AntonosStake_A_crazyblack\",\
+    applied_stakes = { \"AntonosStake_A_crazyred\" },\
+    atlas = 'A_crazystakes',\
+    sticker_atlas = 'crazystickers',\
+    pos = { x = 2, y = 0 },\
+    sticker_pos = { x = 3, y = 0 },\
+    modifiers = function()\
+        G.GAME.win_ante = (G.GAME.win_ante or 1) + 2\
+        G.GAME.modifiers.scaling = (G.GAME.modifiers.scaling or 1) + 2\
+    end,\
+    colour = G.C.GREEN,\
+    loc_txt = {\
+        name = \"Crazy Green Stake\",\
+        text = {\
+            \"Increases the ante\",\
+            \"required to win the game by 2\",\
+            \"Required score scales\",\
+            \"faster for each {C:attention}Ante by 25%\",\
+        }\
+    }\
+}\
+\
+SMODS.Stake {\
+    name = \"Crazy Black Stake\",\
+    key = \"A_crazyblack\",\
+    above_stake = 'AntonosStake_A_crazygreen',\
+    unlocked_stake = \"AntonosStake_A_crazyblue\",\
+    applied_stakes = { \"AntonosStake_A_crazygreen\" },\
+    atlas = 'A_crazystakes',\
+    sticker_atlas = 'crazystickers',\
+    pos = { x = 4, y = 0 },\
+    sticker_pos = { x = 0, y = 1 },\
+    modifiers = function()\
+        G.GAME.win_ante = (G.GAME.win_ante or 1) + 2\
+        G.GAME.modifiers.scaling = (G.GAME.modifiers.scaling or 1) + 2\
+    end,\
+    colour = G.C.BLACK,\
+    loc_txt = {\
+        name = \"Crazy Black Stake\",\
+        text = {\
+            \"Increases the ante\",\
+            \"required to win the game by 2\",\
+            \"Required score scales\",\
+            \"faster for each {C:attention}Ante by 25%\",\
+        }\
+    }\
+}\
+\
+SMODS.Stake {\
+    name = \"Crazy Gold Stake\",\
+    key = \"A_crazygold\",\
+    above_stake = 'AntonosStake_A_crazyblack',\
+    unlocked_stake = \"AntonosStake_A_crazydeath\",\
+    applied_stakes = { \"AntonosStake_A_crazyblack\" },\
+    atlas = 'A_crazystakes',\
+    sticker_atlas = 'crazystickers',\
+    shiny = true,\
+    pos = { x = 2, y = 1 },\
+    sticker_pos = { x = 3, y = 1 },\
+    modifiers = function()\
+        G.GAME.win_ante = (G.GAME.win_ante or 1) + 2\
+        G.GAME.modifiers.scaling = (G.GAME.modifiers.scaling or 1) + 2\
+    end,\
+    colour = G.C.GOLD,\
+    loc_txt = {\
+    name = \"Crazy Gold Stake\",\
+    text = {\
+        \"Increases the ante\",\
+        \"required to win the game by 2\",\
+        \"Required score scales\",\
+        \"faster for each {C:attention}Ante by 25%\",\
+    }\
+}\
+}\
+\
+SMODS.Stake {\
+    name = \"Crazy Death Stake\",\
+    key = \"A_crazydeath\",\
+    above_stake = 'AntonosStake_A_crazygold',\
+    applied_stakes = { \"AntonosStake_A_crazygold\" },\
+    atlas = 'A_crazystakes',\
+    sticker_atlas = 'crazystickers',\
+    shiny = false,\
+    pos = { x = 4, y = 1 },\
+    sticker_pos = { x = 4, y = 1 },\
+    modifiers = function()\
+        G.GAME.win_ante = (G.GAME.win_ante or 1) + 3\
+        G.GAME.modifiers.scaling = (G.GAME.modifiers.scaling or 1) + 4\
+    end,\
+    colour = G.C.GOLD,\
+    loc_txt = {\
+    name = \"Crazy Death Stake\",\
+    text = {\
+        \"Increases the ante\",\
+        \"required to win the game by 3\",\
+        \"Required score scales\",\
+        \"faster for each {C:attention}Ante by 50%\",\
+    }\
+}\
+}"
+	 headerLine = string: "--- STEAMODDED HEADER"
+	 mod = table: 0x08e8c800  {}
+	 sane = boolean: true
+	 (for generator) = C function: next
+	 (for state) = table: 0x04123b88  {version:table: 0x04124118, id:table: 0x04123bd8, conflicts:table: 0x04124008, outdated:table: 0x04124198, prefix:table: 0x041240b8, dump_loc:table: 0x041241f8 (more...)}
+	 (for control) = number: nan
+	 k = string: "version"
+	 v = table: 0x04124118  {handle:function: 0x04124178, pattern:%-%-%- VERSION: (.-)
+}
+	 component = string: "Beta 1.0"
+(7) Lua upvalue 'processDirectory' at Steamodded file 'src/loader.lua:205' 
+	Local variables:
+	 directory = string: "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods/Stakes"
+	 depth = number: 2
+	 isDirLovely = boolean: false
+	 (for generator) = C function: builtin#6
+	 (for state) = table: 0x08e7dad0  {1:Scaling-Ante-Stakes-main}
+	 (for control) = number: 1
+	 _ = number: 1
+	 filename = string: "Scaling-Ante-Stakes-main"
+	 file_path = string: "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods/Stakes/Scaling-Ante-Stakes-main"
+	 file_type = string: "directory"
+(8) Lua local 'processDirectory' at Steamodded file 'src/loader.lua:205' 
+	Local variables:
+	 directory = string: "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods"
+	 depth = number: 1
+	 isDirLovely = boolean: false
+	 (for generator) = C function: builtin#6
+	 (for state) = table: 0x041218f8  {1:.git, 2:.gitattributes, 3:.gitignore, 4:BalatroMultiplayer-0.1.8.3, 5:Brainstorm-2.0.0-alpha-1, 6:Decks, 7:HandyBalatro, 8:Packs_and_Mechanics (more...)}
+	 (for control) = number: 9
+	 _ = number: 9
+	 filename = string: "Stakes"
+	 file_path = string: "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods/Stakes"
+	 file_type = string: "directory"
+(9) Lua global 'loadMods' at Steamodded file 'src/loader.lua:366' 
+	Local variables:
+	 modsDirectory = string: "C:\\users\\steamuser\\AppData\\Roaming\\Balatro\\Mods"
+	 header_components = table: 0x04123b88  {version:table: 0x04124118, id:table: 0x04123bd8, conflicts:table: 0x04124008, outdated:table: 0x04124198, prefix:table: 0x041240b8, dump_loc:table: 0x041241f8 (more...)}
+	 json_spec = table: 0x04124290  {version:table: 0x041246c8, id:table: 0x041242b8, main_file:table: 0x041248a8, __:table: 0x04124968, badge_colour:table: 0x04124568, badge_text_colour:table: 0x041245e8 (more...)}
+	 used_prefixes = table: 0x04124a68  {ulti:UltimateRandomDeck, paup:pauperdeck, pactdeck:PactDeck, abso:AbsoluteDeck}
+	 lovely_directories = table: 0x04124a90  {1:C:\users\steamuser\AppData\Roaming\Balatro\Mods/BalatroMultiplayer-0.1.8.3/, 2:C:\users\steamuser\AppData\Roaming\Balatro\Mods/HandyBalatro/ (more...)}
+	 processDirectory = Lua function '?' (defined at line 185 of chunk [SMODS _ "src/loader.lua"])
+(10) Lua global 'initSteamodded' at Steamodded file 'src/loader.lua:654' 
+(11) Lua upvalue 'su' at file 'game.lua:211'
+	Local variables:
+	 self = table: 0x03ddc838  {F_GUIDE:false, F_CRASH_REPORTS:false, F_QUIT_BUTTON:true, F_ENGLISH_ONLY:false, F_VIDEO_SETTINGS:true, STAGE:1, F_MOBILE_UI:false, F_NO_SAVING:false (more...)}
+	 settings = string: "return {[\"version\"]=\"1.0.1o-FULL\",[\"paused\"]=false,[\"QUEUED_CHANGE\"]={},[\"COMP\"]={[\"prev_name\"]=\"\",[\"name\"]=\"\",[\"score\"]=580150259.137,},[\"colourblind_option\"]=false,[\"play_button_pos\"]=2,[\"CUSTOM_DECK\"]={[\"Collabs\"]={[\"Spades\"]=\"default_Spades\",[\"Hearts\"]=\"default_Hearts\",[\"Diamonds\"]=\"default_Diamonds\",[\"Clubs\"]=\"default_Clubs\",},},[\"colour_palettes\"]={[\"Spades\"]=\"lc\",[\"Hearts\"]=\"lc\",[\"Diamonds\"]=\"lc\",[\"Clubs\"]=\"lc\",},[\"crashreports\"]=false,[\"tutorial_progress\"]={[\"completed_parts\"]={[\"first_hand_3\"]=true,[\"shop_1\"]=true,[\"big_blind\"]=true,[\"first_hand_4\"]=true,[\"small_blind\"]=true,[\"first_hand_section\"]=true,[\"first_hand_2\"]=true,[\"first_hand\"]=true,},[\"section\"]=\"big_blind\",[\"hold_parts\"]={},},[\"language\"]=\"en-us\",[\"run_stake_stickers\"]=false,[\"ambient_control\"]={[\"ambientFire3\"]={[\"vol\"]=0,[\"per\"]=1,},[\"ambientFire1\"]={[\"vol\"]=0,[\"per\"]=1.1,},[\"ambientFire2\"]={[\"vol\"]=0,[\"per\"]=1.05,},[\"ambientOrgan1\"]={[\"vol\"]=0,[\"per\"]=0.7,},},[\"WINDOW\"]={[\"vsync\"]=0,[\"display_names\"]={[1]=\"1\",},[\"screenmode\"]=\"Windowed\",[\"DISPLAYS\"]={[2]={[\"DPI_scale\"]=1,[\"screen_resolutions\"]={[\"strings\"]={[1]=\"-\",},[\"values\"]={[1]={[\"h\"]=720,[\"w\"]=1280,},},},[\"MONITOR_DIMS\"]={[\"height\"]=2160,[\"width\"]=3840,},},[1]={[\"DPI_scale\"]=1,[\"screen_res\"]={[\"w\"]=2560,[\"h\"]=1440,},[\"screen_resolutions\"]={[\"strings\"]={[1]=\"-\",},[\"values\"]={[1]={[\"h\"]=720,[\"w\"]=1280,},},},[\"MONITOR_DIMS\"]={[\"height\"]=1080,[\"width\"]=1920,},},},[\"selected_display\"]=1,},[\"screenshake\"]=50,[\"GAMESPEED\"]=4,[\"SOUND\"]={[\"volume\"]=30.213881063598,[\"music_volume\"]=28.36664526879,[\"game_sounds_volume\"]=100,},[\"music_control\"]={[\"current_track\"]=\"\",[\"desired_track\"]=\"\",[\"lerp\"]=1,},[\"ACHIEVEMENTS_EARNED\"]={[\"card_discarder\"]=true,[\"_10k\"]=true,[\"retrograde\"]=true,[\"royale\"]=true,[\"_100000k\"]=true,[\"cartomancy\"]=true,[\"mid_stakes\"]=true,[\"low_stakes\"]=true,[\"ante_upper\"]=true,[\"rule_bender\"]=true,[\"you_get_what_you_get\"]=true,[\"legendary\"]=true,[\"speedrunner\"]=true,[\"heads_up\"]=true,[\"_1000k\"]=true,[\"clairvoyance\"]=true,[\"ante_up\"]=true,[\"card_player\"]=true,},[\"tutorial_complete\"]=true,[\"current_setup\"]=\"New Run\",[\"profile\"]=1,[\"FASTFORWARD\"]=0,[\"DEMO\"]={[\"win_CTA_shown\"]=true,[\"quit_CTA_shown\"]=true,[\"timed_CTA_shown\"]=true,[\"total_uptime\"]=10.011528921789,},[\"GRAPHICS\"]={[\"shadows\"]=\"On\",[\"crt\"]=0,[\"bloom\"]=1,[\"texture_scaling\"]=2,},}"
+	 settings_ver = nil
+	 new_colour_proto = table: 0x03de4da8  {Spades:table: 0x03de5030, Hearts:table: 0x03de4ea0, Diamonds:table: 0x03de4f58, Clubs:table: 0x03de50c8}
+	 sound_files = table: 0x0424efb8  {1:ambientFire1.ogg, 2:ambientFire2.ogg, 3:ambientFire3.ogg, 4:ambientOrgan1.ogg, 5:button.ogg, 6:cancel.ogg, 7:card1.ogg, 8:card3.ogg, 9:cardFan2.ogg (more...)}
+	 shader_files = table: 0x04252ec8  {1:CRT.fs, 2:background.fs, 3:booster.fs, 4:debuff.fs, 5:dissolve.fs, 6:flame.fs, 7:flash.fs, 8:foil.fs, 9:gold_seal.fs, 10:holo.fs, 11:hologram.fs (more...)}
+(12) Lua method 'start_up' at file 'main.lua:4694'
+	Local variables:
+	 self = table: 0x03ddc838  {F_GUIDE:false, F_CRASH_REPORTS:false, F_QUIT_BUTTON:true, F_ENGLISH_ONLY:false, F_VIDEO_SETTINGS:true, STAGE:1, F_MOBILE_UI:false, F_NO_SAVING:false (more...)}
+(13) Lua field 'load' at file 'main.lua:948'
+(14) Lua function '?' at file 'main.lua:895' (best guess)
+(15) global C function 'xpcall'
+(16) LÖVE function at file 'boot.lua:368' (best guess)
+	Local variables:
+	 result = boolean: true
+	 main = nil
+(17) global C function 'xpcall'
+(18) LÖVE function at file 'boot.lua:377' (best guess)
+	Local variables:
+	 func = Lua function '(LÖVE Function)' (defined at line 355 of chunk [love "boot.lua"])
+	 inerror = boolean: true
+	 deferErrhand = Lua function '(LÖVE Function)' (defined at line 348 of chunk [love "boot.lua"])
+	 earlyinit = Lua function '(LÖVE Function)' (defined at line 355 of chunk [love "boot.lua"])
+
+INFO - [G] line not found
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] 2025-03-16 11:27:52 :: INFO  :: StackTrace :: Additional Context:
+Balatro Version: 1.0.1o-FULL
+Modded Version: 1.0.0~BETA-0312b-STEAMODDED
+LÖVE Version: 11.5.0
+Lovely Version: 0.7.1
+Platform: Windows
+Steamodded Mods:
+Lovely Mods:
