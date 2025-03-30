@@ -659,7 +659,8 @@ function buildAchievementsTab(mod, current_page)
             return wrappedText
         end
     
-        local loc_target = (v.hidden_text and not v.earned) and {localize("hidden_achievement", 'achievement_descriptions')} or wrapText(localize(v.key, 'achievement_descriptions'), maxCharsPerLine)
+        local loc_target = (v.hidden_text and not v.earned) and {localize("hidden_achievement", 'achievement_descriptions')} or localize(v.key, 'achievement_descriptions')
+        if type(loc_target) == 'string' then loc_target = wrapText(loc_target, maxCharsPerLine) end
         local loc_name = (v.hidden_name and not v.earned) and localize("hidden_achievement", 'achievement_names') or localize(v.key, 'achievement_names')
 
         local ability_text = {}
@@ -905,9 +906,11 @@ local function createClickableModBox(modInfo, scale)
         minh = 0.8,
         minw = 7
     }
+    local version_col = copy_table(G.C.WHITE)
+    version_col[4] = 0.6
     if modInfo.lovely_only then
         local config = but.nodes[1].nodes[2].nodes[1].config
-        config.colour = mix_colours(invert(col), G.C.UI.TEXT_INACTIVE, 0.8)
+        config.colour = version_col
         config.scale = scale * .8
     end
     if modInfo.version and modInfo.version ~= '0.0.0' then
@@ -916,7 +919,7 @@ local function createClickableModBox(modInfo, scale)
             config = {
                 text = ('(%s) '):format(modInfo.version),
                 scale = scale*0.8,
-                colour = mix_colours(invert(col), G.C.UI.TEXT_INACTIVE, 0.8),
+                colour = version_col,
                 shadow = true,
             },
         })

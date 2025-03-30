@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'e81cde3b95e142fc9ff030db365e5a1218ab721a59b7332f185cc885ad081eed'
+LOVELY_INTEGRITY = 'a96869ba40a54890846acfc72480e655f0fc6b91d1d40ab0e977c84cc61f4445'
 
 ---@class Controller
 Controller = Object:extend()
@@ -777,7 +777,6 @@ function Controller:key_press_update(key, dt)
 
     if self.text_input_hook then
         if key == "escape" then
-        	G.cry_edeck_select = nil
             self.text_input_hook = nil
         elseif key == "capslock" then
             self.capslock = not self.capslock
@@ -792,7 +791,6 @@ function Controller:key_press_update(key, dt)
     end
 
     if key == "escape" then
-    	G.cry_edeck_select = nil
         if G.STATE == G.STATES.SPLASH then 
             G:delete_run()
             G:main_menu()
@@ -940,7 +938,7 @@ function Controller:key_hold_update(key, dt)
         end
     end
 end
-if key == "r" and not G.SETTINGS.paused and not (G.GAME and G.GAME.USING_CODE) then
+if key == "r" and not G.SETTINGS.paused then
             if self.held_key_times[key] > 0.7 then
                 if not G.GAME.won and not G.GAME.seeded and not G.GAME.challenge then 
                     G.PROFILES[G.SETTINGS.profile].high_scores.current_streak.amt = 0
