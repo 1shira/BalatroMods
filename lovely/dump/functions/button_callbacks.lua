@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '3e63b36cfb98351a619a487e118e3c368ef1cd73e756d83a8cf7c9d3188ecb88'
+LOVELY_INTEGRITY = 'a699559c1b1c8e2a8f1dff9a08dc2f0f51042522539d098ecb160030d0427523'
 
 --Moves the tutorial to the next step in queue
 --
@@ -1838,7 +1838,7 @@ end
 
 G.FUNCS.start_setup_run = function(e)
   if G.OVERLAY_MENU then G.FUNCS.exit_overlay_menu() end
-  if G.SETTINGS.current_setup == 'New Run' then 
+  if G.SETTINGS.current_setup == 'New Run' or G.SETTINGS.current_setup == 'Multiplayer' then
     if not G.GAME or (not G.GAME.won and not G.GAME.seeded) then
       if G.SAVED_GAME ~= nil then
         if not G.SAVED_GAME.GAME.won then 
@@ -2524,6 +2524,9 @@ G.FUNCS.buy_from_shop = function(e)
 end
   
   G.FUNCS.toggle_shop = function(e)
+  if MP.LOBBY.code then
+    MP.ACTIONS.spent_last_shop(to_big(MP.GAME.spent_total) - to_big(MP.GAME.spent_before_shop))
+  end
     stop_use()
     G.CONTROLLER.locks.toggle_shop = true
     if G.shop then 

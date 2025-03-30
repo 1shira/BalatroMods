@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '9672535b46eee8aaecc3a2586276009e9943300cb1783cfff8b1c9042c0c8e66'
+LOVELY_INTEGRITY = 'a965375d305f1759e8bc838f06152147a5480cc50986f5371e7707dd53dcf156'
 
 --Class
 Game = Object:extend()
@@ -2363,7 +2363,14 @@ function Game:start_run(args)
         CAI.consumeable_H, 
         {card_limit = self.GAME.starting_params.consumable_slots, type = 'joker', highlight_limit = 1})
 
-    self.jokers = CardArea(
+    if MP.LOBBY.code then 
+      MP.shared = CardArea(
+        0, CAI.consumeable_H + 0.3,
+        CAI.consumeable_W / 2,
+        CAI.consumeable_H, 
+        {card_limit = 0, type = 'joker', highlight_limit = 1})
+    end
+self.jokers = CardArea(
         0, 0,
         CAI.joker_W,
         CAI.joker_H, 
@@ -3464,7 +3471,8 @@ function Game:update_round_eval(dt)
     if self.buttons then self.buttons:remove(); self.buttons = nil end
     if self.shop then self.shop:remove(); self.shop = nil end
 
-    if not G.STATE_COMPLETE then
+     if not G.STATE_COMPLETE and not MP.GAME.prevent_eval then
+        MP.GAME.prevent_eval = true
         stop_use()
         G.STATE_COMPLETE = true
         G.E_MANAGER:add_event(Event({

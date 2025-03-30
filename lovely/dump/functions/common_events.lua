@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '0e8b0fb773a190f9f382a4d27bef6969a921d3a0b3c977b841b02af38e4343d3'
+LOVELY_INTEGRITY = 'dcee0f419fb831e26062a3a28f9f4e4a22ad6f41bb9551ac4fd7a2c56c6cf364'
 
 function set_screen_positions()
     if G.STAGE == G.STAGES.RUN then
@@ -13,6 +13,10 @@ function set_screen_positions()
 
         G.consumeables.T.x = G.jokers.T.x + G.jokers.T.w + 0.2
         G.consumeables.T.y = 0
+        if MP.shared then
+          MP.shared.T.x = G.consumeables.T.x + (G.consumeables.T.w / 2)
+          MP.shared.T.y = G.consumeables.T.y + G.consumeables.T.h + 0.4
+        end
 
         G.deck.T.x = G.TILE_W - G.deck.T.w - 0.5
         G.deck.T.y = G.TILE_H - G.deck.T.h
@@ -81,6 +85,9 @@ function ease_dollars(mod, instant)
         end
         --Ease from current chips to the new number of chips
         G.GAME.dollars = G.GAME.dollars + mod
+        if MP.LOBBY.code and to_big(mod) < to_big(0) then
+          MP.GAME.spent_total = to_big(MP.GAME.spent_total) + (to_big(mod) * to_big(-1))
+        end
         check_and_set_high_score('most_money', G.GAME.dollars)
         check_for_unlock({type = 'money'})
         dollar_UI.config.object:update()
@@ -163,6 +170,9 @@ function ease_hands_played(mod, instant)
         end
         --Ease from current chips to the new number of chips
         G.GAME.current_round.hands_left = G.GAME.current_round.hands_left + mod
+        if MP.LOBBY.code and MP.is_pvp_boss() and mod > 0 then
+        		MP.ACTIONS.play_hand(G.GAME.chips, G.GAME.current_round.hands_left)
+        	end
         hand_UI.config.object:update()
         G.HUD:recalculate()
         --Popup text next to the chips in UI showing number of chips gained/lost
@@ -1210,6 +1220,32 @@ function add_round_eval_row(config)
                     blind_sprite:juice_up()
                     table.insert(left_text, {n=G.UIT.O, config={w=0.7,h=0.7 , object = blind_sprite, hover = true, can_collide = false}})
                     table.insert(left_text, {n=G.UIT.O, config={object = DynaText({string = {config.condition}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4*scale, silent = true})}})                   
+                elseif config.name == "comeback" then
+                  table.insert(left_text, {
+                    n = G.UIT.T,
+                    config = {
+                      text = MP.GAME.comeback_bonus,
+                      scale = 0.8 * scale,
+                      colour = G.C.PURPLE,
+                      shadow = true,
+                      juice = true,
+                    },
+                  })
+                  table.insert(left_text, {
+                    n = G.UIT.O,
+                    config = {
+                      object = DynaText({
+                        string = {
+                          localize("k_total_lives_lost"),
+                        },
+                        colours = { G.C.UI.TEXT_LIGHT },
+                        shadow = true,
+                        pop_in = 0,
+                        scale = 0.4 * scale,
+                        silent = true,
+                      }),
+                    },
+                  })
                 elseif config.name == 'hands' then
                     table.insert(left_text, {n=G.UIT.T, config={text = config.disp or config.dollars, scale = 0.8*scale, colour = G.C.BLUE, shadow = true, juice = true}})
                     table.insert(left_text, {n=G.UIT.O, config={object = DynaText({string = {" "..localize{type = 'variable', key = 'remaining_hand_money', vars = {G.GAME.modifiers.money_per_hand or 1}}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4*scale, silent = true})}})

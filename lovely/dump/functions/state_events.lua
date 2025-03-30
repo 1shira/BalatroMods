@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '4bdc8f528f6ef4a3aebc94dbf1ba028ceb02f4e672e60cf7d852445fcc470bc4'
+LOVELY_INTEGRITY = '62e46957ef356fedcdb17d01fac48667a1603e4d2f376314353aee62651f158e'
 
 function win_game()
     if (not G.GAME.seeded and not G.GAME.challenge) or SMODS.config.seeded_unlocks then
@@ -90,7 +90,7 @@ function end_round()
     G.E_MANAGER:add_event(Event({
       trigger = 'after',
       delay = 0.2,
-      func = function()
+       func = MP.LOBBY.code and MP.end_round or function()
         G.GAME.blind.in_blind = false
         local game_over = true
         local game_won = false
@@ -897,7 +897,7 @@ G.FUNCS.evaluate_round = function()
     }))
     G.GAME.selected_back:trigger_effect({context = 'eval'})
 
-    if G.GAME.current_round.hands_left > 0 and not G.GAME.modifiers.no_extra_hand_money then
+    if G.GAME.current_round.hands_left > 0 and not G.GAME.modifiers.no_extra_hand_money and G.GAME.blind.name ~= "bl_mp_nemesis" then
         add_round_eval_row({dollars = G.GAME.current_round.hands_left*(G.GAME.modifiers.money_per_hand or 1), disp = G.GAME.current_round.hands_left, bonus = true, name='hands', pitch = pitch})
         pitch = pitch + 0.06
         dollars = dollars + G.GAME.current_round.hands_left*(G.GAME.modifiers.money_per_hand or 1)
@@ -942,6 +942,16 @@ G.FUNCS.evaluate_round = function()
         check_for_unlock({type = 'interest_streak'})
         dollars = dollars + G.GAME.interest_amount*math.min(math.floor(G.GAME.dollars/5), G.GAME.interest_cap/5)
     end
+  if not MP.GAME.comeback_bonus_given then
+		MP.GAME.comeback_bonus_given = true
+		add_round_eval_row({
+			bonus = true,
+			name = "comeback",
+			pitch = pitch,
+			dollars = 4 * MP.GAME.comeback_bonus,
+		})
+		dollars = dollars + 4 * MP.GAME.comeback_bonus
+	end
 
     pitch = pitch + 0.06
 
