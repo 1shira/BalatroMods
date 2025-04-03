@@ -1,3 +1,5 @@
+LOVELY_INTEGRITY = '283d9223e19b47c045fabbdaefff157063c3f2305b7e2c52b3d2b45eb43be812'
+
 --- STEAMODDED CORE
 --- MODULE API
 
@@ -359,7 +361,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
             -- language specific sprites override fully defined sprites only if that language is set
             if self.language and G.SETTINGS.language ~= self.language and G.SETTINGS.real_language ~= self.language then return end
             if not self.language and (self.obj_table[('%s_%s'):format(self.key, G.SETTINGS.language)] or self.obj_table[('%s_%s'):format(self.key, G.SETTINGS.real_language)]) then return end
-            self.full_path = (self.mod and self.mod.path or SMODS.path) ..
+            self.full_path = (self.mod_path or self.mod and self.mod.path or SMODS.path) ..
                 'assets/' .. G.SETTINGS.GRAPHICS.texture_scaling .. 'x/' .. file_path
             local file_data = assert(NFS.newFileData(self.full_path),
                 ('Failed to collect file data for Atlas %s'):format(self.key))
@@ -433,7 +435,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                 ((G.SETTINGS.real_language and self.path[G.SETTINGS.real_language]) or self.path[G.SETTINGS.language] or self.path['default'] or self.path['en-us']) or self.path
             if file_path == 'DEFAULT' then return end
             local prev_path = self.full_path
-            self.full_path = (self.mod and self.mod.path or SMODS.path) ..
+            self.full_path = (self.mod_path or self.mod and self.mod.path or SMODS.path) ..
                 'assets/sounds/' .. file_path
             if prev_path == self.full_path then return end
             self.data = NFS.read('data', self.full_path)
@@ -3051,7 +3053,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
         set = 'Shader',
         send_vars = nil, -- function (sprite) - get custom externs to send to shader.
         inject = function(self)
-            self.full_path = (self.mod and self.mod.path or SMODS.path) ..
+            self.full_path = (self.mod_path or self.mod and self.mod.path or SMODS.path) ..
                 'assets/shaders/' .. self.path
             local file = NFS.read(self.full_path)
             love.filesystem.write(self.key .. "-temp.fs", file)

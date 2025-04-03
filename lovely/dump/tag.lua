@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '36006f51b716d3ff1f8c4d2b5103b71af98753817755baca2b2c9f10d1313658'
+LOVELY_INTEGRITY = '36d597f8dd9392bd902da5968a2dbfab9ce6bfb102d78997708bef461f0293b9'
 
 --Class
 Tag = Object:extend()
@@ -62,6 +62,12 @@ function Tag:nope()
 end
 
 function Tag:yep(message, _colour, func)
+if self.ability.shiny then
+	if not Cryptid.shinytagdata[self.key] then
+		Cryptid.shinytagdata[self.key] = true
+		Cryptid.save()
+	end
+end
     stop_use()
 
     G.E_MANAGER:add_event(Event({
@@ -203,6 +209,13 @@ function Tag:apply_to_run(_context)
                 return true
             end
             if self.name == 'Orbital Tag' then
+                if (not self.ability.orbital_hand) or (not G.GAME.hands[self.ability.orbital_hand]) then
+                	local _poker_hands = {}
+                	for k, v in pairs(G.GAME.hands) do
+                		if v.visible then _poker_hands[#_poker_hands+1] = k end
+                	end
+                	self.ability.orbital_hand = pseudorandom_element(_poker_hands, pseudoseed('orbital'))
+                end
                 update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {
                     handname= self.ability.orbital_hand,
                     chips = G.GAME.hands[self.ability.orbital_hand].chips,
@@ -323,6 +336,11 @@ function Tag:apply_to_run(_context)
                     local card = Card(G.shop_vouchers.T.x + G.shop_vouchers.T.w/2,
                     G.shop_vouchers.T.y, G.CARD_W, G.CARD_H, G.P_CARDS.empty, G.P_CENTERS[voucher_key],{bypass_discovery_center = true, bypass_discovery_ui = true})
                     card.from_tag = true
+                    Cryptid.misprintize(card)
+                    if G.GAME.events.ev_cry_choco2 then
+                        card.misprint_cost_fac = (card.misprint_cost_fac or 1) * 2
+                        card:set_cost()
+                    end
                     create_shop_card_ui(card, 'Voucher', G.shop_vouchers)
                     card:start_materialize()
                     G.shop_vouchers:emplace(card)
@@ -339,7 +357,12 @@ function Tag:apply_to_run(_context)
                     if _context.tag.ability and _context.tag.ability.orbital_hand then
                         G.orbital_hand = _context.tag.ability.orbital_hand
                     end
-                    add_tag(Tag(_context.tag.key))
+                    	local tag = Tag(_context.tag.key)
+                    	if _context.tag.key == "tag_cry_rework" then
+                    		tag.ability.rework_edition = _context.tag.ability.rework_edition
+                    		tag.ability.rework_key = _context.tag.ability.rework_key
+                    	end
+                    	add_tag(tag)
                     G.orbital_hand = nil
                     G.CONTROLLER.locks[lock] = nil
                     return true
@@ -407,6 +430,7 @@ function Tag:apply_to_run(_context)
             end
         elseif _context.type == 'store_joker_modify' then
             local _applied = nil
+            if Cryptid.forced_edition() then self:nope() end
             if not _context.card.edition and not _context.card.temp_edition and _context.card.ability.set == 'Joker' then
                 local lock = self.ID
                 G.CONTROLLER.locks[lock] = true
@@ -510,7 +534,17 @@ function Tag:generate_UI(_size)
 
     local tag_sprite_tab = nil
 
-    local tag_sprite = Sprite(0,0,_size*1,_size*1,G.ASSET_ATLAS[(not self.hide_ability) and G.P_TAGS[self.key].atlas or "tags"], (self.hide_ability) and G.tag_undiscovered.pos or self.pos)
+    local tagatlas = G.ASSET_ATLAS[(not self.hide_ability) and G.P_TAGS[self.key].atlas or "tags"]
+    if self.ability.shiny and not self.hide_ability then
+    	if not G.P_TAGS[self.key].atlas then
+    		tagatlas = G.ASSET_ATLAS['cry_shinyv']
+    	elseif G.P_TAGS[self.key].atlas == 'cry_tag_cry' then
+    		tagatlas = G.ASSET_ATLAS['cry_shinyc']
+    	end
+    end
+    
+    local tag_sprite = Sprite(0,0,_size*1,_size*1,tagatlas, (self.hide_ability) and G.tag_undiscovered.pos or self.pos)
+    tag_sprite.tilt_var = {mx = 0, my = 0, dx = 0, dy = 0, amt = 0}
     tag_sprite.T.scale = 1
     tag_sprite_tab = {n= G.UIT.C, config={align = "cm", ref_table = self, group = self.tally}, nodes={
         {n=G.UIT.O, config={w=_size*1,h=_size*1, colour = G.C.BLUE, object = tag_sprite, focus_with_object = true}},
@@ -523,6 +557,7 @@ function Tag:generate_UI(_size)
     tag_sprite.states.hover.can = true
     tag_sprite.states.drag.can = false
     tag_sprite.states.collide.can = true
+    if self.key == 'tag_cry_cat' then tag_sprite.states.click.can = true; tag_sprite.states.drag.can = true end
     tag_sprite.config = {tag = self, force_focus = true}
 
     tag_sprite.hover = function(_self)
@@ -533,6 +568,9 @@ function Tag:generate_UI(_size)
                     _self.hover_tilt = 3
                     _self:juice_up(0.05, 0.02)
                     play_sound('paper1', math.random()*0.1 + 0.55, 0.42)
+                    if self.key == 'tag_cry_cat' then
+                    	play_sound('cry_meow'..math.random(4), 1.26, 0.12);
+                    end
                     play_sound('tarot2', math.random()*0.1 + 0.55, 0.09)
                 end
 
@@ -552,6 +590,131 @@ function Tag:generate_UI(_size)
         end
     end
     tag_sprite.stop_hover = function(_self) _self.hovering = false; Node.stop_hover(_self); _self.hover_tilt = 0 end
+    tag_sprite.draw = function(_self)
+    	if not _self.states.visible then return end
+    
+    	_self.tilt_var = self.tilt_var or {mx = 0, my = 0, dx = _self.tilt_var.dx or 0, dy = _self.tilt_var.dy or 0, amt = 0}
+    	_self.tilt_var.mx, _self.tilt_var.my = G.CONTROLLER.cursor_position.x, G.CONTROLLER.cursor_position.y
+            _self.tilt_var.amt = math.abs(_self.hover_offset.y + _self.hover_offset.x - 10)*0.3
+    
+            _self.ARGS.send_to_shader = _self.ARGS.send_to_shader or {}
+            _self.ARGS.send_to_shader[1] = math.min(_self.VT.r*3, 1) + G.TIMERS.REAL/(28) + (_self.juice and _self.juice.r*10 or 0) + _self.tilt_var.amt
+            _self.ARGS.send_to_shader[2] = G.TIMERS.REAL*2
+    
+    	_self.tilt_var = _self.tilt_var or {}
+    	_self.tilt_var.mx, _self.tilt_var.my =G.CONTROLLER.cursor_position.x,G.CONTROLLER.cursor_position.y
+    
+    	_self.role.draw_major = _self
+    	_self:draw_shader('dissolve', 0.1)
+    	local ed = _self.config.tag.ability.edshader
+    	if ed then
+    		if ed == 'foil' or ed == 'cry_noisy' then
+    			_self:draw_shader('dissolve')
+    		end
+    		_self:draw_shader(ed, nil, _self.ARGS.send_to_shader)
+    		if ed == 'negative' or ed == 'cry_oversat' then
+    			_self:draw_shader('negative_shine', nil, _self.ARGS.send_to_shader)
+    		end
+    	else
+    		_self:draw_shader('dissolve')
+    	end
+    	add_to_drawhash(_self)
+    end
+    tag_sprite.click = function(_self)
+            if self.key == 'tag_cry_cat' and self.HUD_tag then
+    		for i = 1, #G.GAME.tags do
+    			local other_cat = G.GAME.tags[i]
+    			if other_cat.key == 'tag_cry_cat' then
+    				if not self.ability.level then self.ability.level = 1 end
+    				if not other_cat.ability.level then other_cat.ability.level = 1 end	-- setting ability just doesn't seem to be working... so you get this
+    				if (self.ability.level == other_cat.ability.level) and (other_cat ~= self) and not cry_too_fast_kitty then
+    					cry_too_fast_kitty = true
+    					local perc = (other_cat.ability.level + 1)/10
+    					if perc > 1 then perc = 1 end
+    
+    					local edition = G.P_CENTER_POOLS.Edition[1]
+    					local j = 1
+    					while j < other_cat.ability.level + 1 do
+    						for i = 2, #G.P_CENTER_POOLS.Edition do
+    							j = j + 1
+    							if j >= other_cat.ability.level + 1 then
+    								edition = G.P_CENTER_POOLS.Edition[i]
+    								break
+    							end
+    						end
+    					end
+    
+    					G.E_MANAGER:add_event(Event({
+    						delay = 0.0,
+    						trigger = 'immediate',
+    						func = (function()
+    							attention_text({
+    								text = ""..other_cat.ability.level,
+    								colour = G.C.WHITE,
+    								scale = 1,
+    								hold = 0.3/G.SETTINGS.GAMESPEED,
+    								cover = other_cat.HUD_tag,
+    								cover_colour = G.C.DARK_EDITION,
+    								align = 'cm',
+    							})
+    							play_sound('generic1', 0.8 + perc/2, 0.6)
+    							play_sound('multhit1', 0.9 + perc/2, 0.4)
+    							return true
+    						end)
+    					}))
+    					G.E_MANAGER:add_event(Event({
+    						delay = 0.0,
+    						trigger = 'immediate',
+    						func = (function()
+    							attention_text({
+    								text = "-",
+    								colour = G.C.WHITE,
+    								scale = 1,
+    								hold = 0.3/G.SETTINGS.GAMESPEED,
+    								cover = self.HUD_tag,
+    								cover_colour = G.C.RED,
+    								align = 'cm',
+    							})
+    							return true
+    						end)
+    					}))
+    					G.E_MANAGER:add_event(Event({
+    						func = (function()
+    							self.HUD_tag.states.visible = false
+    							return true
+    						end)
+    					}))
+    					G.E_MANAGER:add_event(Event({		-- i have no idea what this does but i'm not messing with it
+    						func = func
+    					}))
+    
+    					other_cat.ability.level = other_cat.ability.level + 1
+    					
+    					if self.ability.shiny then
+    						if not Cryptid.shinytagdata[self.key] then
+    							Cryptid.shinytagdata[self.key] = true
+    							Cryptid.save()
+    						end
+    					end
+    
+    					G.E_MANAGER:add_event(Event({
+    						trigger = 'after',
+    						delay = 0.7,
+    						func = (function()
+    							other_cat:juice_up(0.25, 0.1)
+    							other_cat.ability.edshader = edition.shader
+    							play_sound(edition.sound.sound, (edition.sound.per or 1)*1.3, (edition.sound.vol or 0.25)*0.6)
+    							self:remove()
+    							cry_too_fast_kitty = nil
+    							return true
+    						end)
+    					}))
+    					break
+    				end
+    			end
+    		end
+    	end
+    end
 
     tag_sprite:juice_up()
     self.tag_sprite = tag_sprite

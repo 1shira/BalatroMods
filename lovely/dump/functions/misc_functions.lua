@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'cf2027125e599e74d2708873b2cbcfff97c555076bab03733793611c8698e617'
+LOVELY_INTEGRITY = '24463bbdc9f94005feb2b5ab558c6c9fa27872833dd85c8a698f13aa9eb93a45'
 
 --Updates all display information for all displays for a given screenmode. Returns the key for the resolution option cycle
 --
@@ -280,6 +280,9 @@ function pseudorandom_element(_t, seed, args)
               end
       if in_pool_func then
           keep = in_pool_func(v, args)
+      end
+      if G.GAME and G.GAME.cry_banned_pcards and G.GAME.cry_banned_pcards[k] then
+      	keep = false
       end
       if keep then
           keys[#keys+1] = {k = k,v = v}
@@ -801,6 +804,9 @@ function modulate_sound(dt)
     G.ARGS.score_intensity.earned_score = G.GAME.current_round.current_hand.chips*G.GAME.current_round.current_hand.mult
   end
   G.ARGS.score_intensity.required_score = G.GAME.blind and G.GAME.blind.chips or 0
+  if G.cry_flame_override and G.cry_flame_override['duration'] > 0 then
+  	G.cry_flame_override['duration'] = math.max(0, G.cry_flame_override['duration'] - dt)
+  end
   G.ARGS.score_intensity.flames = math.min(1, (G.STAGE == G.STAGES.RUN and 1 or 0)*(
     (G.ARGS.chip_flames and (G.ARGS.chip_flames.real_intensity + G.ARGS.chip_flames.change) or 0))/10)
   G.ARGS.score_intensity.organ = G.video_organ or to_big(G.ARGS.score_intensity.required_score) > to_big(0) and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0
@@ -1575,6 +1581,29 @@ function save_with_action(action)
   G.action = nil
 end
 
+function cry_rollshiny()
+	local prob = 1
+	if next(SMODS.find_card('j_lucky_cat')) then prob = 3 end
+	if pseudorandom("cry_shiny") < prob / 4096 then
+		return 'shiny'
+	end
+	return 'normal'
+end
+
+function cry_rollshinybool()
+	if cry_rollshiny() == 'shiny' then 
+		return true
+	end
+	return false
+end
+function cry_prob(owned, den, rigged)
+	prob = G.GAME and G.GAME.probabilities.normal or 1
+	if rigged then
+		return den
+	else
+		if owned then return prob*owned else return prob end
+	end
+end
 function save_run()
   if G.F_NO_SAVING == true then return end
   local cardAreas = {}
@@ -1618,13 +1647,6 @@ end
 
 function loc_colour(_c, _default)
   G.ARGS.LOC_COLOURS = G.ARGS.LOC_COLOURS or {
-    paperback_light_suit = G.C.PAPERBACK_LIGHT_SUIT,
-    paperback_dark_suit = G.C.PAPERBACK_DARK_SUIT,
-    paperback_stars = G.C.SUITS.paperback_Stars or G.C.PAPERBACK_STARS_LC,
-    paperback_crowns = G.C.SUITS.paperback_Crowns or G.C.PAPERBACK_CROWNS_LC,
-    paperback_minor_arcana = G.C.PAPERBACK_MINOR_ARCANA,
-    paperback_black = G.C.PAPERBACK_BLACK,
-    paperback_pink = G.C.PAPERBACK_PINK,
     red = G.C.RED,
     mult = G.C.MULT,
     blue = G.C.BLUE,
@@ -1829,6 +1851,19 @@ utf8.chars =
 	end
 
 function localize(args, misc_cat)
+if args and args.vars then
+    local reset = {}
+    for i, j in pairs(args.vars) do
+        if type(j) == 'table' then
+            if (j.new and type(j.new) == "function") and ((j.m and j.e) or (j.array and j.sign and (type(j.array) == "table"))) then
+                reset[i] = number_format(j)
+            end
+        end
+    end
+    for i, j in pairs(reset) do
+        args.vars[i] = j
+    end
+end
   if args and not (type(args) == 'table') then
     if misc_cat and G.localization.misc[misc_cat] then return G.localization.misc[misc_cat][args] or 'ERROR' end
     return G.localization.misc.dictionary[args] or 'ERROR'
@@ -1853,7 +1888,7 @@ function localize(args, misc_cat)
         for _, part in ipairs(lines) do
           local assembled_string = ''
           for _, subpart in ipairs(part.strings) do
-            assembled_string = assembled_string..(type(subpart) == 'string' and subpart or format_ui_value(args.vars[tonumber(subpart[1])]) or 'ERROR')
+            assembled_string = assembled_string..(type(subpart) == 'string' and subpart or Cryptid.pluralize(subpart[1], args.vars) or format_ui_value(args.vars[tonumber(subpart[1])]) or 'ERROR')
           end
           final_line = final_line..assembled_string
         end
@@ -1898,7 +1933,7 @@ function localize(args, misc_cat)
       for _, part in ipairs(lines) do
         local assembled_string = ''
         for _, subpart in ipairs(part.strings) do
-          assembled_string = assembled_string..(type(subpart) == 'string' and subpart or format_ui_value(args.vars[tonumber(subpart[1])]) or 'ERROR')
+          assembled_string = assembled_string..(type(subpart) == 'string' and subpart or Cryptid.pluralize(subpart[1], args.vars) or format_ui_value(args.vars[tonumber(subpart[1])]) or 'ERROR')
         end
         local desc_scale = G.LANG.font.DESCSCALE
         if G.F_MOBILE_UI then desc_scale = desc_scale*1.5 end
@@ -1944,7 +1979,7 @@ function localize(args, misc_cat)
           }}
         else
           final_line[#final_line+1] = {n=G.UIT.T, config={
-          detailed_tooltip = part.control.T and (G.P_CENTERS[part.control.T] or G.P_TAGS[part.control.T]) or nil,
+          detailed_tooltip = part.control.T and Cryptid.get_center(part.control.T) or nil,
           text = assembled_string,
           shadow = args.shadow,
           colour = part.control.V and args.vars.colours[tonumber(part.control.V)] or not part.control.C and args.text_colour or loc_colour(part.control.C or nil, args.default_col),

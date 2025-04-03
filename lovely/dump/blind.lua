@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '58d999b822e17697b7733c9311bb872d4e5a7f30039611099050e7c456c82449'
+LOVELY_INTEGRITY = '23945b73643b7134f9931e4b6932d8f2b2779f89a84ef2018650a8d6245a9b85'
 
 --class
 Blind = Moveable:extend()
@@ -525,7 +525,7 @@ function Blind:press_play()
     end
 end
 
-function Blind:modify_hand(cards, poker_hands, text, mult, hand_chips, scoring_hand)
+function Blind:modify_hand(cards, poker_hands, text, mult, hand_chips)
     if self.disabled then return mult, hand_chips, false end
     local obj = self.config.blind
     if obj.modify_hand and type(obj.modify_hand) == 'function' then
@@ -549,6 +549,10 @@ function Blind:debuff_hand(cards, hand, handname, check)
             self.triggered = true
             return true
         end
+        	if self.name == "The Psychic" and #cards > 5 then
+        		self.triggered = true
+             		return true
+        	end
         if self.debuff.h_size_ge and #cards < self.debuff.h_size_ge then
             self.triggered = true
             return true
@@ -642,11 +646,11 @@ function Blind:drawn_to_hand()
     self.prepped = nil
 end
 
-function Blind:stay_flipped(area, card, from_area)
+function Blind:stay_flipped(area, card)
     if not self.disabled then
         local obj = self.config.blind
         if obj.stay_flipped and type(obj.stay_flipped) == 'function' then
-            return obj:stay_flipped(area, card, from_area)
+            return obj:stay_flipped(area, card)
         end
         if area == G.hand then
             if self.name == 'The Wheel' and pseudorandom(pseudoseed('wheel')) < G.GAME.probabilities.normal/7 then
@@ -673,7 +677,7 @@ function Blind:debuff_card(card, from_blind)
         end
         return
     elseif not self.disabled and obj.debuff_card and type(obj.debuff_card) == 'function' then
-        sendWarnMessage(("Blind object %s has debuff_card function, recalc_debuff is preferred"):format(obj.key), obj.set)
+        -- sendWarnMessage(("Blind object %s has debuff_card function, recalc_debuff is preferred"):format(obj.key), obj.set)
         if obj:debuff_card(card, from_blind) then
             card:set_debuff(true)
             if card.debuff then card.debuffed_by_blind = true end

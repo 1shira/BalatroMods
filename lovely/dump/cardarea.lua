@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'cdd9e89d1533b1bf1a37702011981b84779de0c008ea531fc48249b0906557b3'
+LOVELY_INTEGRITY = 'ce10af21fa314b9d44c25d1ee8603e27ec19d10e02f7cec911dfad9dfecd1626'
 
 --Class
 CardArea = Moveable:extend()
@@ -17,7 +17,7 @@ function CardArea:init(X, Y, W, H, config)
     self.cards = {}
     self.children = {}
     self.highlighted = {}
-    self.config.highlighted_limit = config.highlight_limit or 5
+    self.config.highlighted_limit = config.highlight_limit or G.GAME.modifiers.cry_highlight_limit or 5
     self.config.card_limit = config.card_limit or 52
     self.config.temp_limit = self.config.card_limit
     self.config.card_count = 0
@@ -41,7 +41,8 @@ function CardArea:emplace(card, location, stay_flipped)
     else
         self.cards[#self.cards+1] = card
     end
-    if card.facing == 'back' and self.config.type ~= 'discard' and self.config.type ~= 'deck' and not stay_flipped then
+    if card.cry_flipped then card.facing = 'back'; card.sprite_facing = 'back' end
+    if not (card.cry_flipped and (self == G.shop_jokers or self == G.shop_vouchers or self == G.shop_booster)) and card.facing == 'back' and self.config.type ~= 'discard' and self.config.type ~= 'deck' and not stay_flipped then
         card:flip()
     end
     if self == G.hand and stay_flipped then 
@@ -189,7 +190,7 @@ function CardArea:parse_highlighted()
         if backwards then
             update_hand_text({immediate = true, nopulse = nil, delay = 0}, {handname='????', level='?', mult = '?', chips = '?'})
         else
-            update_hand_text({immediate = true, nopulse = nil, delay = 0}, {handname=disp_text, level=G.GAME.hands[text].level, mult = G.GAME.hands[text].mult, chips = G.GAME.hands[text].chips})
+            update_hand_text({immediate = true, nopulse = nil, delay = 0}, {handname=disp_text, level=G.GAME.hands[text].level, mult = Cryptid.ascend(G.GAME.hands[text].mult), chips = Cryptid.ascend(G.GAME.hands[text].chips)})
         end
     end
 end
@@ -306,13 +307,13 @@ function CardArea:draw()
                                 self == G.shop_vouchers and 
                                 {n=G.UIT.C, config={align = "cm", paddin = 0.1, func = 'shop_voucher_empty', visible = false}, nodes={
                                     {n=G.UIT.R, config={align = "cm"}, nodes={
-                                        {n=G.UIT.T, config={text = 'DEFEAT', scale = 0.6, colour = G.C.WHITE}}
+                                        {n=G.UIT.T, config={text = G.GAME.modifiers.cry_no_vouchers and (very_fair_quip[1] or '') or 'DEFEAT', scale = 0.6, colour = G.C.WHITE}}
                                     }},
                                     {n=G.UIT.R, config={align = "cm"}, nodes={
-                                        {n=G.UIT.T, config={text = 'BOSS BLIND', scale = 0.4, colour = G.C.WHITE}}
+                                        {n=G.UIT.T, config={text = G.GAME.modifiers.cry_no_vouchers and (very_fair_quip[2] or '') or G.GAME.modifiers.cry_voucher_restock_antes and G.GAME.round_resets.ante % G.GAME.modifiers.cry_voucher_restock_antes == 0 and 'TWO BOSS BLINDS' or 'BOSS BLIND', scale = 0.4, colour = G.C.WHITE}}
                                     }},
                                     {n=G.UIT.R, config={align = "cm"}, nodes={
-                                        {n=G.UIT.T, config={text = 'TO RESTOCK', scale = 0.4, colour = G.C.WHITE}}
+                                        {n=G.UIT.T, config={text = G.GAME.modifiers.cry_no_vouchers and (very_fair_quip[3] or '') or 'TO RESTOCK', scale = 0.4, colour = G.C.WHITE}}
                                     }},
                                 }} or nil,
                             }},
@@ -419,6 +420,9 @@ function CardArea:draw()
 end
 
 function CardArea:align_cards()
+    if self.config.type == 'hand' then
+        self.config.temp_limit = math.min(self.config.card_limit, #G.playing_cards)
+    end
     if (self == G.hand or self == G.deck or self == G.discard or self == G.play) and G.view_deck and G.view_deck[1] and G.view_deck[1].cards then return end
     if self.config.type == 'deck' then
             local deck_height = (self.config.deck_height or 0.15)/52
@@ -456,7 +460,7 @@ function CardArea:align_cards()
                 card.T.x = card.T.x + card.shadow_parrallax.x/30
             end
         end
-        table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 < b.T.x + b.T.w/2 end)
+        table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 - 100*((a.pinned and not a.ignore_pinned) and a.sort_id or 0) < b.T.x + b.T.w/2 - 100*((b.pinned and not b.ignore_pinned) and b.sort_id or 0) end)
     end  
     if self.config.type == 'hand' and not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED) then
 
@@ -472,7 +476,7 @@ function CardArea:align_cards()
                 card.T.x = card.T.x + card.shadow_parrallax.x/30
             end
         end
-        table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 < b.T.x + b.T.w/2 end)
+        table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 - 100*((a.pinned and not a.ignore_pinned) and a.sort_id or 0) < b.T.x + b.T.w/2 - 100*((b.pinned and not b.ignore_pinned) and b.sort_id or 0) end)
     end  
     if self.config.type == 'title' or (self.config.type == 'voucher' and #self.cards == 1) then
         for k, card in ipairs(self.cards) do
@@ -486,7 +490,7 @@ function CardArea:align_cards()
                 card.T.x = card.T.x + card.shadow_parrallax.x/30
             end
         end
-        table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 < b.T.x + b.T.w/2 end)
+        table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 - 100*((a.pinned and not a.ignore_pinned) and a.sort_id or 0) < b.T.x + b.T.w/2 - 100*((b.pinned and not b.ignore_pinned) and b.sort_id or 0) end)
     end  
     if self.config.type == 'voucher' and #self.cards > 1 then
         local self_w = math.max(self.T.w, 3.2)
@@ -515,7 +519,7 @@ function CardArea:align_cards()
                 card.T.x = card.T.x + card.shadow_parrallax.x/30
             end
         end
-        table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 < b.T.x + b.T.w/2 end)
+        table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 - 100*((a.pinned and not a.ignore_pinned) and a.sort_id or 0) < b.T.x + b.T.w/2 - 100*((b.pinned and not b.ignore_pinned) and b.sort_id or 0) end)
     end 
     if self.config.type == 'joker' or self.config.type == 'title_2' then
         for k, card in ipairs(self.cards) do
@@ -536,7 +540,7 @@ function CardArea:align_cards()
                 card.T.x = card.T.x + card.shadow_parrallax.x/30
             end
         end
-        table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 - 100*((a.pinned and not a.ignore_pinned) and a.sort_id or 0) < b.T.x + b.T.w/2 - 100*((b.pinned and not b.ignore_pinned) and b.sort_id or 0) end)
+        if not G.GAME.modifiers.cry_conveyor then table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 - 100*((a.pinned and not a.ignore_pinned) and a.sort_id or 0) < b.T.x + b.T.w/2 - 100*((b.pinned and not b.ignore_pinned) and b.sort_id or 0) end) end
     end   
     if self.config.type == 'consumeable'then
         for k, card in ipairs(self.cards) do
@@ -552,7 +556,7 @@ function CardArea:align_cards()
                 card.T.x = card.T.x + card.shadow_parrallax.x/30
             end
         end
-        table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 < b.T.x + b.T.w/2 end)
+        table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 - 100*((a.pinned and not a.ignore_pinned) and a.sort_id or 0) < b.T.x + b.T.w/2 - 100*((b.pinned and not b.ignore_pinned) and b.sort_id or 0) end)
     end   
     for k, card in ipairs(self.cards) do
         card.rank = k
@@ -608,7 +612,7 @@ function CardArea:draw_card_from(area, stay_flipped, discarded_only)
                 if area == G.discard then
                     card.T.r = 0
                 end
-                local stay_flipped = G.GAME and G.GAME.blind and G.GAME.blind:stay_flipped(self, card, area)
+                local stay_flipped = G.GAME and G.GAME.blind and G.GAME.blind:stay_flipped(self, card)
                 if (self == G.hand) and G.GAME.modifiers.flipped_cards then
                     if pseudorandom(pseudoseed('flipped_card')) < 1/G.GAME.modifiers.flipped_cards then
                         stay_flipped = true

@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'ee5f6002641f272eb6949ecb3258b182a6532b3a40b8de61c32cb1e67ba8eedf'
+LOVELY_INTEGRITY = 'aff31fa5b6d747257d2a873784665affe63d66e80c0b4e9cb9f394fff3e03405'
 
 --- STEAMODDED CORE
 --- MODULE STACKTRACE
@@ -944,6 +944,17 @@ function love.run()
 	end
 end
 
+Cryptid = {}
+Cryptid.aliases = {}
+function cry_format(...)
+	return ...
+end
+
+-- These ones are deprecated, they do not do anything and are just here to prevent crashes
+Cryptid.memepack = {}
+Cryptid.food = {}
+Cryptid.M_jokers = {}
+Cryptid.Megavouchers = {}
 function love.load() 
 	G:start_up()
 	--Steam integration

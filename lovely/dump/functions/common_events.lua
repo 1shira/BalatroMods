@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'f821ff37bc72f425e5ea85d4a4943d6d90d913cfdce9f3382e0118e9d27b05b9'
+LOVELY_INTEGRITY = '6c368fd4b8bd0bdfc339df30f98e84201ed04d2adcbbcfac3897c9ef2674c413'
 
 function set_screen_positions()
     if G.STAGE == G.STAGES.RUN then
@@ -13,10 +13,8 @@ function set_screen_positions()
 
         G.consumeables.T.x = G.jokers.T.x + G.jokers.T.w + 0.2
         G.consumeables.T.y = 0
-        if MP.shared then
-          MP.shared.T.x = G.consumeables.T.x + (G.consumeables.T.w / 2)
-          MP.shared.T.y = G.consumeables.T.y + G.consumeables.T.h + 0.4
-        end
+        G.jokers.T.x = G.hand.T.x - 0.1
+        G.jokers.T.y = 0
 
         G.deck.T.x = G.TILE_W - G.deck.T.w - 0.5
         G.deck.T.y = G.TILE_H - G.deck.T.h
@@ -85,9 +83,6 @@ function ease_dollars(mod, instant)
         end
         --Ease from current chips to the new number of chips
         G.GAME.dollars = G.GAME.dollars + mod
-        if MP.LOBBY.code and to_big(mod) < to_big(0) then
-          MP.GAME.spent_total = to_big(MP.GAME.spent_total) + (to_big(mod) * to_big(-1))
-        end
         check_and_set_high_score('most_money', G.GAME.dollars)
         check_for_unlock({type = 'money'})
         dollar_UI.config.object:update()
@@ -170,9 +165,6 @@ function ease_hands_played(mod, instant)
         end
         --Ease from current chips to the new number of chips
         G.GAME.current_round.hands_left = G.GAME.current_round.hands_left + mod
-        if MP.LOBBY.code and MP.is_pvp_boss() and mod > 0 then
-        		MP.ACTIONS.play_hand(G.GAME.chips, G.GAME.current_round.hands_left)
-        	end
         hand_UI.config.object:update()
         G.HUD:recalculate()
         --Popup text next to the chips in UI showing number of chips gained/lost
@@ -214,6 +206,7 @@ function ease_ante(mod)
           end
           G.GAME.round_resets.ante = G.GAME.round_resets.ante + mod
           G.GAME.round_resets.ante_disp = number_format(G.GAME.round_resets.ante)
+          G.GAME.round_resets.ante = Big and (to_number(math.floor(to_big(G.GAME.round_resets.ante)))) or math.floor(G.GAME.round_resets.ante)
           check_and_set_high_score('furthest_ante', G.GAME.round_resets.ante)
           ante_UI.config.object:update()
           G.HUD:recalculate()
@@ -412,7 +405,7 @@ function draw_card(from, to, percent, dir, sort, card, delay, mute, stay_flipped
             if card then 
                 if from then card = from:remove_card(card) end
                 if card then drawn = true end
-                local stay_flipped = G.GAME and G.GAME.blind and G.GAME.blind:stay_flipped(to, card, from)
+                local stay_flipped = G.GAME and G.GAME.blind and G.GAME.blind:stay_flipped(to, card)
                 if G.GAME.modifiers.flipped_cards and to == G.hand then
                     if pseudorandom(pseudoseed('flipped_card')) < 1/G.GAME.modifiers.flipped_cards then
                         stay_flipped = true
@@ -479,21 +472,33 @@ end
 
 function level_up_hand(card, hand, instant, amount)
     amount = amount or 1
+    if not next(find_joker('cry-Universum')) then
     G.GAME.hands[hand].level = math.max(0, G.GAME.hands[hand].level + amount)
-    G.GAME.hands[hand].mult = math.max(G.GAME.hands[hand].s_mult + G.GAME.hands[hand].l_mult*(G.GAME.hands[hand].level - 1), 1)
-    G.GAME.hands[hand].chips = math.max(G.GAME.hands[hand].s_chips + G.GAME.hands[hand].l_chips*(G.GAME.hands[hand].level - 1), 0)
+    G.GAME.hands[hand].mult = math.max(G.GAME.hands[hand].mult + G.GAME.hands[hand].l_mult*amount, 1)
+    G.GAME.hands[hand].chips = math.max(G.GAME.hands[hand].chips + G.GAME.hands[hand].l_chips*amount, 1)
+    else
+        universum_mod = 1
+        local effects = {}
+        SMODS.calculate_context({cry_universum = true}, effects)
+        for i = 1, #effects do
+            universum_mod = universum_mod * (effects[i] and effects[i].jokers and effects[i].jokers.mod or 1)
+        end
+        G.GAME.hands[hand].level = math.max(0, G.GAME.hands[hand].level + amount)
+        G.GAME.hands[hand].mult = math.max(G.GAME.hands[hand].mult * (universum_mod)^amount, 1)
+        G.GAME.hands[hand].chips = math.max(G.GAME.hands[hand].chips * (universum_mod)^amount, 1)
+    end
     if not instant and not Talisman.config_file.disable_anims then
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
             play_sound('tarot1')
             if card and card.juice_up then card:juice_up(0.8, 0.5) end
             G.TAROT_INTERRUPT_PULSE = true
             return true end }))
-        update_hand_text({delay = 0}, {mult = G.GAME.hands[hand].mult, StatusText = true})
+        update_hand_text({delay = 0}, {mult = Cryptid.ascend(G.GAME.hands[hand].mult), StatusText = true})
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.9, func = function()
             play_sound('tarot1')
             if card and card.juice_up then card:juice_up(0.8, 0.5) end
             return true end }))
-        update_hand_text({delay = 0}, {chips = G.GAME.hands[hand].chips, StatusText = true})
+        update_hand_text({delay = 0}, {chips = Cryptid.ascend(G.GAME.hands[hand].chips), StatusText = true})
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.9, func = function()
             play_sound('tarot1')
             if card and card.juice_up then card:juice_up(0.8, 0.5) end
@@ -592,8 +597,8 @@ function update_hand_text(config, vals)
 end
 
 function eval_card(card, context)
+    if card.ability.set ~= 'Joker' and not card:can_calculate() then return {}, {} end
     context = context or {}
-    if not card:can_calculate(context.ignore_debuff) then return {}, {} end
     local ret = {}
 
     if context.repetition_only then
@@ -627,7 +632,7 @@ function eval_card(card, context)
     end
     
     if context.cardarea == G.play and context.main_scoring then
-        ret.playing_card = {}
+        ret.playing_card = ret.playing_card or {}
         local chips = card:get_chip_bonus()
         if chips ~= 0 then
             ret.playing_card.chips = chips
@@ -716,8 +721,8 @@ function eval_card(card, context)
         end
     end
 
-    if context.cardarea == G.hand and context.main_scoring then
-        ret.playing_card = {}
+    if (context.cardarea == G.hand or context.cardarea == G.play and next(SMODS.find_card('j_cry_lebaron_james')) and Cryptid.safe_get(SMODS.Ranks,Cryptid.safe_get(card,'base','value') or 'm','key') == 'King') and context.main_scoring then
+        ret.playing_card = ret.playing_card or {}
         local h_mult = card:get_chip_h_mult()
         if h_mult ~= 0 then
             ret.playing_card.h_mult = h_mult
@@ -780,9 +785,9 @@ function eval_card(card, context)
         local jokers, triggered = card:calculate_joker(context)
         if jokers == true then jokers = { remove = true } end
         if type(jokers) ~= 'table' then jokers = nil end
-        if jokers or triggered then
+        if (jokers and not jokers.no_retrigger) or triggered then
             ret.jokers = jokers
-            if not (context.retrigger_joker_check or context.retrigger_joker) and not (jokers and jokers.no_retrigger) then
+            if not (context.retrigger_joker_check or context.retrigger_joker) then
                 local retriggers = SMODS.calculate_retriggers(card, context, ret)
                 if next(retriggers) then
                     ret.retriggers = retriggers
@@ -1083,6 +1088,7 @@ function card_eval_status_text(card, eval_type, amt, percent, dir, extra)
         delay = extra.delay or 0.75
         amt = 1
         text = extra.message or text
+        if not text or text == '' then return end
         if not extra.edition and (extra.mult_mod or extra.Xmult_mod)  then
             colour = G.C.MULT
         end
@@ -1199,7 +1205,7 @@ function add_round_eval_row(config)
                     config.saved and 
                     {n=G.UIT.C, config={padding = 0.05, align = 'cm'}, nodes={
                         {n=G.UIT.R, config={align = 'cm'}, nodes={
-                            {n=G.UIT.O, config={object = DynaText({string = {' '..localize('ph_mr_bones')..' '}, colours = {G.C.FILTER}, shadow = true, pop_in = 0, scale = 0.5*scale, silent = true})}}
+                            {n=G.UIT.O, config={object = DynaText({string = {' '..(G.GAME.current_round.semicolon and ";" or localize('ph_mr_bones'))..' '}, colours = {(G.GAME.current_round.semicolon and G.C.SET.Code or G.C.FILTER)}, shadow = true, pop_in = 0, scale = 0.5*scale, silent = true})}}
                         }}
                     }}
                     or {n=G.UIT.C, config={padding = 0.05, align = 'cm'}, nodes={
@@ -1220,32 +1226,6 @@ function add_round_eval_row(config)
                     blind_sprite:juice_up()
                     table.insert(left_text, {n=G.UIT.O, config={w=0.7,h=0.7 , object = blind_sprite, hover = true, can_collide = false}})
                     table.insert(left_text, {n=G.UIT.O, config={object = DynaText({string = {config.condition}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4*scale, silent = true})}})                   
-                elseif config.name == "comeback" then
-                  table.insert(left_text, {
-                    n = G.UIT.T,
-                    config = {
-                      text = MP.GAME.comeback_bonus,
-                      scale = 0.8 * scale,
-                      colour = G.C.PURPLE,
-                      shadow = true,
-                      juice = true,
-                    },
-                  })
-                  table.insert(left_text, {
-                    n = G.UIT.O,
-                    config = {
-                      object = DynaText({
-                        string = {
-                          localize("k_total_lives_lost"),
-                        },
-                        colours = { G.C.UI.TEXT_LIGHT },
-                        shadow = true,
-                        pop_in = 0,
-                        scale = 0.4 * scale,
-                        silent = true,
-                      }),
-                    },
-                  })
                 elseif config.name == 'hands' then
                     table.insert(left_text, {n=G.UIT.T, config={text = config.disp or config.dollars, scale = 0.8*scale, colour = G.C.BLUE, shadow = true, juice = true}})
                     table.insert(left_text, {n=G.UIT.O, config={object = DynaText({string = {" "..localize{type = 'variable', key = 'remaining_hand_money', vars = {G.GAME.modifiers.money_per_hand or 1}}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4*scale, silent = true})}})
@@ -1254,6 +1234,9 @@ function add_round_eval_row(config)
                     table.insert(left_text, {n=G.UIT.O, config={object = DynaText({string = {" "..localize{type = 'variable', key = 'remaining_discard_money', vars = {G.GAME.modifiers.money_per_discard or 0}}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4*scale, silent = true})}})
                 elseif string.find(config.name, 'joker') then
                     table.insert(left_text, {n=G.UIT.O, config={object = DynaText({string = localize{type = 'name_text', set = config.card.config.center.set, key = config.card.config.center.key}, colours = {G.C.FILTER}, shadow = true, pop_in = 0, scale = 0.6*scale, silent = true})}})
+                elseif config.name == 'interest_payload' then
+                table.insert(left_text, {n=G.UIT.T, config={text = num_dollars, scale = 0.8*scale, colour = G.C.SECONDARY_SET.Code, shadow = true, juice = true}})
+                table.insert(left_text,{n=G.UIT.O, config={object = DynaText({string = {" "..localize{type = 'variable', key = 'interest', vars = {G.GAME.interest_amount*config.payload, 5, G.GAME.interest_amount*config.payload*G.GAME.interest_cap/5}}}, colours = {G.C.SECONDARY_SET.Code}, shadow = true, pop_in = 0, scale = 0.4*scale, silent = true})}})
                 elseif config.name == 'interest' then
                     table.insert(left_text, {n=G.UIT.T, config={text = num_dollars, scale = 0.8*scale, colour = G.C.MONEY, shadow = true, juice = true}})
                     table.insert(left_text,{n=G.UIT.O, config={object = DynaText({string = {" "..localize{type = 'variable', key = 'interest', vars = {G.GAME.interest_amount, 5, G.GAME.interest_amount*G.GAME.interest_cap/5}}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4*scale, silent = true})}})
@@ -1347,8 +1330,8 @@ function add_round_eval_row(config)
             func = function()
                 UIBox{
                     definition = {n=G.UIT.ROOT, config={align = 'cm', colour = G.C.CLEAR}, nodes={
-                        {n=G.UIT.R, config={id = 'cash_out_button', align = "cm", padding = 0.1, minw = 7, r = 0.15, colour = G.C.ORANGE, shadow = true, hover = true, one_press = true, button = 'cash_out', focus_args = {snap_to = true}}, nodes={
-                            {n=G.UIT.T, config={text = localize('b_cash_out')..": ", scale = 1, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                        {n=G.UIT.R, config={id = 'cash_out_button', align = "cm", padding = 0.1, minw = 7, r = 0.15, colour = G.GAME.current_round.semicolon and G.C.SET.Code or G.C.ORANGE, shadow = true, hover = true, one_press = true, button = 'cash_out', focus_args = {snap_to = true}}, nodes={
+                            {n=G.UIT.T, config={text = G.GAME.current_round.semicolon and localize('k_end_blind') or (localize('b_cash_out')..": "), scale = 1, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
                             {n=G.UIT.T, config={text = localize('$')..format_ui_value(config.dollars), scale = 1.2*scale, colour = G.C.WHITE, shadow = true, juice = true}}
                     }},}},
                     config = {
@@ -2251,6 +2234,10 @@ function create_playing_card(card_init, area, skip_materialize, silent, colours,
     local card = Card(_area.T.x, _area.T.y, G.CARD_W, G.CARD_H, card_init.front, card_init.center, {playing_card = G.playing_card})
     table.insert(G.playing_cards, card)
     card.playing_card = G.playing_card
+    if G.GAME.modifiers.cry_force_suit then card:change_suit(G.GAME.modifiers.cry_force_suit) end
+    if G.GAME.modifiers.cry_force_enhancement then card:set_ability(G.P_CENTERS[G.GAME.modifiers.cry_force_enhancement]) end
+    if G.GAME.modifiers.cry_force_edition then card:set_edition({[G.GAME.modifiers.cry_force_edition]=true},true,true) end
+    if G.GAME.modifiers.cry_force_seal then card:set_seal(G.GAME.modifiers.cry_force_seal) end
 
     if area and not skip_emplace then area:emplace(card) end
     if not skip_materialize then card:start_materialize(colours, silent) end
@@ -2274,7 +2261,7 @@ function get_pack(_key, _type)
             if it >= poll and it - (v.weight or 1) <= poll then center = v; break end
         end
     end
-    return center
+    if not center then center = G.P_CENTERS['p_buffoon_normal_1'] end return center
 end
 
 function get_current_pool(_type, _rarity, _legendary, _append)
@@ -2322,7 +2309,7 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
                 if v.set == 'Voucher' then
                     if not G.GAME.used_vouchers[v.key] then 
                         local include = true
-                        if v.requires then 
+                        if v.requires and _type ~= 'Tier3' then
                             for kk, vv in pairs(v.requires) do
                                 if not G.GAME.used_vouchers[vv] then 
                                     include = false
@@ -2339,8 +2326,33 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
                         end
                     end
                 elseif v.set == 'Planet' then
-                    if (not v.config.softlock or G.GAME.hands[v.config.hand_type].played > 0) then
+                    local softlocked = true
+                    if not v.config.softlock then
+                        softlocked = false
+                    elseif v.config.hand_type then
+                        softlocked = G.GAME.hands[v.config.hand_type].played == 0
+                    elseif v.config.hand_types then
+                        for _, h in pairs(v.config.hand_types) do
+                            if G.GAME.hands[h].played > 0 then
+                                softlocked = false
+                            end
+                        end
+                    end
+                    if not softlocked then
                         add = true
+                    end
+                elseif v.source_gate then
+                    if v.source_gate ~= _append then
+                        add = nil
+                    else
+                        add = true
+                    end
+                elseif v.joker_gate then
+                    add = nil
+                    for kk, vv in pairs(G.jokers.cards) do
+                        if vv.ability.name == v.joker_gate then
+                            add = true
+                        end
                     end
                 elseif v.enhancement_gate then
                     add = nil
@@ -2359,19 +2371,12 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
 
             if v.no_pool_flag and G.GAME.pool_flags[v.no_pool_flag] then add = nil end
             if v.yes_pool_flag and not G.GAME.pool_flags[v.yes_pool_flag] then add = nil end
+            if G.GAME.cry_banished_keys[v.key] then add = nil end
             
             if v.in_pool and type(v.in_pool) == 'function' then
                 add = in_pool and (add or pool_opts.override_base_checks)
             end
             if add and not G.GAME.banned_keys[v.key] then 
-                -- If the selected deck is the Paper deck and this key is a Paperback Joker, add copies of it
-                -- to the pool, so that it is more common to get
-                if (G.GAME.selected_back_key or {}).key == 'b_paperback_paper' and v.key:find('j_paperback_') then
-                  for i = 1, 2 do
-                    _pool[#_pool + 1] = v.key
-                    _pool_size = _pool_size + 1
-                  end
-                end
                 _pool[#_pool + 1] = v.key
                 _pool_size = _pool_size + 1
             else
@@ -2380,6 +2385,13 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
         end
 
         --if pool is empty
+        if G.GAME.oldbpfactor and G.GAME.oldbpfactor >= 2 then
+        	if _type == 'Joker' and (_rarity == nil or type(_rarity) ~= "string") and not _legendary and not (G.GAME.used_jokers["j_blueprint"] and not next(find_joker("Showman"))) then
+        		for i = 1, math.floor(G.GAME.oldbpfactor - 1) do
+        			_pool[#_pool + 1] = "j_blueprint"
+        		end
+        	end
+        end
         if _pool_size == 0 then
             _pool = EMPTY(G.ARGS.TEMP_POOL)
             if SMODS.ObjectTypes[_type] and SMODS.ObjectTypes[_type].default and G.P_CENTERS[SMODS.ObjectTypes[_type].default] then
@@ -2391,6 +2403,7 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
             elseif _type == 'Demo' then _pool[#_pool + 1] = "j_joker"
             elseif _type == 'Voucher' then _pool[#_pool + 1] = "v_blank"
             elseif _type == 'Tag' then _pool[#_pool + 1] = "tag_handy"
+            elseif _type == 'Consumeables' then _pool[#_pool + 1] = "c_ceres"
             else _pool[#_pool + 1] = "j_joker"
             end
         end
@@ -2477,9 +2490,9 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
     local front = ((_type=='Base' or _type == 'Enhanced') and pseudorandom_element(G.P_CARDS, pseudoseed('front'..(key_append or '')..G.GAME.round_resets.ante))) or nil
 
     local card = Card(area.T.x + area.T.w/2, area.T.y, G.CARD_W, G.CARD_H, front, center,
-    {bypass_discovery_center = SMODS.bypass_create_card_discovery_center or area==G.shop_jokers or area == G.pack_cards or area == G.shop_vouchers or (G.shop_demo and area==G.shop_demo) or area==G.jokers or area==G.consumeables,
-     bypass_discovery_ui = SMODS.bypass_create_card_discovery_center or area==G.shop_jokers or area == G.pack_cards or area==G.shop_vouchers or (G.shop_demo and area==G.shop_demo),
-     discover = SMODS.bypass_create_card_discover or area==G.jokers or area==G.consumeables, 
+    {bypass_discovery_center = area==G.shop_jokers or area == G.pack_cards or area == G.shop_vouchers or (G.shop_demo and area==G.shop_demo) or area==G.jokers or area==G.consumeables,
+     bypass_discovery_ui = area==G.shop_jokers or area == G.pack_cards or area==G.shop_vouchers or (G.shop_demo and area==G.shop_demo),
+     discover = area==G.jokers or area==G.consumeables, 
      bypass_back = G.GAME.selected_back.pos})
     if card.ability.consumeable and not skip_materialize then card:start_materialize() end
     for k, v in ipairs(SMODS.Sticker.obj_buffer) do
@@ -2510,6 +2523,7 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
         card:set_edition(edition)
         check_for_unlock({type = 'have_edition'})
         end
+        SMODS.calculate_context{cry_creating_card = true, card = card}
     end
     return card
 end
@@ -2519,11 +2533,6 @@ function copy_card(other, new_card, card_scale, playing_card, strip_edition)
     new_card:set_ability(other.config.center)
     new_card.ability.type = other.ability.type
     new_card:set_base(other.config.card)
-    -- If the card to copy from has a Paperclip, remove
-    -- the existing Paperclips, if any, on the new card
-    if PB_UTIL.has_paperclip(other) then
-      PB_UTIL.remove_paperclip(new_card)
-    end
     for k, v in pairs(other.ability) do
         if type(v) == 'table' then 
             new_card.ability[k] = copy_table(v)
@@ -2532,7 +2541,9 @@ function copy_card(other, new_card, card_scale, playing_card, strip_edition)
         end
     end
 
+    if new_card.ability.name == "cry-longboi" then new_card:set_ability(new_card.config.center) end
     if not strip_edition then 
+        new_card.from_copy = true
         new_card:set_edition(other.edition or {}, nil, true)
         for k,v in pairs(other.edition or {}) do
             if type(v) == 'table' then
@@ -2714,10 +2725,18 @@ end
 function reset_blinds()
     G.GAME.round_resets.blind_states = G.GAME.round_resets.blind_states or {Small = 'Select', Big = 'Upcoming', Boss = 'Upcoming'}
     if G.GAME.round_resets.blind_states.Boss == 'Defeated' then
-        G.GAME.round_resets.blind_states.Small = 'Upcoming'
+        G.GAME.round_resets.blind_states.Small = G.GAME.modifiers.cry_no_small_blind and 'Hide' or 'Upcoming'
         G.GAME.round_resets.blind_states.Big = 'Upcoming'
         G.GAME.round_resets.blind_states.Boss = 'Upcoming'
-        G.GAME.blind_on_deck = 'Small'
+        G.GAME.blind_on_deck = G.GAME.modifiers.cry_no_small_blind and 'Big' or 'Small'
+        if G.GAME.modifiers.cry_big_boss_rate and pseudorandom('cry_big_boss') < G.GAME.modifiers.cry_big_boss_rate then
+            G.GAME.round_resets.blind_choices.Big = get_new_boss()
+        elseif G.GAME.modifiers.cry_rush_hour_ii then
+            G.GAME.round_resets.blind_choices.Small = get_new_boss()
+            G.GAME.round_resets.blind_choices.Big = get_new_boss()
+        else
+            G.GAME.round_resets.blind_choices.Big = 'bl_big'
+        end
         G.GAME.round_resets.blind_choices.Boss = get_new_boss()
         G.GAME.round_resets.boss_rerolled = false
     end
@@ -2751,7 +2770,7 @@ function get_new_boss()
             end
         elseif not v.boss.showdown and (v.boss.min <= math.max(1, G.GAME.round_resets.ante) and ((math.max(1, G.GAME.round_resets.ante))%G.GAME.win_ante ~= 0 or G.GAME.round_resets.ante < 2)) then
             eligible_bosses[k] = true
-        elseif v.boss.showdown and (G.GAME.round_resets.ante)%G.GAME.win_ante == 0 and G.GAME.round_resets.ante >= 2 then
+        elseif v.boss.showdown and (((G.GAME.round_resets.ante)%G.GAME.win_ante == 0 and G.GAME.round_resets.ante >= 2) or G.GAME.modifiers.cry_big_showdown ) then
             eligible_bosses[k] = true
         end
     end
@@ -2814,6 +2833,26 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
     local desc_nodes = (not full_UI_table.name and full_UI_table.main) or full_UI_table.info
     local name_override = nil
     local info_queue = {}
+    if _c.cry_disabled or (_c.force_gameset and _c.force_gameset == 'disabled') then
+        if _c.cry_disabled then
+            if _c.cry_disabled.type == "card_dependency" then
+                local name = Cryptid.get_center(_c.cry_disabled.key) and localize{type = 'name_text', set = Cryptid.get_center(_c.cry_disabled.key).set, key = _c.cry_disabled.key} or _c.cry_disabled.key
+                info_queue[#info_queue+1] = {key = 'disabled_card_dependency', set = 'Other', specific_vars = {name}}
+            elseif _c.cry_disabled.type == "mod_dependency" then
+                local name = Cryptid.cross_mod_names[_c.cry_disabled.key] or _c.cry_disabled.key
+                info_queue[#info_queue+1] = {key = 'disabled_mod_dependency', set = 'Other', specific_vars = {name}}
+            elseif _c.cry_disabled.type == "mod_conflict" then
+                local name = SMODS.Mods[_c.cry_disabled.key].name
+                info_queue[#info_queue+1] = {key = 'disabled_mod_conflict', set = 'Other', specific_vars = {name}}
+            else
+                if not (_c.force_gameset and _c.force_gameset ~= 'disabled') then
+                    info_queue[#info_queue+1] = {key = 'disabled', set = 'Other'}
+                end
+            end
+        else
+            info_queue[#info_queue+1] = {key = 'disabled', set = 'Other'}
+        end
+    end
 
     if full_UI_table.name then
         full_UI_table.info[#full_UI_table.info+1] = {}
@@ -2844,33 +2883,60 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         full_UI_table.card_type = card_type or _c.set
     end 
 
+    if specific_vars and specific_vars.ccd then
+    	full_UI_table.ccd = {name = {}, main = {}}
+    	localize{type = 'other', key = 'playing_card', set = 'Other', nodes = full_UI_table.ccd.name, vars = {localize(specific_vars.ccd.value, 'ranks'), localize(specific_vars.ccd.suit, 'suits_plural'), colours = {specific_vars.ccd.colour}}}
+    	full_UI_table.ccd.name = full_UI_table.ccd.name[1]
+    	if specific_vars.ccd.nominal_chips then 
+    		localize{type = 'other', key = 'card_chips', nodes = full_UI_table.ccd.main, vars = {specific_vars.ccd.nominal_chips}}
+    	end
+    	if specific_vars.ccd.bonus_chips then
+    		localize{type = 'other', key = 'card_extra_chips', nodes = full_UI_table.ccd.main, vars = {specific_vars.ccd.bonus_chips}}
+    	end
+    end
     local loc_vars = {}
     if main_start then 
         desc_nodes[#desc_nodes+1] = main_start 
     end
 
     local cfg = (card and card.ability) or _c['config']
-    -- Add the tooltip for Basic Joker Energy if the card is marked by it
-    if card and card.ability and card.ability.paperback_energized then
-      info_queue[#info_queue + 1] = {
-        set = 'Other',
-        key = 'paperback_energized'
-      }
-    end
-    
-    -- Add tooltips for items removed from the pool by the paperback config
-    if (card and card.config and card.config.center and card.config.center.paperback) or (_c and _c.paperback) then
-      local config = (_c and _c.paperback) or card.config.center.paperback
-    
-      for _, v in ipairs(config.requirements or {}) do
-        if not PB_UTIL.config[v.setting] and first_pass then
-          info_queue[#info_queue + 1] = {
-            set = v.set or 'Other',
-            key = v.tooltip,
-            vars = v.vars or {}
-          }
+    if cfg and G.GAME.modifiers.cry_consumable_reduce and cfg.max_highlighted and (cfg.max_highlighted > 1) then
+        local new_table = {}
+        for i0, j0 in pairs(cfg) do
+            new_table[i0] = j0
         end
-      end
+        new_table.max_highlighted = new_table.max_highlighted - 1
+        cfg = new_table
+    end
+    if _c.name == 'cry-membershipcard' or _c.name == 'cry-membershipcardtwo' then
+    	if not Cryptid_config["HTTPS Module"] then
+    		if G.localization.descriptions.Other.cry_https_disabled then
+    			main_end = {}
+    			localize{type = 'other', key = 'cry_https_disabled', nodes = main_end, vars = {}}
+    			main_end = main_end[1]
+    		end
+    	end
+    end
+    if _c.name == 'cry-translucent Joker' then
+    	if G.jokers and G.jokers.cards then
+                    for k, v in ipairs(G.jokers.cards) do
+                        if (v.edition and v.edition.negative) and (G.localization.descriptions.Other.remove_negative)then
+                            main_end = {}
+                            localize{type = 'other', key = 'remove_negative', nodes = main_end, vars = {}}
+                            main_end = main_end[1]
+                            break
+                        end
+                    end
+            end
+    end
+    if _c.name == 'cry-blurred Joker' then
+    	if (SMODS.Mods["sdm0sstuff"] or {}).can_load then
+    		if G.localization.descriptions.Other.blurred_sdm0 then
+    			main_end = {}
+    			localize{type = 'other', key = 'blurred_sdm0', nodes = main_end, vars = {}}
+    			main_end = main_end[1]
+    		end
+    	end
     end
     if _c.set == 'Other' then
         localize{type = 'other', key = _c.key, nodes = desc_nodes, vars = specific_vars or _c.vars}
@@ -2963,7 +3029,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
     elseif specific_vars and specific_vars.debuffed then
         localize{type = 'other', key = 'debuffed_'..(specific_vars.playing_card and 'playing_card' or 'default'), nodes = desc_nodes}
     elseif _c.set == 'Joker' then
-        if not card then
+        if cfg and not card then
             local ability = copy_table(cfg)
             ability.set = 'Joker'
             ability.name = _c.name
@@ -2996,6 +3062,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         if specific_vars and specific_vars.pinned then info_queue[#info_queue+1] = {key = 'pinned_left', set = 'Other'} end
         if specific_vars and specific_vars.sticker then info_queue[#info_queue+1] = {key = string.lower(specific_vars.sticker)..'_sticker', set = 'Other'} end
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = specific_vars or {}}
+    elseif _c.set == 'Back' or _c.set == 'Blind' then localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = specific_vars or {}}
     elseif _c.set == 'Tag' then
     specific_vars = specific_vars or Tag.get_uibox_table({ name = _c.name, config = cfg, ability = { orbital_hand = '['..localize('k_poker_hand')..']' }}, nil, true)
         if _c.name == 'Negative Tag' then info_queue[#info_queue+1] = G.P_CENTERS.e_negative
@@ -3010,7 +3077,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         end
         localize{type = 'descriptions', key = _c.key, set = 'Tag', nodes = desc_nodes, vars = specific_vars or {}}
     elseif _c.set == 'Voucher' then
-        if _c.name == "Overstock" or _c.name == 'Overstock Plus' then
+        if _c.name == "Overstock" or _c.name == "Overstock Plus" then loc_vars = {cfg.extra}
         elseif _c.name == "Tarot Merchant" or _c.name == "Tarot Tycoon" then loc_vars = {cfg.extra_disp}
         elseif _c.name == "Planet Merchant" or _c.name == "Planet Tycoon" then loc_vars = {cfg.extra_disp}
         elseif _c.name == "Hone" or _c.name == "Glow Up" then loc_vars = {cfg.extra}
@@ -3018,12 +3085,13 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         elseif _c.name == "Grabber" or _c.name == "Nacho Tong" then loc_vars = {cfg.extra}
         elseif _c.name == "Wasteful" or _c.name == "Recyclomancy" then loc_vars = {cfg.extra}
         elseif _c.name == "Seed Money" or _c.name == "Money Tree" then loc_vars = {cfg.extra/5}
-        elseif _c.name == "Blank" or _c.name == "Antimatter" then
+        elseif _c.name == "Blank" or _c.name == "Antimatter" then loc_vars = {cfg.extra}
         elseif _c.name == "Hieroglyph" or _c.name == "Petroglyph" then loc_vars = {cfg.extra}
         elseif _c.name == "Director's Cut" or _c.name == "Retcon" then loc_vars = {cfg.extra}
         elseif _c.name == "Paint Brush" or _c.name == "Palette" then loc_vars = {cfg.extra}
         elseif _c.name == "Telescope" or _c.name == "Observatory" then loc_vars = {cfg.extra}
         elseif _c.name == "Clearance Sale" or _c.name == "Liquidation" then loc_vars = {cfg.extra}
+        elseif _c.name == "Crystal Ball" or _c.name == "Omen Globe" then loc_vars = {cfg.extra}
         end
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = _c.vars or loc_vars}
     elseif _c.set == 'Edition' then
@@ -3069,11 +3137,11 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         end
         if _c.effect == 'Mult Card' then loc_vars = {SMODS.signed(cfg.mult + (specific_vars and specific_vars.bonus_mult or 0))}
         elseif _c.effect == 'Wild Card' then
-        elseif _c.effect == 'Glass Card' then loc_vars = {cfg.Xmult, G.GAME.probabilities.normal, cfg.extra}
+        elseif _c.effect == 'Glass Card' then loc_vars = {cfg.Xmult, cfg.cry_prob and cry_prob(cfg.cry_prob, cfg.extra, cfg.cry_rigged) or G.GAME.probabilities.normal, cfg.extra}
         elseif _c.effect == 'Steel Card' then loc_vars = {cfg.h_x_mult}
         elseif _c.effect == 'Stone Card' then loc_vars = {((specific_vars and SMODS.signed(specific_vars.bonus_chips)) or cfg.bonus and SMODS.signed(cfg.bonus) or 0)}
         elseif _c.effect == 'Gold Card' then loc_vars = {specific_vars and SMODS.signed_dollars(specific_vars.total_h_dollars) or cfg.h_dollars and SMODS.signed_dollars(cfg.h_dollars) or 0}
-        elseif _c.effect == 'Lucky Card' then loc_vars = {G.GAME.probabilities.normal, cfg.mult, 5, cfg.p_dollars, 15}
+        elseif _c.effect == 'Lucky Card' then loc_vars = {cfg.cry_prob and cry_prob(cfg.cry_prob, 15, cfg.cry_rigged) or G.GAME.probabilities.normal, cfg.mult, 5, cfg.p_dollars, 15}
         end
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = _c.vars or loc_vars}
         if _c.name ~= 'Stone Card' and ((specific_vars and specific_vars.bonus_chips) or (cfg.bonus ~= 0 and cfg.bonus)) then
@@ -3127,7 +3195,11 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         name_override = desc_override
         if not full_UI_table.name then full_UI_table.name = localize{type = 'name', set = 'Other', key = name_override, nodes = full_UI_table.name} end
         localize{type = 'other', key = desc_override, nodes = desc_nodes, vars = loc_vars}
-    elseif _c.set == 'Spectral' then 
+    elseif _c.set == 'Spectral' then         
+        if _c.name == 'Talisman' or _c.name == 'Medium' or _c.name == 'Trance' or _c.name == 'Deja Vu' then
+            loc_vars = {cfg.max_highlighted}
+        end
+
         if _c.name == 'Familiar' or _c.name == 'Grim' or _c.name == 'Incantation' then loc_vars = {cfg.extra}
         elseif _c.name == 'Immolate' then loc_vars = {cfg.extra.destroy, cfg.extra.dollars}
         elseif _c.name == 'Hex' then info_queue[#info_queue+1] = G.P_CENTERS.e_polychrome
@@ -3147,7 +3219,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
                     end
                 end
             end
-        elseif _c.name == 'Cryptid' then loc_vars = {cfg.extra}
+        elseif _c.name == 'Cryptid' then loc_vars = {cfg.extra, cfg.max_highlighted}
         end
         if _c.name == 'Ectoplasm' then info_queue[#info_queue+1] = G.P_CENTERS.e_negative; loc_vars = {G.GAME.ecto_minus or 1} end
         if _c.name == 'Aura' then
@@ -3191,7 +3263,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
        elseif _c.name == "The Chariot" then loc_vars = {cfg.max_highlighted, localize{type = 'name_text', set = 'Enhanced', key = cfg.mod_conv}}; info_queue[#info_queue+1] = G.P_CENTERS[cfg.mod_conv]
        elseif _c.name == "Justice" then loc_vars = {cfg.max_highlighted, localize{type = 'name_text', set = 'Enhanced', key = cfg.mod_conv}}; info_queue[#info_queue+1] = G.P_CENTERS[cfg.mod_conv]
        elseif _c.name == "The Hermit" then loc_vars = {cfg.extra}
-       elseif _c.name == "The Wheel of Fortune" then loc_vars = {G.GAME.probabilities.normal, cfg.extra};  info_queue[#info_queue+1] = G.P_CENTERS.e_foil; info_queue[#info_queue+1] = G.P_CENTERS.e_holo; info_queue[#info_queue+1] = G.P_CENTERS.e_polychrome; 
+       elseif _c.name == "The Wheel of Fortune" then loc_vars = {cfg.cry_prob and cry_prob(cfg.cry_prob, cfg.extra, cfg.cry_rigged) or G.GAME.probabilities.normal, cfg.extra};  info_queue[#info_queue+1] = G.P_CENTERS.e_foil; info_queue[#info_queue+1] = G.P_CENTERS.e_holo; info_queue[#info_queue+1] = G.P_CENTERS.e_polychrome;
        elseif _c.name == "Strength" then loc_vars = {cfg.max_highlighted}
        elseif _c.name == "The Hanged Man" then loc_vars = {cfg.max_highlighted}
        elseif _c.name == "Death" then loc_vars = {cfg.max_highlighted}

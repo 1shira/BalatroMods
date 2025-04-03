@@ -11,7 +11,8 @@ pattern = '''function Card:get_end_of_round_effect(context)
 position = "at"
 match_indent = true
 payload = '''
-function Card:get_end_of_round_effect(context)'''
+function Card:get_end_of_round_effect(context)
+    if not self:can_calculate() then return {} end'''
 
 [[patches]]
 [patches.pattern]
@@ -32,18 +33,21 @@ pattern = '''function Card:calculate_seal(context)
 position = "at"
 match_indent = true
 payload = '''
-function Card:calculate_seal(context)'''
+function Card:calculate_seal(context)
+    if not self:can_calculate() then return {} end'''
 
 [[patches]]
 [patches.pattern]
 target = "card.lua"
 pattern = '''function Card:calculate_joker(context)
-    if self.debuff then return nil end'''
+    if self.debuff then return nil end
+    if self.ability.set == "Planet" and not self.debuff then'''
 position = "at"
 match_indent = true
 payload = '''
-function Card:calculate_joker(context)'''
-
+function Card:calculate_joker(context)
+    if not self:can_calculate() then return {} end
+    if self.ability.set == "Planet" and self:can_calculate() then'''
 
 [[patches]]
 [patches.pattern]
@@ -51,13 +55,5 @@ target = "card.lua"
 pattern = '''if self.ability.set == "Joker" and not self.debuff then'''
 position = "at"
 match_indent = true
-payload = '''if self.ability.set == "Joker" then'''
+payload = '''if self.ability.set == "Joker" and self:can_calculate() then'''
 
-
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''if self.debuff then return 0 end'''
-position = "at"
-match_indent = true
-payload = ''

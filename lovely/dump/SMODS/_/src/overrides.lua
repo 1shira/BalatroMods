@@ -1,3 +1,5 @@
+LOVELY_INTEGRITY = '90d1870e2ac25d2312761f95f810f2c22de1a3e81d8089a250aa3e99c7bbc6a0'
+
 --- STEAMODDED CORE
 --- OVERRIDES
 
@@ -406,6 +408,12 @@ function create_UIBox_your_collection_tags_content(page)
 		if k <= cols*rows*(page-1) then elseif k > cols*rows*page then break else
 			local discovered = v.discovered
 			local temp_tag = Tag(v.key, true)
+			if G.showshinytags then 
+				temp_tag.ability.shiny = true
+				if not Cryptid.shinytagdata[temp_tag.key] then
+					temp_tag.hide_ability = true
+				end
+			end
 			if not v.discovered then temp_tag.hide_ability = true end
 			local temp_tag_ui, temp_tag_sprite = temp_tag:generate_UI()
 			tag_matrix[row][col] = {
@@ -478,13 +486,21 @@ function create_UIBox_your_collection_tags_content(page)
 					})
 				}
 			}
+						,
+						    Cryptid.shinytag_tally() > 0 and create_toggle{ -- tally function runs way too often but whatever
+						      label = localize('k_cry_shiny'), 
+						      w = 0,
+						      ref_table = G, 
+						      ref_value = "showshinytags" 
+						    } or nil,
 		}
 	})
 	return t
 end
 
 G.FUNCS.your_collection_tags_page = function(args)
-	local page = args.cycle_config.current_option or 1
+	if args then G.cry_current_tagpage = args.cycle_config.current_option end
+	local page = args and args.cycle_config.current_option or G.cry_current_tagpage or 1
 	local t = create_UIBox_your_collection_tags_content(page)
 	local e = G.OVERLAY_MENU:get_UIE_by_ID('your_collection_tags_contents')
 	if e.config.object then e.config.object:remove() end
@@ -1086,6 +1102,7 @@ function G.FUNCS.get_poker_hand_info(_cards)
 			break
 		end
 	end
+	text = G.GAME.cry_exploit_override or text
 	disp_text = text
 	local _hand = SMODS.PokerHands[text]
 	if text == 'Straight Flush' then
