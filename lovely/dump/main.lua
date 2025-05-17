@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '41f131d35e1dbfa1bcd85ccb56ef29821c958ab7b0f8ac87255d107e33e39aad'
+LOVELY_INTEGRITY = '86786e49911989948cecdf21f3a8bf5a135840e665ad0d4719f552b54caac412'
 
 --- STEAMODDED CORE
 --- MODULE STACKTRACE
@@ -32,7 +32,7 @@ function loadStackTracePlus()
     local pcall, type, pairs, ipairs = pcall, type, pairs, ipairs
     local error = error
 
-    assert(debug, "debug table must be available at this point")
+    assert(debug, "Internal: Debug table must be available at this point")
 
     local io_open = io.open
     local string_gmatch = string.gmatch
@@ -40,7 +40,7 @@ function loadStackTracePlus()
     local table_concat = table.concat
 
     local _M = {
-        max_tb_output_len = 70 -- controls the maximum length of the 'stringified' table before cutting with ' (more...)'
+        max_tb_output_len = 140 -- controls the maximum length of the 'stringified' table before cutting with ' (more...)'
     }
 
     -- this tables should be weak so the elements in them won't become uncollectable
@@ -102,7 +102,7 @@ function loadStackTracePlus()
     -- Parses a line, looking for possible function definitions (in a very naïve way)
     -- Returns '(anonymous)' if no function name was found in the line
     local function ParseLine(line)
-        assert(type(line) == "string")
+        assert(type(line) == "string", ("Internal: line \"%s\" is type \"%s\", should be a string"):format(tostring(line), type(line)))
         -- print(line)
         local match = line:match("^%s*function%s+(%w+)")
         if match then
@@ -665,6 +665,9 @@ function injectStackTrace()
         if sanitizedmsg:find("Syntax error: game.lua:4: '=' expected near 'Game'") then
             table.insert(err,
                 'Duplicate installation of Steamodded detected! Please clean your installation: Steam Library > Balatro > Properties > Installed Files > Verify integrity of game files.')
+        elseif sanitizedmsg:find("Syntax error: game.lua:%d+: duplicate label 'continue'") then
+            table.insert(err,
+                'Duplicate installation of Steamodded detected! Please remove the duplicate steamodded/smods folder in your mods folder.')
         else
             table.insert(err, sanitizedmsg)
         end
@@ -955,11 +958,11 @@ function love.load()
 			local old_cpath = package.cpath
 			package.cpath = package.cpath .. ';' .. dir .. '/?.so'
 			local success, _st = pcall(require, 'luasteam')
-			if success then st = _st else sendWarnMessage(_st); st = {} end
+			if success then st = _st else sendWarnMessage(_st, "LuaSteam"); st = {} end
 			package.cpath = old_cpath
 		else
 			local success, _st = pcall(require, 'luasteam')
-			if success then st = _st else sendWarnMessage(_st); st = {} end
+			if success then st = _st else sendWarnMessage(_st, "LuaSteam"); st = {} end
 		end
 
 		st.send_control = {
@@ -1331,6 +1334,8 @@ for _, path in ipairs {
 } do
     assert(load(NFS.read(SMODS.path..path), ('=[SMODS _ "%s"]'):format(path)))()
 end
+
+sendInfoMessage("Steamodded v" .. SMODS.version, "SMODS")
 
 Handy = setmetatable({
 	last_clicked_area = nil,

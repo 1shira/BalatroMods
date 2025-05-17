@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '342046b689dd87acb8d53f7bf71e203cf79102c780359956ea557178d3384f06'
+LOVELY_INTEGRITY = '50903a7613ce79a631036b1e64bd840a153b0559d02dc4390dcb080025867a2f'
 
 --Moves the tutorial to the next step in queue
 --
@@ -203,7 +203,7 @@ G.FUNCS.can_continue = function(e)
       if not G.SAVED_GAME then 
         G.SAVED_GAME = get_compressed(G.SETTINGS.profile..'/'..'save.jkr')
         if G.SAVED_GAME ~= nil then G.SAVED_GAME = STR_UNPACK(G.SAVED_GAME) end
-        if G.SAVED_GAME == nil then 
+        if G.SAVED_GAME == nil then
             e.config.colour = G.C.UI.BACKGROUND_INACTIVE
             e.config.button = nil
             return _can_continue
@@ -2125,7 +2125,9 @@ end
   end
 
   G.FUNCS.can_select_card = function(e)
-    if e.config.ref_table.ability.set ~= 'Joker' or (e.config.ref_table.edition and e.config.ref_table.edition.negative) or #G.jokers.cards < G.jokers.config.card_limit then 
+    local card = e.config.ref_table
+    local card_limit = card.edition and card.edition.card_limit or 0
+    if card.ability.set ~= 'Joker' or #G.jokers.cards < G.jokers.config.card_limit + card_limit then
         e.config.colour = G.C.GREEN
         e.config.button = 'use_card'
     else
@@ -2236,6 +2238,7 @@ end
     if card.area and (not nc or card.area == G.pack_cards) then card.area:remove_card(card) end
     
     if select_to then
+        card:add_to_deck()
         G[select_to]:emplace(card)
         if card.config.center.on_select and type(card.config.center.on_select) == 'function' then
             card.config.center:on_select(card)
@@ -2320,8 +2323,8 @@ end
                     G.GAME.pack_choices = G.GAME.pack_choices - 1
                   else
                       G.CONTROLLER.interrupt.focus = true
-                      if prev_state == G.STATES.TAROT_PACK then inc_career_stat('c_tarot_reading_used', 1) end
-                      if prev_state == G.STATES.PLANET_PACK then inc_career_stat('c_planetarium_used', 1) end
+                      if prev_state == G.STATES.SMODS_BOOSTER_OPENED and booster_obj.name:find('Arcana') then inc_career_stat('c_tarot_reading_used', 1) end
+                      if prev_state == G.STATES.SMODS_BOOSTER_OPENED and booster_obj.name:find('Celestial') then inc_career_stat('c_planetarium_used', 1) end
                       G.FUNCS.end_consumeable(nil, delay_fac)
                   end
                 else
@@ -2419,7 +2422,7 @@ end
   end
 
 G.FUNCS.shop_voucher_empty = function(e)
-  if (G.shop_vouchers and G.shop_vouchers.cards and (G.shop_vouchers.cards[1] or G.GAME.current_round.voucher)) then
+    if (G.shop_vouchers and G.shop_vouchers.cards and G.shop_vouchers.cards[1]) then
     e.states.visible = false
   elseif G.SETTINGS.language ~= 'en-us' then 
     e.states.visible = false
@@ -2432,8 +2435,8 @@ G.FUNCS.check_for_buy_space = function(card)
   if card.ability.set ~= 'Voucher' and
     card.ability.set ~= 'Enhanced' and
     card.ability.set ~= 'Default' and
-    not (card.ability.set == 'Joker' and #G.jokers.cards < G.jokers.config.card_limit + ((card.edition and card.edition.negative) and 1 or 0)) and
-    not (card.ability.consumeable and #G.consumeables.cards < G.consumeables.config.card_limit + ((card.edition and card.edition.negative) and 1 or 0)) then
+        not (card.ability.set == 'Joker' and #G.jokers.cards < G.jokers.config.card_limit + (card.edition and card.edition.card_limit or 0)) and
+        not (card.ability.consumeable and #G.consumeables.cards < G.consumeables.config.card_limit + (card.edition and card.edition.card_limit or 0)) then
       alert_no_space(card, card.ability.consumeable and G.consumeables or G.jokers)
     return false
   end
@@ -2521,6 +2524,9 @@ G.FUNCS.buy_from_shop = function(e)
 end
   
   G.FUNCS.toggle_shop = function(e)
+  if MP.LOBBY.code then
+    MP.ACTIONS.spent_last_shop(to_big(MP.GAME.spent_total) - to_big(MP.GAME.spent_before_shop))
+  end
     stop_use()
     G.CONTROLLER.locks.toggle_shop = true
     if G.shop then 
@@ -2906,6 +2912,7 @@ end
     stop_use()
     G.CONTROLLER.locks.shop_reroll = true
     if G.CONTROLLER:save_cardarea_focus('shop_jokers') then G.CONTROLLER.interrupt.focus = true end
+    local reroll_cost = G.GAME.current_round.reroll_cost
     if G.GAME.current_round.reroll_cost > 0 then 
       inc_career_stat('c_shop_dollars_spent', G.GAME.current_round.reroll_cost)
       inc_career_stat('c_shop_rerolls', 1)
@@ -2947,7 +2954,7 @@ end
             G.CONTROLLER.interrupt.focus = false
             G.CONTROLLER.locks.shop_reroll = false
             G.CONTROLLER:recall_cardarea_focus('shop_jokers')
-            SMODS.calculate_context({reroll_shop = true})
+            SMODS.calculate_context({reroll_shop = true, cost = reroll_cost})
             return true
           end
         }))
@@ -2964,7 +2971,7 @@ if Handy.insta_cash_out.is_skipped and e.config.button then return end
         e.config.button = nil
         G.round_eval.alignment.offset.y = G.ROOM.T.y + 15
         G.round_eval.alignment.offset.x = 0
-        G.deck:shuffle('cashout'..G.GAME.round_resets.ante)
+        G.deck:shuffle('cashout'..MP.ante_based())
         G.deck:hard_set_T()
         delay(0.3)
         G.E_MANAGER:add_event(Event({

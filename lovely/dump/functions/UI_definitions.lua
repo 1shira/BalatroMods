@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '87c153b2a722f92ede031e6982486708a02e9abc2fec2cebc42e887a653c7942'
+LOVELY_INTEGRITY = '68cccd8d9b54975343759c3a756790d63a3d374bbf436cef1930dd6735444978'
 
 --Create a global UIDEF that contains all UI definition functions\
 --As a rule, these contain functions that return a table T representing the definition for a UIBox
@@ -654,7 +654,7 @@ function G.UIDEF.shop()
     G.shop_jokers = CardArea(
       G.hand.T.x+0,
       G.hand.T.y+G.ROOM.T.y + 9,
-      G.GAME.shop.joker_max*1.02*G.CARD_W,
+      math.min(G.GAME.shop.joker_max*1.02*G.CARD_W,4.08*G.CARD_W),
       1.05*G.CARD_H, 
       {card_limit = G.GAME.shop.joker_max, type = 'shop', highlight_limit = 1})
 
@@ -782,7 +782,7 @@ end
           for _,v in ipairs(SMODS.ConsumableType.ctype_buffer) do
               total_rate = total_rate + G.GAME[v:lower()..'_rate']
           end
-          local polled_rate = pseudorandom(pseudoseed('cdt'..G.GAME.round_resets.ante))*total_rate
+          local polled_rate = pseudorandom(pseudoseed('cdt'..MP.ante_based()))*total_rate
           local check_rate = 0
           -- need to preserve order to leave RNG unchanged
           local rates = {
@@ -1055,7 +1055,7 @@ end
     for k, v in ipairs(desc_nodes) do
       t[#t+1] = {n=G.UIT.R, config={align = "cm", maxw = maxw}, nodes=v}
     end
-    return {n=G.UIT.R, config={align = "cm", colour = desc_nodes.background_colour or empty and G.C.CLEAR or G.C.UI.BACKGROUND_WHITE, r = 0.1, padding = 0.04, minw = 2, minh = 0.8, emboss = not empty and 0.05 or nil, filler = true}, nodes={
+    return {n=G.UIT.R, config={align = "cm", colour = desc_nodes.background_colour or empty and G.C.CLEAR or G.C.UI.BACKGROUND_WHITE, r = 0.1, padding = 0.04, minw = 2, minh = 0.8, emboss = not empty and 0.05 or nil, filler = true, main_box_flag = desc_nodes.main_box_flag and true or nil}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0.03}, nodes=t}
     }}
   end
@@ -1156,6 +1156,14 @@ end
           badges.mod_set = nil
       end
 
+      AUT.main.background_colour = AUT.main.background_colour or AUT.box_colours and AUT.box_colours[1] or nil
+      local multi_boxes = {}
+      if AUT.multi_box then
+          for i, box in ipairs(AUT.multi_box) do
+              box.background_colour = box.background_colour or AUT.box_colours and AUT.box_colours[i+1] or nil
+              multi_boxes[#multi_boxes+1] = desc_from_rows(box)
+          end
+      end
       if AUT.info then
         for k, v in ipairs(AUT.info) do
           info_boxes[#info_boxes+1] =
@@ -1190,8 +1198,8 @@ end
           table.insert(info_cols, {n=G.UIT.C, config = {align="cm"}, nodes = col})
       end
       info_boxes = {{n=G.UIT.R, config = {align="cm", padding = 0.05, card_pos = card.T.x }, nodes = info_cols}}
-      return {n=G.UIT.ROOT, config = {align = 'cm', colour = G.C.CLEAR}, nodes={
-        {n=G.UIT.C, config={align = "cm", func = 'show_infotip',object = Moveable(),ref_table = next(info_boxes) and info_boxes or nil}, nodes={
+      local ret_val = {n=G.UIT.ROOT, config = {align = 'cm', colour = G.C.CLEAR}, nodes={
+          {n=G.UIT.C, config={align = "cm", func = 'show_infotip',object = Moveable(),ref_table = next(info_boxes) and info_boxes or nil}, nodes={
           {n=G.UIT.R, config={padding = outer_padding, r = 0.12, colour = lighten(G.C.JOKER_GREY, 0.5), emboss = 0.07}, nodes={
             {n=G.UIT.R, config={align = "cm", padding = 0.07, r = 0.1, colour = adjust_alpha(card_type_background, 0.8)}, nodes={
               name_from_rows(AUT.name, is_playing_card and G.C.WHITE or nil),
@@ -1201,6 +1209,19 @@ end
           }}
         }},
       }}
+              if multi_boxes[1] then
+                  for i=1, #ret_val.nodes[1].nodes[1].nodes[1].nodes do -- find the main box
+                      if ret_val.nodes[1].nodes[1].nodes[1].nodes[i] and ret_val.nodes[1].nodes[1].nodes[1].nodes[i].config and ret_val.nodes[1].nodes[1].nodes[1].nodes[i].config.main_box_flag then
+                          for j=#multi_boxes, 1, -1 do -- add the extra boxes
+                              table.insert(ret_val.nodes[1].nodes[1].nodes[1].nodes, i+1, multi_boxes[j])
+                          end
+                          break
+                      end
+                  end
+                  
+              end
+              
+              return ret_val
     end
   end
 
@@ -1405,7 +1426,7 @@ function create_UIBox_HUD()
                 }},
               }},
               {n=G.UIT.C, config={minw = spacing},nodes={}},
-              {n=G.UIT.C, config={align = "cm", padding = 0.05, minw = 1.45, minh = 1, colour = temp_col, emboss = 0.05, r = 0.1}, nodes={
+              MP.LOBBY.code and MP.UI.timer_hud() or {n=G.UIT.C, config={align = "cm", padding = 0.05, minw = 1.45, minh = 1, colour = temp_col, emboss = 0.05, r = 0.1}, nodes={
                 {n=G.UIT.R, config={align = "cm", maxw = 1.35}, nodes={
                   {n=G.UIT.T, config={text = localize('k_round'), minh = 0.33, scale = 0.85*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
                 }},
@@ -1461,7 +1482,7 @@ function create_UIBox_HUD()
 
     contents.buttons = {
       {n=G.UIT.C, config={align = "cm", r=0.1, colour = G.C.CLEAR, shadow = true, id = 'button_area', padding = 0.2}, nodes={
-          {n=G.UIT.R, config={id = 'run_info_button', align = "cm", minh = 1.75, minw = 1.5,padding = 0.05, r = 0.1, hover = true, colour = G.C.RED, button = "run_info", shadow = true}, nodes={
+          {n=G.UIT.R, config={id = 'run_info_button', align = "cm",  minh = MP.LOBBY.code and 1.2 or 1.75, minw = 1.5,padding = 0.05, r = 0.1, hover = true, colour = G.C.RED, button = "run_info", shadow = true}, nodes={
             {n=G.UIT.R, config={align = "cm", padding = 0, maxw = 1.4}, nodes={
               {n=G.UIT.T, config={text = localize('b_run_info_1'), scale = 1.2*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}}
             }},
@@ -1469,11 +1490,20 @@ function create_UIBox_HUD()
               {n=G.UIT.T, config={text = localize('b_run_info_2'), scale = 1*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true, focus_args = {button = G.F_GUIDE and 'guide' or 'back', orientation = 'bm'}, func = 'set_button_pip'}}
             }}
           }},
-          {n=G.UIT.R, config={align = "cm", minh = 1.75, minw = 1.5,padding = 0.05, r = 0.1, hover = true, colour = G.C.ORANGE, button = "options", shadow = true}, nodes={
+          {n=G.UIT.R, config={align = "cm",  minh = MP.LOBBY.code and 1.2 or 1.75, minw = 1.5,padding = 0.05, r = 0.1, hover = true, colour = G.C.ORANGE, button = "options", shadow = true}, nodes={
             {n=G.UIT.C, config={align = "cm", maxw = 1.4, focus_args = {button = 'start', orientation = 'bm'}, func = 'set_button_pip'}, nodes={
               {n=G.UIT.T, config={text = localize('b_options'), scale = scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}}
             }},
           }}
+              ,
+              MP.LOBBY.code and {n=G.UIT.R, config={id = 'lobby_info_button', align = "cm", minh = 1.2, minw = 1.5,padding = 0.05, r = 0.1, hover = true, colour = G.C.BLUE, button = "lobby_info", shadow = true}, nodes={
+                  {n=G.UIT.R, config={align = "cm", padding = 0, maxw = 1.4}, nodes={
+                      {n=G.UIT.T, config={text = localize("ml_lobby_info")[1], scale = 1.2*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}}
+                  }},
+                  {n=G.UIT.R, config={align = "cm", padding = 0, maxw = 1.4}, nodes={
+                      {n=G.UIT.T, config={text = localize("ml_lobby_info")[2], scale = 1*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true, focus_args = {button = G.F_GUIDE and 'guide' or 'back', orientation = 'bm'}, func = 'set_button_pip'}}
+                  }}
+              }} or nil
         }}
     }
 
@@ -2316,8 +2346,8 @@ function create_UIBox_options()
     restart = UIBox_button{id = 'restart_button', label = {localize('b_start_new_run')}, button = "setup_run", minw = 5}
     main_menu = UIBox_button{ label = {localize('b_main_menu')}, button = "go_to_menu", minw = 5}
     unstuck_button = UIBox_button{ label = {localize('b_unstuck')}, button = "mp_unstuck", minw = 5}
-    return_to_lobby = UIBox_button{ label = {localize('return_lobby')}, button = "mp_return_to_lobby", minw = 5}
-    leave_lobby = UIBox_button{ label = {localize('leave_lobby')}, button = "lobby_leave", minw = 5}
+    return_to_lobby = UIBox_button{ label = {localize('b_return_lobby')}, button = "mp_return_to_lobby", minw = 5}
+    leave_lobby = UIBox_button{ label = {localize('b_leave_lobby')}, button = "lobby_leave", minw = 5}
     mods = UIBox_button{ id = "mods_button", label = {localize('b_mods')}, button = "mods_button", minw = 5}
     your_collection = UIBox_button{ label = {localize('b_collection')}, button = "your_collection", minw = 5, id = 'your_collection'}
     current_seed = {n=G.UIT.R, config={align = "cm", padding = 0.05}, nodes={
@@ -2346,12 +2376,12 @@ function create_UIBox_options()
 
   local t = create_UIBox_generic_options({ contents = {
       settings,
-      (not G.LOBBY.code and G.GAME.seeded) and current_seed or nil,
-      not G.LOBBY.code and restart or nil,
-      not G.LOBBY.code and main_menu or nil,
-      G.LOBBY.code and unstuck_button or nil,
-      G.LOBBY.code and return_to_lobby or nil,
-      G.LOBBY.code and leave_lobby or nil,
+      (not MP.LOBBY.code and G.GAME.seeded) and current_seed or nil,
+      not MP.LOBBY.code and restart or nil,
+      not MP.LOBBY.code and main_menu or nil,
+      MP.LOBBY.code and unstuck_button or nil,
+      MP.LOBBY.code and return_to_lobby or nil,
+      MP.LOBBY.code and leave_lobby or nil,
       mods,
       high_scores,
       your_collection,
@@ -3167,7 +3197,9 @@ function create_UIBox_hand_tip(handname)
     0.75*G.CARD_H, 
     {card_limit = 5, type = 'title', highlight_limit = 0})
   for k, v in ipairs(G.GAME.hands[handname].example) do
-      local card = Card(0,0, 0.5*G.CARD_W, 0.5*G.CARD_H, G.P_CARDS[v[1]], G.P_CENTERS.c_base)
+      local card = Card(0,0, 0.5*G.CARD_W, 0.5*G.CARD_H, G.P_CARDS[v[1]], G.P_CENTERS[v.enhancement or 'c_base'])
+      if v.edition then card:set_edition(v.edition, true, true) end
+      if v.seal then card:set_seal(v.seal, true, true) end
       if v[2] then card:juice_up(0.3, 0.2) end
       if k == 1 then play_sound('paper1',0.95 + math.random()*0.1, 0.3) end
       ease_value(card.T, 'scale',v[2] and 0.25 or -0.15,nil,'REAL',true,0.2)
@@ -3263,8 +3295,8 @@ function G.UIDEF.deck_info(_show_remaining)
         chosen = true,
         tab_definition_function = G.UIDEF.view_deck
       },
-      G.LOBBY.code and {
-                    label = G.localization.misc.challenge_names.c_multiplayer_1 or "Multiplayer",
+      MP.LOBBY.code and {
+                    label = G.localization.misc.challenge_names[MP.Rulesets[MP.LOBBY.config.ruleset].challenge_deck],
                     tab_definition_function = G.UIDEF.multiplayer_deck,
                   },
     },
@@ -3652,13 +3684,13 @@ function create_UIBox_your_collection()
     end
   }))
   local consumable_nodes = {}
-  if #SMODS.ConsumableType.ctype_buffer <= 3 then
-      for _, key in ipairs(SMODS.ConsumableType.ctype_buffer) do
+  if #SMODS.ConsumableType.visible_buffer <= 3 then
+      for _, key in ipairs(SMODS.ConsumableType.visible_buffer) do
           local id = 'your_collection_'..key:lower()..'s'
           consumable_nodes[#consumable_nodes+1] = UIBox_button({button = id, label = {localize('b_'..key:lower()..'_cards')}, count = G.DISCOVER_TALLIES[key:lower()..'s'], minw = 4, id = id, colour = G.C.SECONDARY_SET[key]})
       end
   else
-      consumable_nodes[#consumable_nodes+1] = UIBox_button({ button = 'your_collection_consumables', label = {localize('b_stat_consumables'), localize{ type = 'variable', key = 'c_types', vars = {#SMODS.ConsumableType.ctype_buffer} } }, count = G.DISCOVER_TALLIES['consumeables'], minw = 4, minh = 4, id = 'your_collection_consumables', colour = G.C.FILTER })
+      consumable_nodes[#consumable_nodes+1] = UIBox_button({ button = 'your_collection_consumables', label = {localize('b_stat_consumables'), localize{ type = 'variable', key = 'c_types', vars = {#SMODS.ConsumableType.visible_buffer} } }, count = G.DISCOVER_TALLIES['consumeables'], minw = 4, minh = 4, id = 'your_collection_consumables', colour = G.C.FILTER })
   end
   local t = create_UIBox_generic_options({ back_func = G.STAGE == G.STAGES.RUN and 'options' or 'exit_overlay_menu', contents = {
     {n=G.UIT.C, config={align = "cm", padding = 0.15}, nodes={
@@ -5482,12 +5514,25 @@ function G.UIDEF.run_setup(from_game_over)
 
   local _can_continue = G.MAIN_MENU_UI and G.FUNCS.can_continue({config = {func = true}})
   G.FUNCS.false_ret = function() return false end
-  local t = G.LOBBY.code and create_UIBox_generic_options({contents ={
-      {n=G.UIT.R, config={padding = 0.0, align = "cm", colour = G.C.CLEAR}, nodes={
-        {n=G.UIT.R, config={align = 'cm', padding = 0.1, no_fill = true, minh = 0, minw = 0}, nodes={
-          {n=G.UIT.O, config={id = 'tab_contents', object = UIBox{definition = G.UIDEF.run_setup_option('New Run'), config = {offset = {x=0,y=0}}}}}
+  local t = MP.LOBBY.code and create_UIBox_generic_options({contents ={
+        {n=G.UIT.R, config={align = "cm", padding = 0, draw_layer = 1}, nodes={
+          create_tabs(
+          {tabs = {
+              {
+                  label = localize('b_new_run'),
+                  chosen = true,
+                  tab_definition_function = (Galdur and Galdur.config.use) and G.UIDEF.run_setup_option_new_model or G.UIDEF.run_setup_option,
+                  tab_definition_function_args = 'New Run'
+              },
+              {
+                label = localize('b_challenges'),
+                tab_definition_function = G.UIDEF.challenges,
+                tab_definition_function_args = from_game_over,
+                chosen = false
+              },
+          },
+          snap_to_nav = true}),
         }},
-      }},
     }}) or create_UIBox_generic_options({no_back = from_game_over, no_esc = from_game_over, contents ={
       {n=G.UIT.R, config={align = "cm", padding = 0, draw_layer = 1}, nodes={
         create_tabs(
@@ -5776,6 +5821,7 @@ function G.UIDEF.challenge_description(_id, daily, is_row)
       if v.edition then card:set_edition({[v.edition] = true}, true, true) end
       if v.eternal then card:set_eternal(true) end
       if v.pinned then card.pinned = true end
+      if v.rental then card:set_rental(true) end
       jokers:emplace(card)
     end
   end
@@ -5864,7 +5910,7 @@ function G.UIDEF.challenge_description(_id, daily, is_row)
         no_shoulders = true,
         no_loop = true}
     )}},
-    (not G.LOBBY.code) and (not is_row) and {n=G.UIT.R, config={align = "cm", minh = 0.9}, nodes={
+    (not (MP.LOBBY.code and G.STAGE == G.STAGES.RUN)) and (not is_row) and {n=G.UIT.R, config={align = "cm", minh = 0.9}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0.1, minh = 0.7, minw = 9, r = 0.1, hover = true, colour = G.C.BLUE, button = "start_challenge_run", shadow = true, id = _id}, nodes={
         {n=G.UIT.T, config={text = localize('b_play_cap'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT,func = 'set_button_pip', focus_args = {button = 'x',set_button_pip = true}}}
       }}
@@ -6143,7 +6189,7 @@ function G.UIDEF.challenge_description_tab(args)
       table.sort(SUITS[suit_map[j]], function(a,b) return a:get_nominal() > b:get_nominal() end )
       local view_deck = CardArea(
         0,0,
-        5.5*G.CARD_W,			
+        5.5*G.CARD_W,
               (0.42 - (num_suits <= 4 and 0 or num_suits >= 8 and 0.28 or 0.07 * (num_suits - 4))) * G.CARD_H,
         {card_limit = #SUITS[suit_map[j]], type = 'title_2', view_deck = true, highlight_limit = 0, card_w = G.CARD_W*0.5, draw_layers = {'card'}})
       table.insert(deck_tables, 
@@ -6170,7 +6216,7 @@ function G.UIDEF.run_setup_option(type)
   end
 
   G.SETTINGS.current_setup = type
-  G.GAME.viewed_back = G.LOBBY.code and Back(get_deck_from_name(G.LOBBY.deck.back)) or Back(get_deck_from_name(G.PROFILES[G.SETTINGS.profile].MEMORY.deck))
+  G.GAME.viewed_back = MP.LOBBY.code and Back(get_deck_from_name(MP.LOBBY.deck.back)) or Back(get_deck_from_name(G.PROFILES[G.SETTINGS.profile].MEMORY.deck))
 
   G.PROFILES[G.SETTINGS.profile].MEMORY.stake = G.PROFILES[G.SETTINGS.profile].MEMORY.stake or 1
 
@@ -6188,7 +6234,7 @@ function G.UIDEF.run_setup_option(type)
     end
   end
 
-  if type == 'New Run' and not G.LOBBY.code then
+  if type == 'New Run' and not MP.LOBBY.code then
     if G.OVERLAY_MENU then 
       local seed_toggle = G.OVERLAY_MENU:get_UIE_by_ID('run_setup_seed')
       if seed_toggle then seed_toggle.states.visible = true end
@@ -6196,8 +6242,8 @@ function G.UIDEF.run_setup_option(type)
     G.viewed_stake = G.PROFILES[G.SETTINGS.profile].MEMORY.stake or 1
     G.FUNCS.change_stake({to_key = G.viewed_stake})
   else
-    if G.LOBBY.code then
-        G.viewed_stake = G.LOBBY.deck.stake
+    if MP.LOBBY.code then
+        G.viewed_stake = MP.LOBBY.deck.stake
         G.FUNCS.change_stake({to_key = G.viewed_stake})
       end
     G.run_setup_seed = nil
@@ -6323,7 +6369,7 @@ function G.UIDEF.run_setup_option(type)
                   }},
                     {n=G.UIT.C, config={align = "cm", minw = 5, minh = 0.8, padding = 0.2, r = 0.1, hover = true, colour = G.C.BLUE, button = "start_setup_run", shadow = true, func = 'can_start_run'}, nodes={
                       {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
-                        {n=G.UIT.T, config={text =  G.LOBBY.code and localize('b_select') or localize('b_play_cap'), scale = 0.8, colour = G.C.UI.TEXT_LIGHT,func = 'set_button_pip', focus_args = {button = 'x',set_button_pip = true}}}
+                        {n=G.UIT.T, config={text =  MP.LOBBY.code and localize('b_select') or localize('b_play_cap'), scale = 0.8, colour = G.C.UI.TEXT_LIGHT,func = 'set_button_pip', focus_args = {button = 'x',set_button_pip = true}}}
                       }}
                     }},
                    {n=G.UIT.C, config={align = "cm", minw = 2.5}, nodes={}}

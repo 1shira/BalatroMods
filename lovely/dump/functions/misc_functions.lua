@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'ce267560ffb923b0877d512c00e4f203344192dcdfd769b88b834647a45a21ed'
+LOVELY_INTEGRITY = '2a400c4987fded265f2f5f963d276f5f163cbd7b9c9386c0abddeefd85dad7e0'
 
 --Updates all display information for all displays for a given screenmode. Returns the key for the resolution option cycle
 --
@@ -327,6 +327,7 @@ end
 
 function pseudoseed(key, predict_seed)
   if key == 'seed' then return math.random() end
+  if G.SETTINGS.paused and key ~= 'to_do' then return math.random() end
 
   if predict_seed then 
     local _pseed = pseudohash(key..(predict_seed or ''))
@@ -1010,7 +1011,7 @@ function find_joker(name, non_debuff)
 end
 
 function get_blind_amount(ante)
-if G.GAME.modifiers.scaling and G.GAME.modifiers.scaling > 3 then return SMODS.get_blind_amount(ante) end
+if G.GAME.modifiers.scaling and (G.GAME.modifiers.scaling ~= 1 and G.GAME.modifiers.scaling ~= 2 and G.GAME.modifiers.scaling ~= 3) then return SMODS.get_blind_amount(ante) end
   local k = 0.75
   if not G.GAME.modifiers.scaling or G.GAME.modifiers.scaling == 1 then 
     local amounts = {
@@ -1397,7 +1398,7 @@ function set_profile_progress()
       G.PROGRESS.deck_stakes.of = G.PROGRESS.deck_stakes.of + #G.P_CENTER_POOLS.Stake
       G.PROGRESS.deck_stakes.tally = G.PROGRESS.deck_stakes.tally + get_deck_win_stake(v.key)
     end
-    if v.set == 'Joker' then 
+    if v.set == 'Joker' and not v.no_collection then 
       G.PROGRESS.joker_stickers.of = G.PROGRESS.joker_stickers.of + #G.P_CENTER_POOLS.Stake
       G.PROGRESS.joker_stickers.tally = G.PROGRESS.joker_stickers.tally + get_joker_win_sticker(v, true)
     end
@@ -1571,6 +1572,8 @@ function save_with_action(action)
 end
 
 function save_run()
+    if G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.SPECTRAL_PACK
+        or G.STATE == G.STATES.BUFFOON_PACK or G.STATE == G.STATES.STANDARD_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED then return end
   if G.F_NO_SAVING == true then return end
   local cardAreas = {}
   for k, v in pairs(G) do
@@ -1639,8 +1642,11 @@ function loc_colour(_c, _default)
       for _, v in ipairs(SMODS.Rarity.obj_buffer) do
           G.ARGS.LOC_COLOURS[v:lower()] = G.C.RARITY[v]
       end
+      for _, v in ipairs(SMODS.Gradient.obj_buffer) do
+          G.ARGS.LOC_COLOURS[v:lower()] = SMODS.Gradients[v]
+      end
       for _, v in ipairs(SMODS.ConsumableType.ctype_buffer) do
-          G.ARGS.LOC_COLOURS[v:lower()] = G.C.SECONDARY_SET[v] 
+          G.ARGS.LOC_COLOURS[v:lower()] = G.C.SECONDARY_SET[v]
       end
       for _, v in ipairs(SMODS.Suit.obj_buffer) do
           G.ARGS.LOC_COLOURS[v:lower()] = G.C.SUITS[v]
@@ -1688,7 +1694,14 @@ function init_localization()
           center.text_parsed = {}
           if not center.text then else
           for _, line in ipairs(center.text) do
-            center.text_parsed[#center.text_parsed+1] = loc_parse_string(line)
+              if type(line) == 'table' then
+                  center.text_parsed[#center.text_parsed+1] = {}
+                  for _, new_line in ipairs(line) do
+                       center.text_parsed[#center.text_parsed][#center.text_parsed[#center.text_parsed]+1] = loc_parse_string(new_line)
+                  end
+              else
+                  center.text_parsed[#center.text_parsed+1] = loc_parse_string(line)
+              end
           end
           center.name_parsed = {}
           for _, line in ipairs(type(center.name) == 'table' and center.name or {center.name}) do
@@ -1817,6 +1830,7 @@ utf8.chars =
 	end
 
 function localize(args, misc_cat)
+   if not args then return "ERROR" end
   if args and not (type(args) == 'table') then
     if misc_cat and G.localization.misc[misc_cat] then return G.localization.misc[misc_cat][args] or 'ERROR' end
     return G.localization.misc.dictionary[args] or 'ERROR'
@@ -1881,6 +1895,25 @@ function localize(args, misc_cat)
   if ret_string then return ret_string end
 
   if loc_target then 
+    args.AUT = args.AUT or {}
+    args.AUT.box_colours = {}
+    if (args.type == 'descriptions' or args.type == 'other') and type(loc_target.text) == 'table' and type(loc_target.text[1]) == 'table' then
+        args.AUT.multi_box = {}
+        for i, box in ipairs(loc_target.text_parsed) do
+            for j, line in ipairs(box) do
+                local final_line = SMODS.localize_box(line, args)
+                if i == 1 or next(args.AUT.info) then
+                    args.nodes[#args.nodes+1] = final_line -- Sends main box to AUT.main
+                    if not next(args.AUT.info) then args.nodes.main_box_flag = true end
+                elseif not next(args.AUT.info) then 
+                    args.AUT.multi_box[i-1] = args.AUT.multi_box[i-1] or {}
+                    args.AUT.multi_box[i-1][#args.AUT.multi_box[i-1]+1] = final_line
+                end
+                if not next(args.AUT.info) then args.AUT.box_colours[i] = args.vars.box_colours and args.vars.box_colours[i] or G.C.UI.BACKGROUND_WHITE end
+            end
+        end
+        return
+    end
     for _, lines in ipairs(args.type == 'unlocks' and loc_target.unlock_parsed or args.type == 'name' and loc_target.name_parsed or (args.type == 'text' or args.type == 'tutorial' or args.type == 'quips') and loc_target or loc_target.text_parsed) do
       local final_line = {}
       for _, part in ipairs(lines) do
@@ -1891,7 +1924,8 @@ function localize(args, misc_cat)
         local desc_scale = G.LANG.font.DESCSCALE
         if G.F_MOBILE_UI then desc_scale = desc_scale*1.5 end
         if args.type == 'name' then
-          final_line[#final_line+1] = {n=G.UIT.O, config={
+          final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = part.control.B and args.vars.colours[tonumber(part.control.B)] or part.control.X and loc_colour(part.control.X) or nil, r = 0.05, padding = 0.03, res = 0.15}, nodes={}}
+          final_line[#final_line].nodes[1] = {n=G.UIT.O, config={
             object = DynaText({string = {assembled_string},
               colours = {(part.control.V and args.vars.colours[tonumber(part.control.V)]) or (part.control.C and loc_colour(part.control.C)) or args.text_colour or G.C.UI.TEXT_LIGHT},
               bump = true,
@@ -1912,7 +1946,8 @@ function localize(args, misc_cat)
           elseif part.control.E == '2' then
             _bump = true; _spacing = 1
           end
-          final_line[#final_line+1] = {n=G.UIT.O, config={
+          final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = part.control.B and args.vars.colours[tonumber(part.control.B)] or part.control.X and loc_colour(part.control.X) or nil, r = 0.05, padding = 0.03, res = 0.15}, nodes={}}
+          final_line[#final_line].nodes[1] = {n=G.UIT.O, config={
             object = DynaText({string = {assembled_string}, colours = {part.control.V and args.vars.colours[tonumber(part.control.V)] or loc_colour(part.control.C or nil)},
             float = _float,
             silent = _silent,
@@ -1921,11 +1956,11 @@ function localize(args, misc_cat)
             spacing = _spacing,
             scale = 0.32*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*desc_scale})
           }}
-        elseif part.control.X then
-          final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = loc_colour(part.control.X), r = 0.05, padding = 0.03, res = 0.15}, nodes={
+        elseif part.control.X or part.control.B then
+          final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = part.control.B and args.vars.colours[tonumber(part.control.B)] or loc_colour(part.control.X), r = 0.05, padding = 0.03, res = 0.15}, nodes={
               {n=G.UIT.T, config={
                 text = assembled_string,
-                colour = loc_colour(part.control.C or nil),
+                colour = part.control.V and args.vars.colours[tonumber(part.control.V)] or loc_colour(part.control.C or nil),
                 scale = 0.32*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*desc_scale}},
           }}
         else
@@ -2072,6 +2107,8 @@ return {
     consumable_slots = 2,
     no_faces = false,
     erratic_suits_and_ranks = false,
+    boosters_in_shop = 2,
+    vouchers_in_shop = 1,
   }
 end
 
