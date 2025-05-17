@@ -12,10 +12,12 @@ git checkout <branch>
 
 I've got the Following branches:
 
-main - A lot of random mods thrown together, crashes sometimes
+main - Some few mods, pretty balanced rn
 
-multi - Less mods, more stable, includes the multiplayer mod
+multi - Only multiplayer mod and a few random decks
 
-none- Empty folder for when you want to play Vanilla
+multib - multiplayer mod beta
 
-insanity - Cryptid mod, a few decks and extra stakes, includes multiplayer, hasn't crashed on me yet
+none - Empty folder for when you want to play Vanilla
+
+insanity - POLTERWORX mod
