@@ -1,0 +1,140 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 2147483600
+
+[[patches]]
+[patches.regex]
+target = "card.lua"
+pattern = '''\) then self.cost = 0 end'''
+position = 'after'
+payload = '''if self.edition and self.edition.type == 'mp_phantom' then self.sell_cost = 0 end'''
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''if G.jokers.cards[i] ~= self then'''
+position = 'at'
+payload = '''if G.jokers.cards[i] ~= self and (not G.jokers.cards[i].edition or G.jokers.cards[i].edition.type ~= "mp_phantom") then'''
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''local chosen_joker = pseudorandom_element(G.jokers.cards, pseudoseed('ankh_choice'))'''
+position = 'at'
+payload = '''local copyable_jokers = {}
+    for i, v in ipairs(G.jokers.cards) do
+      if not G.jokers.cards[i].edition or G.jokers.cards[i].edition.type ~= "mp_phantom" then copyable_jokers[#copyable_jokers + 1] = v end
+    end
+    local chosen_joker = pseudorandom_element(copyable_jokers, pseudoseed('ankh_choice'))'''
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.regex]
+target = "card.lua"
+pattern = '''--if there is at least one joker(?<pre>[\s\S]+?)for k, v in pairs\(G.jokers.cards\) do'''
+position = 'at'
+payload = '''--if there is at least one joker$pre local copyable_jokers = {}
+      for i, v in ipairs(G.jokers.cards) do
+        if not G.jokers.cards[i].edition or G.jokers.cards[i].edition.type ~= "mp_phantom" then copyable_jokers[#copyable_jokers + 1] = v end
+      end
+      for k, v in pairs(copyable_jokers) do'''
+times = 1
+
+# Sets the balanced sticker on multiplayer glass cards
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''local old_center = self.config.center'''
+position = 'after'
+payload = '''if old_center ~= center then
+    if center.name == "m_mp_glass" then
+      self.ability.mp_sticker_balanced = true
+    else
+      self.ability.mp_sticker_balanced = false
+    end
+  end'''
+match_indent = true
+times = 1
+
+
+# For the deck syncing
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''function Card:set_base(card, initial)'''
+position = 'after'
+payload = '''if card and card.suit and MP and MP.LOBBY.code and MP.LOBBY.is_started and not MP.GAME.setting_deck and (self.area == G.deck or self.area == G.hand or self.area == G.discard or self.area == G.play) then
+MP.ACTIONS.set_card_suit(self, card.suit)
+end
+if card and card.value and MP and MP.LOBBY.code and MP.LOBBY.is_started and not MP.GAME.setting_deck and (self.area == G.deck or self.area == G.hand or self.area == G.discard or self.area == G.play) then
+MP.ACTIONS.set_card_rank(self, card.value)
+end'''
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''function Card:change_suit(new_suit)
+    local new_code = SMODS.Suits[new_suit].card_key'''
+position = 'after'
+payload = '''if MP and new_code and MP.LOBBY.code and MP.LOBBY.is_started and not MP.GAME.setting_deck and (self.area == G.deck or self.area == G.hand or self.area == G.discard or self.area == G.play) then
+MP.ACTIONS.set_card_suit(self, new_code)
+end'''
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''function Card:set_ability(center, initial, delay_sprites)'''
+position = 'after'
+payload = '''if MP and MP.LOBBY.code and MP.LOBBY.is_started and not MP.GAME.setting_deck and (self.area == G.deck or self.area == G.hand or self.area == G.discard or self.area == G.play) then
+MP.ACTIONS.set_card_enhancement(self, MP.UTILS.reverse_key_value_pairs(G.P_CENTERS)[center] or "none")
+end'''
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''function Card:set_seal(_seal, silent, immediate)'''
+position = 'after'
+payload = '''
+if MP and MP.LOBBY.code and MP.LOBBY.is_started and not MP.GAME.setting_deck and (self.area == G.deck or self.area == G.hand or self.area == G.discard or self.area == G.play) then
+MP.ACTIONS.set_card_seal(self, _seal or "none")
+end'''
+match_indent = true
+times = 1 
+
+# Creation
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''
+function Card:add_to_deck(from_debuff)'''
+position = 'after'
+payload = '''if MP and MP.LOBBY.code and MP.LOBBY.is_started and not MP.GAME.setting_deck then
+MP.ACTIONS.add_card(self)
+end'''
+match_indent = true
+times = 1
+
+
+# Destruction
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''function Card:remove()
+    self.removed = true'''
+position = 'after'
+payload = '''if MP and MP.LOBBY.code and MP.LOBBY.is_started and not MP.GAME.setting_deck and (self.area == G.deck or self.area == G.hand or self.area == G.discard or self.area == G.play) then
+MP.ACTIONS.remove_card(self)
+end'''
+match_indent = true
+times = 1
