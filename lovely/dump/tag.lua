@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'fc4d50464fc95f66b83c0fb494b4dc8778783f12b1ef71f1ccf3eaa3a075181f'
+LOVELY_INTEGRITY = '36006f51b716d3ff1f8c4d2b5103b71af98753817755baca2b2c9f10d1313658'
 
 --Class
 Tag = Object:extend()
@@ -322,6 +322,7 @@ function Tag:apply_to_run(_context)
                     G.shop_vouchers.config.card_limit = G.shop_vouchers.config.card_limit + 1
                     local card = Card(G.shop_vouchers.T.x + G.shop_vouchers.T.w/2,
                     G.shop_vouchers.T.y, G.CARD_W, G.CARD_H, G.P_CARDS.empty, G.P_CENTERS[voucher_key],{bypass_discovery_center = true, bypass_discovery_ui = true})
+                    card.from_tag = true
                     create_shop_card_ui(card, 'Voucher', G.shop_vouchers)
                     card:start_materialize()
                     G.shop_vouchers:emplace(card)

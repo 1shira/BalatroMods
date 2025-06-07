@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '4d3ad4a06af6c3434496cd6eba8dc31769263795c4d2dc7e0c0d0f20f63ff652'
+LOVELY_INTEGRITY = '49e9e8060727a0ba194313bbe5f32a79916e4e0b37417589500a576f8792b480'
 
 --Class
 Game = Object:extend()
@@ -1006,7 +1006,7 @@ function Game:set_language()
 
     local localization = love.filesystem.getInfo('localization/'..G.SETTINGS.language..'.lua') or love.filesystem.getInfo('localization/en-us.lua')
     if localization ~= nil then
-      self.localization = assert(loadstring(love.filesystem.read('localization/'..G.SETTINGS.language..'.lua') or love.filesystem.read('localization/en-us.lua')))()
+      self.localization = assert(loadstring(love.filesystem.read('localization/'..G.SETTINGS.language..'.lua') or love.filesystem.read('localization/en-us.lua'), '=[localization "'..G.SETTINGS.language..'.lua"]'))()
       init_localization()
     end
 end
@@ -1991,6 +1991,7 @@ function Game:init_game_object()
             hands = 1, 
             discards = 1,
             reroll_cost = 1,
+            free_rerolls = 0,
             temp_reroll_cost = nil,
             temp_handsize = nil,
             ante = 1,
@@ -2086,6 +2087,7 @@ function Game:start_run(args)
                             local _joker = add_joker(v.id, v.edition, k ~= 1)
                             if v.eternal then _joker:set_eternal(true) end
                             if v.pinned then _joker.pinned = true end
+                            if v.rental then _joker:set_rental(true) end
                         return true
                         end
                     }))
@@ -2167,6 +2169,9 @@ function Game:start_run(args)
         self.GAME.round_resets.discards = self.GAME.starting_params.discards
         self.GAME.round_resets.reroll_cost = self.GAME.starting_params.reroll_cost
         self.GAME.dollars = self.GAME.starting_params.dollars
+            if MP and MP.LOBBY and MP.LOBBY.code then
+                MP.GAME.real_money = tostring(self.GAME.starting_params.dollars)
+            end
         self.GAME.base_reroll_cost = self.GAME.starting_params.reroll_cost
         self.GAME.round_resets.reroll_cost = self.GAME.base_reroll_cost
         self.GAME.current_round.reroll_cost = self.GAME.base_reroll_cost
@@ -2179,6 +2184,7 @@ function Game:start_run(args)
         self.GAME.pseudorandom.seed = args.seed or (not (G.SETTINGS.tutorial_complete or G.SETTINGS.tutorial_progress.completed_parts['big_blind']) and "TUTORIAL") or generate_starting_seed()
     end
 
+    if self.GAME.pseudorandom.seed:sub(1, 1) ~= "*" and MP.INTEGRATIONS.TheOrder then self.GAME.pseudorandom.seed = "*" .. self.GAME.pseudorandom.seed end
     for k, v in pairs(self.GAME.pseudorandom) do if v == 0 then self.GAME.pseudorandom[k] = pseudohash(k..self.GAME.pseudorandom.seed) end end
     self.GAME.pseudorandom.hashed_seed = pseudohash(self.GAME.pseudorandom.seed)
 
@@ -2190,7 +2196,8 @@ function Game:start_run(args)
 
     if not saveTable then
         self.GAME.round_resets.blind_choices.Boss = get_new_boss()
-        self.GAME.current_round.voucher = G.SETTINGS.tutorial_progress and G.SETTINGS.tutorial_progress.forced_voucher or get_next_voucher_key()
+        local forced_voucher = (G.SETTINGS.tutorial_progress or {}).forced_voucher
+        self.GAME.current_round.voucher = forced_voucher and {forced_voucher, spawn = {[forced_voucher] = true }} or SMODS.get_next_vouchers()
         self.GAME.round_resets.blind_tags.Small = G.SETTINGS.tutorial_progress and G.SETTINGS.tutorial_progress.forced_tags and G.SETTINGS.tutorial_progress.forced_tags[1] or get_next_tag_key()
         self.GAME.round_resets.blind_tags.Big = G.SETTINGS.tutorial_progress and G.SETTINGS.tutorial_progress.forced_tags and G.SETTINGS.tutorial_progress.forced_tags[2] or get_next_tag_key()
     else
@@ -2253,7 +2260,14 @@ function Game:start_run(args)
         CAI.consumeable_H, 
         {card_limit = self.GAME.starting_params.consumable_slots, type = 'joker', highlight_limit = 1})
 
-    self.jokers = CardArea(
+    if MP.LOBBY.code then 
+      MP.shared = CardArea(
+        0, CAI.consumeable_H + 0.3,
+        CAI.consumeable_W / 2,
+        CAI.consumeable_H, 
+        {card_limit = 0, type = 'joker', highlight_limit = 1})
+    end
+self.jokers = CardArea(
         0, 0,
         CAI.joker_W,
         CAI.joker_H, 
@@ -2413,7 +2427,8 @@ function Game:start_run(args)
         reset_mail_rank()
         self.GAME.current_round.ancient_card.suit = nil
         reset_ancient_card()
-        reset_castle_card()        for _, mod in ipairs(SMODS.mod_list) do
+        reset_castle_card()        
+        for _, mod in ipairs(SMODS.mod_list) do
         	if mod.reset_game_globals and type(mod.reset_game_globals) == 'function' then
         		mod.reset_game_globals(true)
         	end
@@ -2488,6 +2503,7 @@ function Game:update(dt)
     if not G.SETTINGS.tutorial_complete then G.FUNCS.tutorial_controller() end
                 timer_checkpoint('tallies', 'update')
     modulate_sound(dt)
+    SMODS.enh_cache:clear()
                 timer_checkpoint('sounds', 'update')
     update_canvas_juice(dt)
                 timer_checkpoint('canvas and juice', 'update')
@@ -2526,7 +2542,7 @@ function Game:update(dt)
 
         self.SPEEDFACTOR = (G.STAGE == G.STAGES.RUN and not G.SETTINGS.paused and not G.screenwipe) and self.SETTINGS.GAMESPEED or 1
         self.SPEEDFACTOR = self.SPEEDFACTOR + math.max(0, math.abs(G.ACC) - 2)
-        self.SPEEDFACTOR = self.SPEEDFACTOR * Handy.speed_multiplier.value or 1
+        self.SPEEDFACTOR = self.SPEEDFACTOR * Handy.speed_multiplier.get_value() or 1
 
         self.TIMERS.TOTAL = self.TIMERS.TOTAL + dt*(self.SPEEDFACTOR)
 
@@ -2539,6 +2555,9 @@ function Game:update(dt)
         self.C.EDITION[2] = 0.7+0.2*(1+math.sin(self.TIMERS.REAL*1.5 + 6))
         for k, v in pairs(SMODS.Rarities) do
             if v.gradient and type(v.gradient) == "function" then v:gradient(dt) end
+        end
+        for _,v in pairs(SMODS.Gradients) do
+           v:update(dt) 
         end
 
         
@@ -2554,7 +2573,7 @@ function Game:update(dt)
                             {n=G.UIT.O, config={object = DynaText({scale = 0.7, string = localize('ph_unscored_hand'), maxw = 9, colours = {G.C.WHITE},float = true, shadow = true, silent = true, pop_in = 0, pop_in_rate = 6})}},
                         }},
                         {n=G.UIT.R, config = {align = 'cm', maxw = 1}, nodes={
-                            {n=G.UIT.O, config={object = DynaText({scale = 0.6, string = G.GAME.blind:get_loc_debuff_text(), maxw = 9, colours = {G.C.WHITE},float = true, shadow = true, silent = true, pop_in = 0, pop_in_rate = 6})}},
+                            {n=G.UIT.O, config={object = DynaText({scale = 0.6, string = SMODS.debuff_text or G.GAME.blind:get_loc_debuff_text(), maxw = 9, colours = {G.C.WHITE},float = true, shadow = true, silent = true, pop_in = 0, pop_in_rate = 6})}},
                         }}
                     }}, 
                     config = {
@@ -2565,7 +2584,11 @@ function Game:update(dt)
                   }
                   self.boss_warning_text.attention_text = true
                   self.boss_warning_text.states.collide.can = false
-                  G.GAME.blind.children.animatedSprite:juice_up(0.05, 0.02)
+                  if SMODS.hand_debuff_source then
+                      SMODS.hand_debuff_source:juice_up(0.05, 0.1)
+                  else
+                      G.GAME.blind.children.animatedSprite:juice_up(0.05, 0.02)
+                  end
                   play_sound('chips1', math.random()*0.1 + 0.55, 0.12)
             end
         else
@@ -3050,7 +3073,7 @@ end
 function Game:update_selecting_hand(dt)
     if not self.deck_preview and not G.OVERLAY_MENU and (
         (self.deck and self.deck.cards[1] and self.deck.cards[1].states.collide.is and ((not self.deck.cards[1].states.drag.is) or self.CONTROLLER.HID.touch) and (not self.CONTROLLER.HID.controller)) or 
-        G.CONTROLLER.held_buttons.triggerleft or Handy.show_deck_preview.is_hold
+        Handy.show_deck_preview.is_hold
 ) then
         if self.buttons then
             self.buttons.states.visible = false
@@ -3063,7 +3086,7 @@ function Game:update_selecting_hand(dt)
             blocking = false,
             blockable = false,
             func = function()
-                if self.deck_preview and not (((self.deck and self.deck.cards[1] and self.deck.cards[1].states.collide.is and not self.CONTROLLER.HID.controller)) or G.CONTROLLER.held_buttons.triggerleft or Handy.show_deck_preview.is_hold
+                if self.deck_preview and not (((self.deck and self.deck.cards[1] and self.deck.cards[1].states.collide.is and not self.CONTROLLER.HID.controller)) or Handy.show_deck_preview.is_hold
 ) then 
                     self.deck_preview:remove()
                     self.deck_preview = nil
@@ -3130,6 +3153,7 @@ function Game:update_shop(dt)
                         blockable = false,
                         func = function()
                             if math.abs(G.shop.T.y - G.shop.VT.y) < 3 then
+                            Handy.regular_keybinds.on_shop_loaded()
                                 G.ROOM.jiggle = G.ROOM.jiggle + 3
                                 play_sound('cardFan2')
                                 for i = 1, #G.GAME.tags do
@@ -3164,13 +3188,15 @@ function Game:update_shop(dt)
                                         end
                                         G.load_shop_vouchers = nil
                                     else
-                                        if G.GAME.current_round.voucher and G.P_CENTERS[G.GAME.current_round.voucher] then
-                                            local card = Card(G.shop_vouchers.T.x + G.shop_vouchers.T.w/2,
-                                            G.shop_vouchers.T.y, G.CARD_W, G.CARD_H, G.P_CARDS.empty, G.P_CENTERS[G.GAME.current_round.voucher],{bypass_discovery_center = true, bypass_discovery_ui = true})
-                                            card.shop_voucher = true
-                                            create_shop_card_ui(card, 'Voucher', G.shop_vouchers)
-                                            card:start_materialize()
-                                            G.shop_vouchers:emplace(card)
+                                        local vouchers_to_spawn = 0
+                                        for _,_ in pairs(G.GAME.current_round.voucher.spawn) do vouchers_to_spawn = vouchers_to_spawn + 1 end
+                                        if vouchers_to_spawn < G.GAME.starting_params.vouchers_in_shop + (G.GAME.modifiers.extra_vouchers or 0) then
+                                            SMODS.get_next_vouchers(G.GAME.current_round.voucher)
+                                        end
+                                        for _, key in ipairs(G.GAME.current_round.voucher or {}) do
+                                            if G.P_CENTERS[key] and G.GAME.current_round.voucher.spawn[key] then
+                                                SMODS.add_voucher_to_shop(key)
+                                            end
                                         end
                                     end
                                     
@@ -3184,7 +3210,7 @@ function Game:update_shop(dt)
                                         end
                                         G.load_shop_booster = nil
                                     else
-                                        for i = 1, 2 do
+                                        for i=1, G.GAME.starting_params.boosters_in_shop + (G.GAME.modifiers.extra_boosters or 0) do
                                             G.GAME.current_round.used_packs = G.GAME.current_round.used_packs or {}
                                             if not G.GAME.current_round.used_packs[i] then
                                                 G.GAME.current_round.used_packs[i] = get_pack('shop_pack').key
@@ -3209,6 +3235,7 @@ function Game:update_shop(dt)
                                     end
                                 end
 
+                                if not nosave_shop then SMODS.calculate_context({starting_shop = true}) end
                                 G.CONTROLLER:snap_to({node = G.shop:get_UIE_by_ID('next_round_button')})
                                 if not nosave_shop then G.E_MANAGER:add_event(Event({ func = function() save_run(); return true end})) end
                                 return true
@@ -3340,8 +3367,8 @@ function Game:update_round_eval(dt)
     if self.buttons then self.buttons:remove(); self.buttons = nil end
     if self.shop then self.shop:remove(); self.shop = nil end
 
-     if not G.STATE_COMPLETE and not G.MULTIPLAYER_GAME.prevent_eval then
-        G.MULTIPLAYER_GAME.prevent_eval = true
+     if not G.STATE_COMPLETE and not MP.GAME.prevent_eval then
+        MP.GAME.prevent_eval = true
         stop_use()
         G.STATE_COMPLETE = true
         G.E_MANAGER:add_event(Event({
