@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '85af87be558f96f5db5643e3e5daedff6e9c592668c99583acd4ff8a3f638f1e'
+LOVELY_INTEGRITY = '66a83f858019b5582c668c212b6d452787abe785b422f7cf616a483296d1c6e1'
 
 --Moves the tutorial to the next step in queue
 --
@@ -2062,7 +2062,7 @@ G.FUNCS.hand_text_UI_set = function(e)
 end
 
   G.FUNCS.can_play = function(e)
-    if #G.hand.highlighted <= 0 or G.GAME.blind.block_play or #G.hand.highlighted > 5 then 
+    if #G.hand.highlighted <= 0 or G.GAME.blind.block_play or #G.hand.highlighted > math.max(G.GAME.starting_params.play_limit, 1) then 
         e.config.colour = G.C.UI.BACKGROUND_INACTIVE
         e.config.button = nil
     else
@@ -2106,7 +2106,7 @@ end
   end
 
   G.FUNCS.can_discard = function(e)
-    if G.GAME.current_round.discards_left <= 0 or #G.hand.highlighted <= 0 then 
+    if G.GAME.current_round.discards_left <= 0 or #G.hand.highlighted <= 0 or #G.hand.highlighted > math.max(G.GAME.starting_params.discard_limit, 0) then 
         e.config.colour = G.C.UI.BACKGROUND_INACTIVE
         e.config.button = nil
     else
@@ -2479,7 +2479,7 @@ G.FUNCS.buy_from_shop = function(e)
               G.jokers:emplace(c1)
             end
             G.E_MANAGER:add_event(Event({func = function()
-                local eval, post = eval_card(c1, {buying_card = true, card = c1})
+                local eval, post = eval_card(c1, {buying_card = true, buying_self = true, card = c1}) -- buying_card left for back compat, buying_self recommended to use
                 SMODS.trigger_effects({eval, post}, c1)
                 return true
                 end}))
@@ -2972,7 +2972,7 @@ if Handy.insta_cash_out.is_skipped and e.config.button then return end
         e.config.button = nil
         G.round_eval.alignment.offset.y = G.ROOM.T.y + 15
         G.round_eval.alignment.offset.x = 0
-        G.deck:shuffle('cashout'..MP.ante_based())
+        G.deck:shuffle('cashout'..MP.order_round_based(true))
         G.deck:hard_set_T()
         delay(0.3)
         G.E_MANAGER:add_event(Event({

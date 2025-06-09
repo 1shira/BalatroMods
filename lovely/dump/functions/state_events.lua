@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'efd9ae92af9f99f78fe86e36df398812aec92d48ccfc458c2dc8e80346247896'
+LOVELY_INTEGRITY = '37daad1013dd06606120a53c774e01ccfca7c3a5d62a4235ce5f58097a22472b'
 
 function win_game()
     if (not G.GAME.seeded and not G.GAME.challenge) or SMODS.config.seeded_unlocks then
@@ -282,7 +282,7 @@ function new_round()
                 trigger = 'immediate',
                 func = function()
                     G.STATE = G.STATES.DRAW_TO_HAND
-                    G.deck:shuffle('nr'..MP.ante_based())
+                    G.deck:shuffle('nr'..MP.order_round_based(true))
                     G.deck:hard_set_T()
                     G.STATE_COMPLETE = false
                     return true
@@ -318,6 +318,8 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
         G.GAME.current_round.discards_used > 0) then
             hand_space = math.min(#G.deck.cards, 3)
     end
+    local flags = SMODS.calculate_context({drawing_cards = true, amount = hand_space})
+    hand_space = math.min(#G.deck.cards, flags.cards_to_draw or hand_space)
     delay(0.3)
     SMODS.drawn_cards = {}
     for i=1, hand_space do --draw cards from deckL
@@ -555,7 +557,7 @@ G.FUNCS.evaluate_play = function(e)
             end
         end
         local effects = {}
-        SMODS.calculate_context({modify_scoring_hand = true, other_card =  G.play.cards[i], full_hand = G.play.cards, scoring_hand = scoring_hand}, effects)
+        SMODS.calculate_context({modify_scoring_hand = true, other_card =  G.play.cards[i], full_hand = G.play.cards, scoring_hand = scoring_hand, in_scoring = true}, effects)
         local flags = SMODS.trigger_effects(effects, G.play.cards[i])
         if flags.add_to_hand then splashed = true end
     	if flags.remove_from_hand then unsplashed = true end

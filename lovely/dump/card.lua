@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'ee0dad649d371ee685347a597a1aca3de4737e88811c9d1858d4c936b6d77b69'
+LOVELY_INTEGRITY = 'e21f3f366c573cd4ae23a5941d13e904c355ae87cd8635ad03cee1f517758482'
 
 --class
 Card = Moveable:extend()
@@ -411,6 +411,9 @@ SMODS.enh_cache:write(self, nil)
         local old_hand = self.ability.to_do_poker_hand
         self.ability.to_do_poker_hand = nil
 
+        if MP.INTEGRATIONS.TheOrder then
+        	_poker_hands = MP.sorted_hand_list(self.ability.to_do_poker_hand)
+        end
         while not self.ability.to_do_poker_hand do
             self.ability.to_do_poker_hand = pseudorandom_element(_poker_hands, pseudoseed((self.area and self.area.config.type == 'title') and 'false_to_do' or 'to_do'))
             if self.ability.to_do_poker_hand == old_hand then self.ability.to_do_poker_hand = nil end
@@ -3273,6 +3276,9 @@ function Card:calculate_joker(context)
                     for k, v in pairs(G.GAME.hands) do
                         if v.visible and k ~= self.ability.to_do_poker_hand then _poker_hands[#_poker_hands+1] = k end
                     end
+                    if MP.INTEGRATIONS.TheOrder then
+                    	_poker_hands = MP.sorted_hand_list(self.ability.to_do_poker_hand)
+                    end
                     self.ability.to_do_poker_hand = pseudorandom_element(_poker_hands, pseudoseed('to_do'))
                     return {
                         message = localize('k_reset')
@@ -5049,6 +5055,7 @@ function Card:remove()
     self.removed = true
 
     if self.area then self.area:remove_card(self) end
+    if G.in_delete_run then goto skip_game_actions_during_remove end
 
     self:remove_from_deck()
     if self.ability.joker_added_to_deck_but_debuffed then
@@ -5067,6 +5074,7 @@ function Card:remove()
         end
     end
 
+    ::skip_game_actions_during_remove::
     if G.playing_cards then
         for k, v in ipairs(G.playing_cards) do
             if v == self then

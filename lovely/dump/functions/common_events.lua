@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'a97d70fc534916d1c9dbfe0c4aa56c9f76117bdac89fdc8094d41dee4539db05'
+LOVELY_INTEGRITY = '42b5044d0ba9d0c3311875f88f9875484ca7deba20c7b2779e29a55257bc0049'
 
 function set_screen_positions()
     if G.STAGE == G.STAGES.RUN then
@@ -602,7 +602,15 @@ end
 
 function eval_card(card, context)
     context = context or {}
-    if not card:can_calculate(context.ignore_debuff) then return {}, {} end
+    if not card:can_calculate(context.ignore_debuff, context.remove_playing_cards) then
+        if card.ability.rental then 
+            local ret = {}
+            ret[SMODS.Stickers.rental] = card:calculate_sticker(context, 'rental')
+            return ret, {}
+        end
+        return {}, {}
+    end
+    if context.other_card and context.other_card.can_calculate and not context.other_card:can_calculate(context.ignore_debuff) then return {}, {} end
     local ret = {}
 
     if context.repetition_only then
@@ -884,6 +892,9 @@ function card_eval_status_text(card, eval_type, amt, percent, dir, extra)
     local text = ''
     local sound = nil
     local volume = 1
+    local trigger = 'before'
+    local blocking = nil
+    local blockable = nil
     local card_aligned = 'bm'
     local y_off = 0.15*G.CARD_H
     if card.area == G.jokers or card.area == G.consumeables then
@@ -971,6 +982,9 @@ function card_eval_status_text(card, eval_type, amt, percent, dir, extra)
         sound = extra.sound or sound
         percent = extra.pitch or percent
         volume = extra.volume or volume
+        trigger = extra.trigger or 'before'
+        blocking = extra.blocking
+        blockable = extra.blockable
         delay = extra.delay or 0.75
         amt = 1
         text = extra.message or text
@@ -1011,8 +1025,10 @@ function card_eval_status_text(card, eval_type, amt, percent, dir, extra)
             end
         else
             G.E_MANAGER:add_event(Event({ --Add bonus chips from this card
-                    trigger = 'before',
-                    delay = delay,
+                                trigger = trigger,
+                                delay = delay,
+                                blocking = blocking,
+                                blockable = blockable,
                     func = function()
                     if extrafunc then extrafunc() end
                     attention_text({
@@ -2403,7 +2419,7 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
 end
 
 function copy_card(other, new_card, card_scale, playing_card, strip_edition)
-    local new_card = new_card or Card(other.T.x, other.T.y, G.CARD_W*(card_scale or 1), G.CARD_H*(card_scale or 1), G.P_CARDS.empty, G.P_CENTERS.c_base, {playing_card = playing_card})
+    local new_card = new_card or Card(other.T.x, other.T.y, G.CARD_W*(card_scale or 1), G.CARD_H*(card_scale or 1), G.P_CARDS.empty, G.P_CENTERS.c_base, {playing_card = playing_card, bypass_back = G.GAME.selected_back.pos})
     new_card:set_ability(other.config.center)
     new_card.ability.type = other.ability.type
     new_card:set_base(other.config.card)
@@ -2896,11 +2912,15 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         loc_vars = {cfg.extra}
         localize{type = 'descriptions', key = _c.key, set = _c.set, nodes = desc_nodes, vars = _c.vars or loc_vars}
     elseif _c.set == 'Default' and specific_vars then 
-        if specific_vars.nominal_chips then 
-            localize{type = 'other', key = 'card_chips', nodes = desc_nodes, vars = {specific_vars.nominal_chips}}
-        end
-        if specific_vars.bonus_chips then
-            localize{type = 'other', key = 'card_extra_chips', nodes = desc_nodes, vars = {SMODS.signed(specific_vars.bonus_chips)}}
+        if card.area == G.cdds_cards and card.generate_ds_card_ui and type(card.generate_ds_card_ui) == 'function' and card.deckskin and card.palette then
+            card.generate_ds_card_ui(card, card.deckskin, card.palette, info_queue, desc_nodes, specific_vars, full_UI_table)
+        else
+            if specific_vars.nominal_chips then
+                localize{type = 'other', key = 'card_chips', nodes = desc_nodes, vars = {specific_vars.nominal_chips}}
+            end
+            if specific_vars.bonus_chips then
+                localize{type = 'other', key = 'card_extra_chips', nodes = desc_nodes, vars = {SMODS.signed(specific_vars.bonus_chips)}}
+            end
         end
     if specific_vars and specific_vars.bonus_x_chips then
         localize{type = 'other', key = 'card_x_chips', nodes = desc_nodes, vars = {specific_vars.bonus_x_chips}}
@@ -3132,7 +3152,14 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
             end
             local seal = G.P_SEALS[v] or G.P_SEALS[SMODS.Seal.badge_to_key[v] or '']
             if seal then
-            	info_queue[#info_queue+1] = seal
+                local t = {key = v, set = 'Other', config = {}}
+                info_queue[#info_queue + 1] = t
+                if seal.loc_vars and type(seal.loc_vars) == 'function' then
+                    local res = seal:loc_vars(info_queue, card) or {}
+                    t.vars = res.vars
+                    t.key = res.key or t.key
+                    t.set = res.set or t.set
+                end
             else
             if v == 'gold_seal' then info_queue[#info_queue+1] = G.P_SEALS['gold_seal'] or G.P_SEALS[SMODS.Seal.badge_to_key['gold_seal'] or ''] end
             if v == 'blue_seal' then info_queue[#info_queue+1] = G.P_SEALS['blue_seal'] or G.P_SEALS[SMODS.Seal.badge_to_key['blue_seal'] or ''] end

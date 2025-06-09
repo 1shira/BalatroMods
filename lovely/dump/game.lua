@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '49e9e8060727a0ba194313bbe5f32a79916e4e0b37417589500a576f8792b480'
+LOVELY_INTEGRITY = '770dab58854f04a5060f266adc849e6be03485371d8b6d0c8881ea609884cb92'
 
 --Class
 Game = Object:extend()
@@ -1160,6 +1160,7 @@ function Game:init_window(reset)
 end
 
 function Game:delete_run()
+    G.in_delete_run = true
     if self.ROOM then
         remove_all(G.STAGE_OBJECTS[G.STAGE])
         self.load_shop_booster = nil
@@ -1206,6 +1207,7 @@ function Game:delete_run()
     if G.GAME then G.GAME.won = false end
 
     G.STATE = -1
+    G.in_delete_run = false
 end
 
 
@@ -2051,6 +2053,7 @@ function Game:start_run(args)
     selected_back = get_deck_from_name(selected_back)
     self.GAME = saveTable and saveTable.GAME or self:init_game_object()
     Handy.UI.init()
+    SMODS.update_hand_limit_text(true, true)
     self.GAME.modifiers = self.GAME.modifiers or {}
     self.GAME.stake = args.stake or self.GAME.stake or 1
     self.GAME.STOP_USE = 0
