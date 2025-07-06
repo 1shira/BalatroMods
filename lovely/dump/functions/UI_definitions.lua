@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'd46d98102ad5e82bab2010567ed5d1b0b6f015b873b19a0de20b5da792d5e4b1'
+LOVELY_INTEGRITY = 'd188585dbd99cd4f8dd26b5412731f6797f901d00c7d076231aa48bebf6921a5'
 
 --Create a global UIDEF that contains all UI definition functions\
 --As a rule, these contain functions that return a table T representing the definition for a UIBox
@@ -782,7 +782,7 @@ end
           for _,v in ipairs(SMODS.ConsumableType.ctype_buffer) do
               total_rate = total_rate + G.GAME[v:lower()..'_rate']
           end
-          local polled_rate = pseudorandom(pseudoseed('cdt'..MP.ante_based()))*total_rate
+          local polled_rate = pseudorandom(pseudoseed('cdt'..G.GAME.round_resets.ante))*total_rate
           local check_rate = 0
           -- need to preserve order to leave RNG unchanged
           local rates = {
@@ -1437,7 +1437,7 @@ function create_UIBox_HUD()
                 }},
               }},
               {n=G.UIT.C, config={minw = spacing},nodes={}},
-              MP.LOBBY.code and (not MP.LOBBY.config.disable_live_and_timer_hud) and MP.UI.timer_hud() or {n=G.UIT.C, config={align = "cm", padding = 0.05, minw = 1.45, minh = 1, colour = temp_col, emboss = 0.05, r = 0.1}, nodes={
+              {n=G.UIT.C, config={align = "cm", padding = 0.05, minw = 1.45, minh = 1, colour = temp_col, emboss = 0.05, r = 0.1}, nodes={
                 {n=G.UIT.R, config={align = "cm", maxw = 1.35}, nodes={
                   {n=G.UIT.T, config={text = localize('k_round'), minh = 0.33, scale = 0.85*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
                 }},
@@ -1493,7 +1493,7 @@ function create_UIBox_HUD()
 
     contents.buttons = {
       {n=G.UIT.C, config={align = "cm", r=0.1, colour = G.C.CLEAR, shadow = true, id = 'button_area', padding = 0.2}, nodes={
-          {n=G.UIT.R, config={id = 'run_info_button', align = "cm",  minh = MP.LOBBY.code and 1.2 or 1.75, minw = 1.5,padding = 0.05, r = 0.1, hover = true, colour = G.C.RED, button = "run_info", shadow = true}, nodes={
+          {n=G.UIT.R, config={id = 'run_info_button', align = "cm", minh = 1.75, minw = 1.5,padding = 0.05, r = 0.1, hover = true, colour = G.C.RED, button = "run_info", shadow = true}, nodes={
             {n=G.UIT.R, config={align = "cm", padding = 0, maxw = 1.4}, nodes={
               {n=G.UIT.T, config={text = localize('b_run_info_1'), scale = 1.2*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}}
             }},
@@ -1501,20 +1501,11 @@ function create_UIBox_HUD()
               {n=G.UIT.T, config={text = localize('b_run_info_2'), scale = 1*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true, focus_args = {button = G.F_GUIDE and 'guide' or 'back', orientation = 'bm'}, func = 'set_button_pip'}}
             }}
           }},
-          {n=G.UIT.R, config={align = "cm",  minh = MP.LOBBY.code and 1.2 or 1.75, minw = 1.5,padding = 0.05, r = 0.1, hover = true, colour = G.C.ORANGE, button = "options", shadow = true}, nodes={
+          {n=G.UIT.R, config={align = "cm", minh = 1.75, minw = 1.5,padding = 0.05, r = 0.1, hover = true, colour = G.C.ORANGE, button = "options", shadow = true}, nodes={
             {n=G.UIT.C, config={align = "cm", maxw = 1.4, focus_args = {button = 'start', orientation = 'bm'}, func = 'set_button_pip'}, nodes={
               {n=G.UIT.T, config={text = localize('b_options'), scale = scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}}
             }},
           }}
-              ,
-              MP.LOBBY.code and {n=G.UIT.R, config={id = 'lobby_info_button', align = "cm", minh = 1.2, minw = 1.5,padding = 0.05, r = 0.1, hover = true, colour = G.C.BLUE, button = "lobby_info", shadow = true}, nodes={
-                  {n=G.UIT.R, config={align = "cm", padding = 0, maxw = 1.4}, nodes={
-                      {n=G.UIT.T, config={text = localize("ml_lobby_info")[1], scale = 1.2*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}}
-                  }},
-                  {n=G.UIT.R, config={align = "cm", padding = 0, maxw = 1.4}, nodes={
-                      {n=G.UIT.T, config={text = localize("ml_lobby_info")[2], scale = 1*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true, focus_args = {button = G.F_GUIDE and 'guide' or 'back', orientation = 'bm'}, func = 'set_button_pip'}}
-                  }}
-              }} or nil
         }}
     }
 
@@ -1634,9 +1625,6 @@ function create_UIBox_blind_choice(type, run_info)
         if v.visible then _poker_hands[#_poker_hands+1] = k end
     end
 
-    if MP.INTEGRATIONS.TheOrder then
-    	_poker_hands = MP.sorted_hand_list()
-    end
     G.GAME.orbital_choices[G.GAME.round_resets.ante][type] = pseudorandom_element(_poker_hands, pseudoseed('orbital'))
   end
 
@@ -2361,9 +2349,6 @@ function create_UIBox_options()
   if G.STAGE == G.STAGES.RUN then
     restart = UIBox_button{id = 'restart_button', label = {localize('b_start_new_run')}, button = "setup_run", minw = 5}
     main_menu = UIBox_button{ label = {localize('b_main_menu')}, button = "go_to_menu", minw = 5}
-    unstuck_button = UIBox_button{ label = {localize('b_unstuck')}, button = "mp_unstuck", minw = 5}
-    return_to_lobby = UIBox_button{ label = {localize('b_return_lobby')}, button = "mp_return_to_lobby", minw = 5}
-    leave_lobby = UIBox_button{ label = {localize('b_leave_lobby')}, button = "lobby_leave", minw = 5}
     mods = UIBox_button{ id = "mods_button", label = {localize('b_mods')}, button = "mods_button", minw = 5}
     your_collection = UIBox_button{ label = {localize('b_collection')}, button = "your_collection", minw = 5, id = 'your_collection'}
     current_seed = {n=G.UIT.R, config={align = "cm", padding = 0.05}, nodes={
@@ -2392,12 +2377,9 @@ function create_UIBox_options()
 
   local t = create_UIBox_generic_options({ contents = {
       settings,
-      (not MP.LOBBY.code and G.GAME.seeded) and current_seed or nil,
-      not MP.LOBBY.code and restart or nil,
-      not MP.LOBBY.code and main_menu or nil,
-      MP.LOBBY.code and unstuck_button or nil,
-      MP.LOBBY.code and return_to_lobby or nil,
-      MP.LOBBY.code and leave_lobby or nil,
+      G.GAME.seeded and current_seed or nil,
+      restart,
+      main_menu,
       mods,
       high_scores,
       your_collection,
@@ -3311,10 +3293,6 @@ function G.UIDEF.deck_info(_show_remaining)
         chosen = true,
         tab_definition_function = G.UIDEF.view_deck
       },
-      MP.LOBBY.code and {
-                    label = G.localization.misc.challenge_names[MP.Rulesets[MP.LOBBY.config.ruleset].challenge_deck],
-                    tab_definition_function = G.UIDEF.multiplayer_deck,
-                  },
     },
     tab_h = 8,
     snap_to_nav = true})}})
@@ -5594,26 +5572,7 @@ function G.UIDEF.run_setup(from_game_over)
 
   local _can_continue = G.MAIN_MENU_UI and G.FUNCS.can_continue({config = {func = true}})
   G.FUNCS.false_ret = function() return false end
-  local t = MP.LOBBY.code and create_UIBox_generic_options({contents ={
-        {n=G.UIT.R, config={align = "cm", padding = 0, draw_layer = 1}, nodes={
-          create_tabs(
-          {tabs = {
-              {
-                  label = localize('b_new_run'),
-                  chosen = true,
-                  tab_definition_function = (Galdur and Galdur.config.use) and G.UIDEF.run_setup_option_new_model or G.UIDEF.run_setup_option,
-                  tab_definition_function_args = 'New Run'
-              },
-              {
-                label = localize('b_challenges'),
-                tab_definition_function = G.UIDEF.challenges,
-                tab_definition_function_args = from_game_over,
-                chosen = false
-              },
-          },
-          snap_to_nav = true}),
-        }},
-    }}) or create_UIBox_generic_options({no_back = from_game_over, no_esc = from_game_over, contents ={
+  local t =   create_UIBox_generic_options({no_back = from_game_over, no_esc = from_game_over, contents ={
       {n=G.UIT.R, config={align = "cm", padding = 0, draw_layer = 1}, nodes={
         create_tabs(
         {tabs = {
@@ -5901,7 +5860,6 @@ function G.UIDEF.challenge_description(_id, daily, is_row)
       if v.edition then card:set_edition({[v.edition] = true}, true, true) end
       if v.eternal then card:set_eternal(true) end
       if v.pinned then card.pinned = true end
-      if v.rental then card:set_rental(true) end
       jokers:emplace(card)
     end
   end
@@ -5990,7 +5948,7 @@ function G.UIDEF.challenge_description(_id, daily, is_row)
         no_shoulders = true,
         no_loop = true}
     )}},
-    (not (MP.LOBBY.code and G.STAGE == G.STAGES.RUN)) and (not is_row) and {n=G.UIT.R, config={align = "cm", minh = 0.9}, nodes={
+    not is_row and {n=G.UIT.R, config={align = "cm", minh = 0.9}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0.1, minh = 0.7, minw = 9, r = 0.1, hover = true, colour = G.C.BLUE, button = "start_challenge_run", shadow = true, id = _id}, nodes={
         {n=G.UIT.T, config={text = localize('b_play_cap'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT,func = 'set_button_pip', focus_args = {button = 'x',set_button_pip = true}}}
       }}
@@ -6296,7 +6254,7 @@ function G.UIDEF.run_setup_option(type)
   end
 
   G.SETTINGS.current_setup = type
-  G.GAME.viewed_back = MP.LOBBY.code and Back(get_deck_from_name(MP.LOBBY.deck.back)) or Back(get_deck_from_name(G.PROFILES[G.SETTINGS.profile].MEMORY.deck))
+  G.GAME.viewed_back = Back(get_deck_from_name(G.PROFILES[G.SETTINGS.profile].MEMORY.deck))
 
   G.PROFILES[G.SETTINGS.profile].MEMORY.stake = G.PROFILES[G.SETTINGS.profile].MEMORY.stake or 1
 
@@ -6314,7 +6272,7 @@ function G.UIDEF.run_setup_option(type)
     end
   end
 
-  if type == 'New Run' and not MP.LOBBY.code then
+  if type == 'New Run' then
     if G.OVERLAY_MENU then 
       local seed_toggle = G.OVERLAY_MENU:get_UIE_by_ID('run_setup_seed')
       if seed_toggle then seed_toggle.states.visible = true end
@@ -6322,10 +6280,6 @@ function G.UIDEF.run_setup_option(type)
     G.viewed_stake = G.PROFILES[G.SETTINGS.profile].MEMORY.stake or 1
     G.FUNCS.change_stake({to_key = G.viewed_stake})
   else
-    if MP.LOBBY.code then
-        G.viewed_stake = MP.LOBBY.deck.stake
-        G.FUNCS.change_stake({to_key = G.viewed_stake})
-      end
     G.run_setup_seed = nil
     if G.OVERLAY_MENU then 
       local seed_toggle = G.OVERLAY_MENU:get_UIE_by_ID('run_setup_seed')
@@ -6449,7 +6403,7 @@ function G.UIDEF.run_setup_option(type)
                   }},
                     {n=G.UIT.C, config={align = "cm", minw = 5, minh = 0.8, padding = 0.2, r = 0.1, hover = true, colour = G.C.BLUE, button = "start_setup_run", shadow = true, func = 'can_start_run'}, nodes={
                       {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
-                        {n=G.UIT.T, config={text =  MP.LOBBY.code and localize('b_select') or localize('b_play_cap'), scale = 0.8, colour = G.C.UI.TEXT_LIGHT,func = 'set_button_pip', focus_args = {button = 'x',set_button_pip = true}}}
+                        {n=G.UIT.T, config={text = localize('b_play_cap'), scale = 0.8, colour = G.C.UI.TEXT_LIGHT,func = 'set_button_pip', focus_args = {button = 'x',set_button_pip = true}}}
                       }}
                     }},
                    {n=G.UIT.C, config={align = "cm", minw = 2.5}, nodes={}}

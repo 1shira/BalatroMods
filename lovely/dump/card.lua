@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'e21f3f366c573cd4ae23a5941d13e904c355ae87cd8635ad03cee1f517758482'
+LOVELY_INTEGRITY = '6ac3d59ec3189258199786de7c5350a69d7151cf4bf954d6fab36c0cddc37234'
 
 --class
 Card = Moveable:extend()
@@ -241,13 +241,6 @@ SMODS.enh_cache:write(self, nil)
     local X, Y, W, H = self.T.x, self.T.y, self.T.w, self.T.h
 
     local old_center = self.config.center
-    if old_center ~= center then
-        if center.name == "m_mp_glass" then
-          self.ability.mp_sticker_balanced = true
-        else
-          self.ability.mp_sticker_balanced = false
-        end
-      end
     if delay_sprites == 'quantum' then self.from_quantum = true end
     local was_added_to_deck = false
     if self.added_to_deck and old_center and not self.debuff then
@@ -260,9 +253,7 @@ SMODS.enh_cache:write(self, nil)
     end
     self.config.center = center
     if not G.OVERLAY_MENU and old_center and not next(SMODS.find_card(old_center.key, true)) then
-        if not G.OVERLAY_MENU then
-        	G.GAME.used_jokers[old_center.key] = nil
-        end
+        G.GAME.used_jokers[old_center.key] = nil
     end
     self.sticker_run = nil
     for k, v in pairs(G.P_CENTERS) do
@@ -411,9 +402,6 @@ SMODS.enh_cache:write(self, nil)
         local old_hand = self.ability.to_do_poker_hand
         self.ability.to_do_poker_hand = nil
 
-        if MP.INTEGRATIONS.TheOrder then
-        	_poker_hands = MP.sorted_hand_list(self.ability.to_do_poker_hand)
-        end
         while not self.ability.to_do_poker_hand do
             self.ability.to_do_poker_hand = pseudorandom_element(_poker_hands, pseudoseed((self.area and self.area.config.type == 'title') and 'false_to_do' or 'to_do'))
             if self.ability.to_do_poker_hand == old_hand then self.ability.to_do_poker_hand = nil end
@@ -491,7 +479,7 @@ function Card:set_cost()
     if (self.ability.set == 'Planet' or (self.ability.set == 'Booster' and self.ability.name:find('Celestial'))) and #find_joker('Astronomer') > 0 then self.cost = 0 end
     if self.ability.rental then self.cost = 1 end
     self.sell_cost = math.max(1, math.floor(self.cost/2)) + (self.ability.extra_value or 0)
-    if self.area and self.ability.couponed and (self.area == G.shop_jokers or self.area == G.shop_booster) then self.cost = 0 end if self.edition and self.edition.type == 'mp_phantom' then self.sell_cost = 0 end
+    if self.area and self.ability.couponed and (self.area == G.shop_jokers or self.area == G.shop_booster) then self.cost = 0 end
     self.sell_cost_label = self.facing == 'back' and '?' or self.sell_cost
 end
 
@@ -1666,11 +1654,7 @@ function Card:use_consumeable(area, copier)
         for k, v in pairs(G.jokers.cards) do
             if not v.ability.eternal then deletable_jokers[#deletable_jokers + 1] = v end
         end
-        local copyable_jokers = {}
-            for i, v in ipairs(G.jokers.cards) do
-              if not G.jokers.cards[i].edition or G.jokers.cards[i].edition.type ~= "mp_phantom" then copyable_jokers[#copyable_jokers + 1] = v end
-            end
-            local chosen_joker = pseudorandom_element(copyable_jokers, pseudoseed('ankh_choice'))
+        local chosen_joker = pseudorandom_element(G.jokers.cards, pseudoseed('ankh_choice'))
         local _first_dissolve = nil
         G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.75, func = function()
             for k, v in pairs(deletable_jokers) do
@@ -1777,11 +1761,7 @@ function Card:can_use_consumeable(any_state, skip_check)
         end
         if self.ability.name == 'Ankh' then
             --if there is at least one joker
-             local copyable_jokers = {}
-      for i, v in ipairs(G.jokers.cards) do
-        if not G.jokers.cards[i].edition or G.jokers.cards[i].edition.type ~= "mp_phantom" then copyable_jokers[#copyable_jokers + 1] = v end
-      end
-      for k, v in pairs(copyable_jokers) do
+            for k, v in pairs(G.jokers.cards) do
                 if v.ability.set == 'Joker' and G.jokers.config.card_limit > 1 then 
                     return true
                 end
@@ -1834,9 +1814,6 @@ function Card:check_use()
 end
 
 function Card:sell_card()
-if MP.LOBBY.code and self.area == G.jokers then
-  MP.ACTIONS.sold_joker()
-end
     G.CONTROLLER.locks.selling_card = true
     stop_use()
     local area = self.area
@@ -2608,7 +2585,7 @@ function Card:calculate_joker(context)
         end
         if context.open_booster then
             if self.ability.name == 'Hallucination' and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-                if pseudorandom('halu'..MP.ante_based()) < G.GAME.probabilities.normal/self.ability.extra then
+                if pseudorandom('halu'..G.GAME.round_resets.ante) < G.GAME.probabilities.normal/self.ability.extra then
                     G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
                     G.E_MANAGER:add_event(Event({
                         trigger = 'before',
@@ -2650,7 +2627,7 @@ function Card:calculate_joker(context)
                                     juice_card_until(self, eval, true)
                 local jokers = {}
                 for i=1, #G.jokers.cards do 
-                    if G.jokers.cards[i] ~= self and (not G.jokers.cards[i].edition or G.jokers.cards[i].edition.type ~= "mp_phantom") then
+                    if G.jokers.cards[i] ~= self then
                         jokers[#jokers+1] = G.jokers.cards[i]
                     end
                 end
@@ -3276,9 +3253,6 @@ function Card:calculate_joker(context)
                     for k, v in pairs(G.GAME.hands) do
                         if v.visible and k ~= self.ability.to_do_poker_hand then _poker_hands[#_poker_hands+1] = k end
                     end
-                    if MP.INTEGRATIONS.TheOrder then
-                    	_poker_hands = MP.sorted_hand_list(self.ability.to_do_poker_hand)
-                    end
                     self.ability.to_do_poker_hand = pseudorandom_element(_poker_hands, pseudoseed('to_do'))
                     return {
                         message = localize('k_reset')
@@ -3701,7 +3675,6 @@ function Card:calculate_joker(context)
             end
         elseif context.other_joker then
             if self.ability.name == 'Baseball Card' and (context.other_joker.config.center.rarity == 2 or context.other_joker.config.center.rarity == "Uncommon") and self ~= context.other_joker then
-            if context.other_joker.edition and context.other_joker.edition.type == 'mp_phantom' then return end
                 G.E_MANAGER:add_event(Event({
                     func = function()
                         context.other_joker:juice_up(0.5, 0.5)

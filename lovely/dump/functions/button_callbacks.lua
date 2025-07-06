@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '66a83f858019b5582c668c212b6d452787abe785b422f7cf616a483296d1c6e1'
+LOVELY_INTEGRITY = '0323345b7b86921e4c8729c6d8733d92c3702c4d9d8ede5d6c633c36179c62ee'
 
 --Moves the tutorial to the next step in queue
 --
@@ -1839,7 +1839,7 @@ end
 
 G.FUNCS.start_setup_run = function(e)
   if G.OVERLAY_MENU then G.FUNCS.exit_overlay_menu() end
-  if G.SETTINGS.current_setup == 'New Run' or G.SETTINGS.current_setup == 'Multiplayer' then
+  if G.SETTINGS.current_setup == 'New Run' then 
     if not G.GAME or (not G.GAME.won and not G.GAME.seeded) then
       if G.SAVED_GAME ~= nil then
         if not G.SAVED_GAME.GAME.won then 
@@ -2525,9 +2525,6 @@ G.FUNCS.buy_from_shop = function(e)
 end
   
   G.FUNCS.toggle_shop = function(e)
-  if MP.LOBBY.code then
-    MP.ACTIONS.spent_last_shop(to_big(MP.GAME.spent_total) - to_big(MP.GAME.spent_before_shop))
-  end
     stop_use()
     G.CONTROLLER.locks.toggle_shop = true
     if G.shop then 
@@ -2972,7 +2969,7 @@ if Handy.insta_cash_out.is_skipped and e.config.button then return end
         e.config.button = nil
         G.round_eval.alignment.offset.y = G.ROOM.T.y + 15
         G.round_eval.alignment.offset.x = 0
-        G.deck:shuffle('cashout'..MP.order_round_based(true))
+        G.deck:shuffle('cashout'..G.GAME.round_resets.ante)
         G.deck:hard_set_T()
         delay(0.3)
         G.E_MANAGER:add_event(Event({
