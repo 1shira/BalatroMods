@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '36aa27a1f9dc47c36f65d3b853738a601bc9f7856e8706b5fb7e6e01603e72d9'
+LOVELY_INTEGRITY = 'ca8fc30c8b9c620cd318657f2a7513853cf99914d5b950d8afc427bfe117eaeb'
 
 function win_game()
     if (not G.GAME.seeded and not G.GAME.challenge) or SMODS.config.seeded_unlocks then
@@ -90,7 +90,7 @@ function end_round()
     G.E_MANAGER:add_event(Event({
       trigger = 'after',
       delay = 0.2,
-      func = function()
+       func = MP.LOBBY.code and MP.end_round or function()
         G.GAME.blind.in_blind = false
         local game_over = true
         local game_won = false
@@ -282,7 +282,7 @@ function new_round()
                 trigger = 'immediate',
                 func = function()
                     G.STATE = G.STATES.DRAW_TO_HAND
-                    G.deck:shuffle('nr'..G.GAME.round_resets.ante)
+                    G.deck:shuffle('nr'..MP.order_round_based(true))
                     G.deck:hard_set_T()
                     G.STATE_COMPLETE = false
                     return true
@@ -318,8 +318,6 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
         G.GAME.current_round.discards_used > 0) then
             hand_space = math.min(#G.deck.cards, 3)
     end
-    local flags = SMODS.calculate_context({drawing_cards = true, amount = hand_space})
-    hand_space = math.min(#G.deck.cards, flags.cards_to_draw or hand_space)
     delay(0.3)
     SMODS.drawn_cards = {}
     for i=1, hand_space do --draw cards from deckL
@@ -557,7 +555,7 @@ G.FUNCS.evaluate_play = function(e)
             end
         end
         local effects = {}
-        SMODS.calculate_context({modify_scoring_hand = true, other_card =  G.play.cards[i], full_hand = G.play.cards, scoring_hand = scoring_hand, in_scoring = true}, effects)
+        SMODS.calculate_context({modify_scoring_hand = true, other_card =  G.play.cards[i], full_hand = G.play.cards, scoring_hand = scoring_hand}, effects)
         local flags = SMODS.trigger_effects(effects, G.play.cards[i])
         if flags.add_to_hand then splashed = true end
     	if flags.remove_from_hand then unsplashed = true end
@@ -577,7 +575,7 @@ G.FUNCS.evaluate_play = function(e)
     if G.GAME.current_round.current_hand.handname ~= disp_text then delay(0.3) end
     update_hand_text({sound = G.GAME.current_round.current_hand.handname ~= disp_text and 'button' or nil, volume = 0.4, immediate = true, nopulse = nil,
                 delay = G.GAME.current_round.current_hand.handname ~= disp_text and 0.4 or 0}, {handname=disp_text, level=G.GAME.hands[text].level, mult = G.GAME.hands[text].mult, chips = G.GAME.hands[text].chips})
-    SMODS.displayed_hand = text; SMODS.displaying_scoring = true
+    SMODS.displayed_hand = text
 
     if not G.GAME.blind:debuff_hand(G.play.cards, poker_hands, text) then
         mult = mod_mult(G.GAME.hands[text].mult)
@@ -797,7 +795,6 @@ G.FUNCS.evaluate_play = function(e)
       func = (function() G.GAME.current_round.current_hand.handname = '';return true end)
     }))
     delay(0.3)
-    SMODS.displaying_scoring = nil
 
     -- context.after calculations
     SMODS.calculate_context({full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, after = true})
@@ -866,8 +863,8 @@ G.FUNCS.evaluate_round = function()
     total_cashout_rows = 0
     local pitch = 0.95
     local dollars = 0
-
-    if G.GAME.chips - G.GAME.blind.chips >= 0 then
+    
+    if G.GAME.chips - G.GAME.blind.chips >= 0 or MP.is_pvp_boss() then
         add_round_eval_row({dollars = G.GAME.blind.dollars, name='blind1', pitch = pitch})
         pitch = pitch + 0.06
         dollars = dollars + G.GAME.blind.dollars
@@ -893,7 +890,7 @@ G.FUNCS.evaluate_round = function()
     }))
     G.GAME.selected_back:trigger_effect({context = 'eval'})
 
-    if G.GAME.current_round.hands_left > 0 and not G.GAME.modifiers.no_extra_hand_money then
+    if G.GAME.current_round.hands_left > 0 and (not G.GAME.modifiers.no_extra_hand_money) and (not MP.is_pvp_boss()) then
         add_round_eval_row({dollars = G.GAME.current_round.hands_left*(G.GAME.modifiers.money_per_hand or 1), disp = G.GAME.current_round.hands_left, bonus = true, name='hands', pitch = pitch})
         pitch = pitch + 0.06
         dollars = dollars + G.GAME.current_round.hands_left*(G.GAME.modifiers.money_per_hand or 1)
@@ -938,6 +935,16 @@ G.FUNCS.evaluate_round = function()
         check_for_unlock({type = 'interest_streak'})
         dollars = dollars + G.GAME.interest_amount*math.min(math.floor(G.GAME.dollars/5), G.GAME.interest_cap/5)
     end
+  if not MP.GAME.comeback_bonus_given then
+		MP.GAME.comeback_bonus_given = true
+		add_round_eval_row({
+			bonus = true,
+			name = "comeback",
+			pitch = pitch,
+			dollars = 4 * MP.GAME.comeback_bonus,
+		})
+		dollars = dollars + 4 * MP.GAME.comeback_bonus
+	end
 
     pitch = pitch + 0.06
 

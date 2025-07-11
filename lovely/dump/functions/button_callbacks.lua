@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '0323345b7b86921e4c8729c6d8733d92c3702c4d9d8ede5d6c633c36179c62ee'
+LOVELY_INTEGRITY = '9ff72e735a2be6d4fd376a6f3beecb33250837b25c0e612103f156b441082897'
 
 --Moves the tutorial to the next step in queue
 --
@@ -1839,7 +1839,7 @@ end
 
 G.FUNCS.start_setup_run = function(e)
   if G.OVERLAY_MENU then G.FUNCS.exit_overlay_menu() end
-  if G.SETTINGS.current_setup == 'New Run' then 
+  if G.SETTINGS.current_setup == 'New Run' or G.SETTINGS.current_setup == 'Multiplayer' then
     if not G.GAME or (not G.GAME.won and not G.GAME.seeded) then
       if G.SAVED_GAME ~= nil then
         if not G.SAVED_GAME.GAME.won then 
@@ -2062,7 +2062,7 @@ G.FUNCS.hand_text_UI_set = function(e)
 end
 
   G.FUNCS.can_play = function(e)
-    if #G.hand.highlighted <= 0 or G.GAME.blind.block_play or #G.hand.highlighted > math.max(G.GAME.starting_params.play_limit, 1) then 
+    if #G.hand.highlighted <= 0 or G.GAME.blind.block_play or #G.hand.highlighted > 5 then 
         e.config.colour = G.C.UI.BACKGROUND_INACTIVE
         e.config.button = nil
     else
@@ -2106,7 +2106,7 @@ end
   end
 
   G.FUNCS.can_discard = function(e)
-    if G.GAME.current_round.discards_left <= 0 or #G.hand.highlighted <= 0 or #G.hand.highlighted > math.max(G.GAME.starting_params.discard_limit, 0) then 
+    if G.GAME.current_round.discards_left <= 0 or #G.hand.highlighted <= 0 then 
         e.config.colour = G.C.UI.BACKGROUND_INACTIVE
         e.config.button = nil
     else
@@ -2479,7 +2479,7 @@ G.FUNCS.buy_from_shop = function(e)
               G.jokers:emplace(c1)
             end
             G.E_MANAGER:add_event(Event({func = function()
-                local eval, post = eval_card(c1, {buying_card = true, buying_self = true, card = c1}) -- buying_card left for back compat, buying_self recommended to use
+                local eval, post = eval_card(c1, {buying_card = true, card = c1})
                 SMODS.trigger_effects({eval, post}, c1)
                 return true
                 end}))
@@ -2525,6 +2525,9 @@ G.FUNCS.buy_from_shop = function(e)
 end
   
   G.FUNCS.toggle_shop = function(e)
+  if MP.LOBBY.code then
+    MP.ACTIONS.spent_last_shop(to_big(MP.GAME.spent_total) - to_big(MP.GAME.spent_before_shop))
+  end
     stop_use()
     G.CONTROLLER.locks.toggle_shop = true
     if G.shop then 
@@ -2969,7 +2972,7 @@ if Handy.insta_cash_out.is_skipped and e.config.button then return end
         e.config.button = nil
         G.round_eval.alignment.offset.y = G.ROOM.T.y + 15
         G.round_eval.alignment.offset.x = 0
-        G.deck:shuffle('cashout'..G.GAME.round_resets.ante)
+        G.deck:shuffle('cashout'..MP.order_round_based(true))
         G.deck:hard_set_T()
         delay(0.3)
         G.E_MANAGER:add_event(Event({

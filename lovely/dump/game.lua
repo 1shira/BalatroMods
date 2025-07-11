@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '7c23f4ed7d223a74909092775d1e005d1dbca0163d954ba86cc2f67096963b74'
+LOVELY_INTEGRITY = '49e9e8060727a0ba194313bbe5f32a79916e4e0b37417589500a576f8792b480'
 
 --Class
 Game = Object:extend()
@@ -1160,7 +1160,6 @@ function Game:init_window(reset)
 end
 
 function Game:delete_run()
-    G.in_delete_run = true
     if self.ROOM then
         remove_all(G.STAGE_OBJECTS[G.STAGE])
         self.load_shop_booster = nil
@@ -1207,7 +1206,6 @@ function Game:delete_run()
     if G.GAME then G.GAME.won = false end
 
     G.STATE = -1
-    G.in_delete_run = false
 end
 
 
@@ -2053,7 +2051,6 @@ function Game:start_run(args)
     selected_back = get_deck_from_name(selected_back)
     self.GAME = saveTable and saveTable.GAME or self:init_game_object()
     Handy.UI.init()
-    SMODS.update_hand_limit_text(true, true)
     self.GAME.modifiers = self.GAME.modifiers or {}
     self.GAME.stake = args.stake or self.GAME.stake or 1
     self.GAME.STOP_USE = 0
@@ -2090,6 +2087,7 @@ function Game:start_run(args)
                             local _joker = add_joker(v.id, v.edition, k ~= 1)
                             if v.eternal then _joker:set_eternal(true) end
                             if v.pinned then _joker.pinned = true end
+                            if v.rental then _joker:set_rental(true) end
                         return true
                         end
                     }))
@@ -2171,6 +2169,9 @@ function Game:start_run(args)
         self.GAME.round_resets.discards = self.GAME.starting_params.discards
         self.GAME.round_resets.reroll_cost = self.GAME.starting_params.reroll_cost
         self.GAME.dollars = self.GAME.starting_params.dollars
+            if MP and MP.LOBBY and MP.LOBBY.code then
+                MP.GAME.real_money = tostring(self.GAME.starting_params.dollars)
+            end
         self.GAME.base_reroll_cost = self.GAME.starting_params.reroll_cost
         self.GAME.round_resets.reroll_cost = self.GAME.base_reroll_cost
         self.GAME.current_round.reroll_cost = self.GAME.base_reroll_cost
@@ -2183,6 +2184,7 @@ function Game:start_run(args)
         self.GAME.pseudorandom.seed = args.seed or (not (G.SETTINGS.tutorial_complete or G.SETTINGS.tutorial_progress.completed_parts['big_blind']) and "TUTORIAL") or generate_starting_seed()
     end
 
+    if self.GAME.pseudorandom.seed:sub(1, 1) ~= "*" and MP.INTEGRATIONS.TheOrder then self.GAME.pseudorandom.seed = "*" .. self.GAME.pseudorandom.seed end
     for k, v in pairs(self.GAME.pseudorandom) do if v == 0 then self.GAME.pseudorandom[k] = pseudohash(k..self.GAME.pseudorandom.seed) end end
     self.GAME.pseudorandom.hashed_seed = pseudohash(self.GAME.pseudorandom.seed)
 
@@ -2258,7 +2260,14 @@ function Game:start_run(args)
         CAI.consumeable_H, 
         {card_limit = self.GAME.starting_params.consumable_slots, type = 'joker', highlight_limit = 1})
 
-    self.jokers = CardArea(
+    if MP.LOBBY.code then 
+      MP.shared = CardArea(
+        0, CAI.consumeable_H + 0.3,
+        CAI.consumeable_W / 2,
+        CAI.consumeable_H, 
+        {card_limit = 0, type = 'joker', highlight_limit = 1})
+    end
+self.jokers = CardArea(
         0, 0,
         CAI.joker_W,
         CAI.joker_H, 
@@ -3358,7 +3367,8 @@ function Game:update_round_eval(dt)
     if self.buttons then self.buttons:remove(); self.buttons = nil end
     if self.shop then self.shop:remove(); self.shop = nil end
 
-    if not G.STATE_COMPLETE then
+     if not G.STATE_COMPLETE and not MP.GAME.prevent_eval then
+        MP.GAME.prevent_eval = true
         stop_use()
         G.STATE_COMPLETE = true
         G.E_MANAGER:add_event(Event({
