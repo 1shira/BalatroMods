@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '68cccd8d9b54975343759c3a756790d63a3d374bbf436cef1930dd6735444978'
+LOVELY_INTEGRITY = 'dec98bd1cb528b9cad4338ab0d4da7c8d9bd5f319a6dcac51a481e0ff093142b'
 
 --Create a global UIDEF that contains all UI definition functions\
 --As a rule, these contain functions that return a table T representing the definition for a UIBox
@@ -782,7 +782,7 @@ end
           for _,v in ipairs(SMODS.ConsumableType.ctype_buffer) do
               total_rate = total_rate + G.GAME[v:lower()..'_rate']
           end
-          local polled_rate = pseudorandom(pseudoseed('cdt'..MP.ante_based()))*total_rate
+          local polled_rate = pseudorandom(pseudoseed('cdt'..G.GAME.round_resets.ante))*total_rate
           local check_rate = 0
           -- need to preserve order to leave RNG unchanged
           local rates = {
@@ -1498,12 +1498,12 @@ function create_UIBox_HUD()
               ,
               MP.LOBBY.code and {n=G.UIT.R, config={id = 'lobby_info_button', align = "cm", minh = 1.2, minw = 1.5,padding = 0.05, r = 0.1, hover = true, colour = G.C.BLUE, button = "lobby_info", shadow = true}, nodes={
                   {n=G.UIT.R, config={align = "cm", padding = 0, maxw = 1.4}, nodes={
-                      {n=G.UIT.T, config={text = localize("ml_lobby_info")[1], scale = 1.2*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}}
+                      {n=G.UIT.T, config={text = localize('ml_lobby_info')[1], scale = 1.2*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}}
                   }},
                   {n=G.UIT.R, config={align = "cm", padding = 0, maxw = 1.4}, nodes={
-                      {n=G.UIT.T, config={text = localize("ml_lobby_info")[2], scale = 1*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true, focus_args = {button = G.F_GUIDE and 'guide' or 'back', orientation = 'bm'}, func = 'set_button_pip'}}
+                      {n=G.UIT.T, config={text = localize('ml_lobby_info')[2], scale = 1*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true, focus_args = {button = G.F_GUIDE and 'guide' or 'back', orientation = 'bm'}, func = 'set_button_pip'}}
                   }}
-              }} or nil
+              }} or nil,
         }}
     }
 
@@ -5515,24 +5515,11 @@ function G.UIDEF.run_setup(from_game_over)
   local _can_continue = G.MAIN_MENU_UI and G.FUNCS.can_continue({config = {func = true}})
   G.FUNCS.false_ret = function() return false end
   local t = MP.LOBBY.code and create_UIBox_generic_options({contents ={
-        {n=G.UIT.R, config={align = "cm", padding = 0, draw_layer = 1}, nodes={
-          create_tabs(
-          {tabs = {
-              {
-                  label = localize('b_new_run'),
-                  chosen = true,
-                  tab_definition_function = (Galdur and Galdur.config.use) and G.UIDEF.run_setup_option_new_model or G.UIDEF.run_setup_option,
-                  tab_definition_function_args = 'New Run'
-              },
-              {
-                label = localize('b_challenges'),
-                tab_definition_function = G.UIDEF.challenges,
-                tab_definition_function_args = from_game_over,
-                chosen = false
-              },
-          },
-          snap_to_nav = true}),
+      {n=G.UIT.R, config={padding = 0.0, align = "cm", colour = G.C.CLEAR}, nodes={
+        {n=G.UIT.R, config={align = 'cm', padding = 0.1, no_fill = true, minh = 0, minw = 0}, nodes={
+          {n=G.UIT.O, config={id = 'tab_contents', object = UIBox{definition = ((Galdur and Galdur.config.use) and G.UIDEF.run_setup_option_new_model or G.UIDEF.run_setup_option)('New Run'), config = {offset = {x=0,y=0}}}}}
         }},
+      }},
     }}) or create_UIBox_generic_options({no_back = from_game_over, no_esc = from_game_over, contents ={
       {n=G.UIT.R, config={align = "cm", padding = 0, draw_layer = 1}, nodes={
         create_tabs(
@@ -5821,7 +5808,6 @@ function G.UIDEF.challenge_description(_id, daily, is_row)
       if v.edition then card:set_edition({[v.edition] = true}, true, true) end
       if v.eternal then card:set_eternal(true) end
       if v.pinned then card.pinned = true end
-      if v.rental then card:set_rental(true) end
       jokers:emplace(card)
     end
   end
@@ -5910,7 +5896,7 @@ function G.UIDEF.challenge_description(_id, daily, is_row)
         no_shoulders = true,
         no_loop = true}
     )}},
-    (not (MP.LOBBY.code and G.STAGE == G.STAGES.RUN)) and (not is_row) and {n=G.UIT.R, config={align = "cm", minh = 0.9}, nodes={
+    (not MP.LOBBY.code) and (not is_row) and {n=G.UIT.R, config={align = "cm", minh = 0.9}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0.1, minh = 0.7, minw = 9, r = 0.1, hover = true, colour = G.C.BLUE, button = "start_challenge_run", shadow = true, id = _id}, nodes={
         {n=G.UIT.T, config={text = localize('b_play_cap'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT,func = 'set_button_pip', focus_args = {button = 'x',set_button_pip = true}}}
       }}

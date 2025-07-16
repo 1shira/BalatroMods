@@ -428,7 +428,7 @@ function SMODS.restart_game()
     if love.system.getOS() ~= 'OS X' then
         love.thread.newThread("os.execute(...)\n"):start('"' .. arg[-2] .. '" ' .. table.concat(arg, " "))
     else
-        os.execute('sh "/Users/$USER/Library/Application Support/Steam/steamapps/common/Balatro/run_lovely_macos.sh" &')
+        os.execute('sh "/Users/$USER/Library/Application Support/Steam/steamapps/common/Balatro/run_lovely.sh" &')
     end
 
     love.event.quit()
@@ -1171,22 +1171,13 @@ G.FUNCS.update_suit_colours = function(suit, skin, palette_num)
 end
 
 SMODS.smart_level_up_hand = function(card, hand, instant, amount)
-    -- Cases:
-    -- Level ups in context.before on the played hand
-    --     -> direct level_up_hand(), keep displaying
-    -- Level ups in context.before on another hand AND any level up during scoring
-    --     -> restore the current chips/mult
-    -- Level ups outside anything -> always update to empty chips/mult
-    local vals_after_level
-    if SMODS.displaying_scoring and not (SMODS.displayed_hand == hand) then
-        vals_after_level = copy_table(G.GAME.current_round.current_hand)
-    end
+    local old_text = copy_table(G.GAME.current_round.current_hand)
     if not (instant or SMODS.displayed_hand == hand) then
         update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {handname=localize(hand, 'poker_hands'),chips = G.GAME.hands[hand].chips, mult = G.GAME.hands[hand].mult, level=G.GAME.hands[hand].level})
     end
     level_up_hand(card, hand, instant, type(amount) == 'number' and amount or 1)
     if not (instant or SMODS.displayed_hand == hand) then
-        update_hand_text({sound = 'button', volume = 0.7, pitch = 1.1, delay = 0}, vals_after_level or {mult = 0, chips = 0, handname = '', level = ''})
+        update_hand_text({sound = 'button', volume = 0.7, pitch = 1.1, delay = 0}, {mult = old_text.mult, chips = old_text.chips, handname = old_text.handname, level = old_text.handname ~= "" and G.GAME.hands[G.GAME.last_hand_played].level or ''})
     end
 end
 

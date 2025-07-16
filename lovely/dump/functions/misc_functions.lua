@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '2a400c4987fded265f2f5f963d276f5f163cbd7b9c9386c0abddeefd85dad7e0'
+LOVELY_INTEGRITY = 'd5119d84b0b8d836816fb22c82031775c11c0a60e4aba17d909d3a5c29123023'
 
 --Updates all display information for all displays for a given screenmode. Returns the key for the resolution option cycle
 --
@@ -1830,7 +1830,6 @@ utf8.chars =
 	end
 
 function localize(args, misc_cat)
-   if not args then return "ERROR" end
   if args and not (type(args) == 'table') then
     if misc_cat and G.localization.misc[misc_cat] then return G.localization.misc[misc_cat][args] or 'ERROR' end
     return G.localization.misc.dictionary[args] or 'ERROR'

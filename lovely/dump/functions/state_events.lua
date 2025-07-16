@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'efd9ae92af9f99f78fe86e36df398812aec92d48ccfc458c2dc8e80346247896'
+LOVELY_INTEGRITY = 'edb909da176db30d5376ff031d5e822a8940fe2887d13c67c655893921945259'
 
 function win_game()
     if (not G.GAME.seeded and not G.GAME.challenge) or SMODS.config.seeded_unlocks then
@@ -282,7 +282,7 @@ function new_round()
                 trigger = 'immediate',
                 func = function()
                     G.STATE = G.STATES.DRAW_TO_HAND
-                    G.deck:shuffle('nr'..MP.ante_based())
+                    G.deck:shuffle('nr'..G.GAME.round_resets.ante)
                     G.deck:hard_set_T()
                     G.STATE_COMPLETE = false
                     return true
@@ -772,6 +772,8 @@ G.FUNCS.evaluate_play = function(e)
         func = (function() play_sound('chips2');return true end)
         }))
     end
+    MP.GAME.calculating_hand = true
+    MP.GAME.pre_calc_score = G.GAME.chips + math.floor(hand_chips*mult)
     G.E_MANAGER:add_event(Event({
       trigger = 'ease',
       blocking = false,
@@ -864,8 +866,8 @@ G.FUNCS.evaluate_round = function()
     total_cashout_rows = 0
     local pitch = 0.95
     local dollars = 0
-    
-    if G.GAME.chips - G.GAME.blind.chips >= 0 or MP.is_pvp_boss() then
+
+    if G.GAME.chips - G.GAME.blind.chips >= 0 then
         add_round_eval_row({dollars = G.GAME.blind.dollars, name='blind1', pitch = pitch})
         pitch = pitch + 0.06
         dollars = dollars + G.GAME.blind.dollars
@@ -891,7 +893,7 @@ G.FUNCS.evaluate_round = function()
     }))
     G.GAME.selected_back:trigger_effect({context = 'eval'})
 
-    if G.GAME.current_round.hands_left > 0 and (not G.GAME.modifiers.no_extra_hand_money) and (not MP.is_pvp_boss()) then
+    if G.GAME.current_round.hands_left > 0 and not G.GAME.modifiers.no_extra_hand_money and G.GAME.blind.name ~= "bl_mp_nemesis" and G.GAME.blind.name ~= "bl_mp_potluck" and G.GAME.blind.name ~= "bl_mp_hivemind" then
         add_round_eval_row({dollars = G.GAME.current_round.hands_left*(G.GAME.modifiers.money_per_hand or 1), disp = G.GAME.current_round.hands_left, bonus = true, name='hands', pitch = pitch})
         pitch = pitch + 0.06
         dollars = dollars + G.GAME.current_round.hands_left*(G.GAME.modifiers.money_per_hand or 1)

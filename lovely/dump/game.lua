@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '69e041e913692891a14bcbca6a6863cf67af6621af91cd0af5467e50af516346'
+LOVELY_INTEGRITY = '31977faea6beab529b6d688ee819841b68f1c98e2f1f3701a19071e080993410'
 
 --Class
 Game = Object:extend()
@@ -2087,7 +2087,6 @@ function Game:start_run(args)
                             local _joker = add_joker(v.id, v.edition, k ~= 1)
                             if v.eternal then _joker:set_eternal(true) end
                             if v.pinned then _joker.pinned = true end
-                            if v.rental then _joker:set_rental(true) end
                         return true
                         end
                     }))
@@ -2169,9 +2168,6 @@ function Game:start_run(args)
         self.GAME.round_resets.discards = self.GAME.starting_params.discards
         self.GAME.round_resets.reroll_cost = self.GAME.starting_params.reroll_cost
         self.GAME.dollars = self.GAME.starting_params.dollars
-            if MP and MP.LOBBY and MP.LOBBY.code then
-                MP.GAME.real_money = tostring(self.GAME.starting_params.dollars)
-            end
         self.GAME.base_reroll_cost = self.GAME.starting_params.reroll_cost
         self.GAME.round_resets.reroll_cost = self.GAME.base_reroll_cost
         self.GAME.current_round.reroll_cost = self.GAME.base_reroll_cost
@@ -2184,7 +2180,6 @@ function Game:start_run(args)
         self.GAME.pseudorandom.seed = args.seed or (not (G.SETTINGS.tutorial_complete or G.SETTINGS.tutorial_progress.completed_parts['big_blind']) and "TUTORIAL") or generate_starting_seed()
     end
 
-    if self.GAME.pseudorandom.seed:sub(1, 1) ~= "*" and MP.INTEGRATIONS.TheOrder then self.GAME.pseudorandom.seed = "*" .. self.GAME.pseudorandom.seed end
     for k, v in pairs(self.GAME.pseudorandom) do if v == 0 then self.GAME.pseudorandom[k] = pseudohash(k..self.GAME.pseudorandom.seed) end end
     self.GAME.pseudorandom.hashed_seed = pseudohash(self.GAME.pseudorandom.seed)
 

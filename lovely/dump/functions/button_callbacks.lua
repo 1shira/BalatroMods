@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '50903a7613ce79a631036b1e64bd840a153b0559d02dc4390dcb080025867a2f'
+LOVELY_INTEGRITY = '1f362acb582edb7457e4f56417b81217b479398a256773d4baf20e1881e2ab79'
 
 --Moves the tutorial to the next step in queue
 --
@@ -2971,7 +2971,7 @@ if Handy.insta_cash_out.is_skipped and e.config.button then return end
         e.config.button = nil
         G.round_eval.alignment.offset.y = G.ROOM.T.y + 15
         G.round_eval.alignment.offset.x = 0
-        G.deck:shuffle('cashout'..MP.ante_based())
+        G.deck:shuffle('cashout'..G.GAME.round_resets.ante)
         G.deck:hard_set_T()
         delay(0.3)
         G.E_MANAGER:add_event(Event({

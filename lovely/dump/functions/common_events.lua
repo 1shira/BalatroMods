@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '7763086e7f8928a0833992d4fd8cf526eccf531d5631bdba9eecf2c1fe309615'
+LOVELY_INTEGRITY = 'dffd0b29904478fe8572514ec15518b457aa502bf887ff9412a08b2d03b37367'
 
 function set_screen_positions()
     if G.STAGE == G.STAGES.RUN then
@@ -88,16 +88,6 @@ function ease_dollars(mod, instant)
         if MP.LOBBY.code and to_big(mod) < to_big(0) then
           MP.GAME.spent_total = to_big(MP.GAME.spent_total) + (to_big(mod) * to_big(-1))
         end
-            if MP and MP.LOBBY and MP.LOBBY.code then
-                if MP.GAME.ce_cache == false then
-                    MP.GAME.real_money = tonumber(MP.GAME.real_money) + mod
-                    if MP.GAME.real_money ~= G.GAME.dollars then 
-                        MP.GAME.ce_cache = true
-                        Client.send("ce_cache")
-                    end
-                    MP.GAME.real_money = tostring(MP.GAME.real_money)
-                end
-            end
         check_and_set_high_score('most_money', G.GAME.dollars)
         check_for_unlock({type = 'money'})
         dollar_UI.config.object:update()
@@ -180,8 +170,7 @@ function ease_hands_played(mod, instant)
         end
         --Ease from current chips to the new number of chips
         G.GAME.current_round.hands_left = G.GAME.current_round.hands_left + mod
-        if MP.LOBBY.code and MP.is_pvp_boss() and mod > 0 then
-        		MP.ACTIONS.play_hand(G.GAME.chips, G.GAME.current_round.hands_left)
+        if MP.LOBBY.code and mod ~= 0 then
         	end
         hand_UI.config.object:update()
         G.HUD:recalculate()
@@ -2113,7 +2102,7 @@ function get_next_voucher_key(_from_tag)
     local it = 1
     while center == 'UNAVAILABLE' do
         it = it + 1
-        center = pseudorandom_element(_pool, pseudoseed(_pool_key..(MP.INTEGRATIONS.TheOrder and '' or ('_resample'..it)) ))
+        center = pseudorandom_element(_pool, pseudoseed(_pool_key..'_resample'..it))
     end
 
     return center
@@ -2158,7 +2147,7 @@ function get_pack(_key, _type)
     for k, v in ipairs(G.P_CENTER_POOLS['Booster']) do
         if (not _type or _type == v.kind) and not G.GAME.banned_keys[v.key] then cume = cume + (v.weight or 1 ) end
     end
-    local poll = pseudorandom(pseudoseed((_key or 'pack_generic')..MP.ante_based()))*cume
+    local poll = pseudorandom(pseudoseed((_key or 'pack_generic')..G.GAME.round_resets.ante))*cume
     for k, v in ipairs(G.P_CENTER_POOLS['Booster']) do
         if not G.GAME.banned_keys[v.key] then 
             if not _type or _type == v.kind then it = it + (v.weight or 1) end
@@ -2324,16 +2313,14 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
         end
         if (_type == 'Tarot' or _type == 'Spectral' or _type == 'Tarot_Planet') and
         not (G.GAME.used_jokers['c_soul'] and not next(find_joker("Showman")))  then
-            if pseudorandom('soul_'..(MP.INTEGRATIONS.TheOrder and 'c_soul' or _type)..G.GAME.round_resets.ante) > 0.997 then
-            	forced_key = 'c_soul'
+            if pseudorandom('soul_'.._type..G.GAME.round_resets.ante) > 0.997 then
+                forced_key = 'c_soul'
             end
         end
         if (_type == 'Planet' or _type == 'Spectral') and
         not (G.GAME.used_jokers['c_black_hole'] and not next(find_joker("Showman")))  then 
-            if pseudorandom('soul_'..(MP.INTEGRATIONS.TheOrder and 'c_black_hole' or _type)..G.GAME.round_resets.ante) > 0.997 then
-            	if not (MP.INTEGRATIONS.TheOrder and forced_key) then
-            		forced_key = 'c_black_hole'
-            	end
+            if pseudorandom('soul_'.._type..G.GAME.round_resets.ante) > 0.997 then
+                forced_key = 'c_black_hole'
             end
         end
     end
@@ -2353,7 +2340,7 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
         local it = 1
         while center == 'UNAVAILABLE' do
             it = it + 1
-            center = pseudorandom_element(_pool, pseudoseed(_pool_key..(MP.INTEGRATIONS.TheOrder and '' or ('_resample'..it)) ))
+            center = pseudorandom_element(_pool, pseudoseed(_pool_key..'_resample'..it))
         end
 
         center = G.P_CENTERS[center]
@@ -2378,23 +2365,20 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
         if G.GAME.modifiers.all_eternal then
             card:set_eternal(true)
         end
-        local _etpeareakey = MP.INTEGRATIONS.TheOrder and 'etperpoll' or (area == G.pack_cards and 'packetper' or 'etperpoll')
-        local _rentareakey = MP.INTEGRATIONS.TheOrder and 'ssjr' or (area == G.pack_cards and 'packssjr' or 'ssjr')
-        local _order = MP.INTEGRATIONS.TheOrder and center.key or ""
         if (area == G.shop_jokers) or (area == G.pack_cards) then 
-            local eternal_perishable_poll = pseudorandom(_order.._etpeareakey..G.GAME.round_resets.ante)
+            local eternal_perishable_poll = pseudorandom((area == G.pack_cards and 'packetper' or 'etperpoll')..G.GAME.round_resets.ante)
             if G.GAME.modifiers.enable_eternals_in_shop and eternal_perishable_poll > 0.7 and not SMODS.Stickers["eternal"].should_apply then
                 card:set_eternal(true)
             elseif G.GAME.modifiers.enable_perishables_in_shop and ((eternal_perishable_poll > 0.4) and (eternal_perishable_poll <= 0.7)) and not SMODS.Stickers["perishable"].should_apply then
                 card:set_perishable(true)
             end
-            if G.GAME.modifiers.enable_rentals_in_shop and pseudorandom(_order.._rentareakey..G.GAME.round_resets.ante) > 0.7 and not SMODS.Stickers["rental"].should_apply then
+            if G.GAME.modifiers.enable_rentals_in_shop and pseudorandom((area == G.pack_cards and 'packssjr' or 'ssjr')..G.GAME.round_resets.ante) > 0.7 and not SMODS.Stickers["rental"].should_apply then
                 card:set_rental(true)
             end
         end
 
         if not SMODS.bypass_create_card_edition and not card.edition then
-            local edition = poll_edition(_order..'edi'..(key_append or '')..G.GAME.round_resets.ante)
+            local edition = poll_edition('edi'..(key_append or '')..G.GAME.round_resets.ante)
         card:set_edition(edition)
         check_for_unlock({type = 'have_edition'})
         end
@@ -2658,12 +2642,7 @@ function get_new_boss()
             end
         end
     end
-    local boss = nil
-    if MP.INTEGRATIONS.TheOrder then
-    	_, boss = pseudorandom_element(eligible_bosses, pseudoseed('boss'..G.GAME.round_resets.ante))
-    else
-    	_, boss = pseudorandom_element(eligible_bosses, pseudoseed('boss'))
-    end
+    local _, boss = pseudorandom_element(eligible_bosses, pseudoseed('boss'))
     G.GAME.bosses_used[boss] = G.GAME.bosses_used[boss] + 1
     
     return boss

@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '20138ea7720dc9931ff43ecb8d9b4dea02416e85d0a3a66b529de5e573733542'
+LOVELY_INTEGRITY = '6e47c2b25510a4f89249291597c5a4909469bca07ff163dd857d5d4016f2499d'
 
 --class
 Card = Moveable:extend()
@@ -111,6 +111,12 @@ function Card:update_alert()
 end
 
 function Card:set_base(card, initial)
+if card and card.suit and MP and MP.LOBBY.code and MP.LOBBY.is_started and not MP.GAME.setting_deck and (self.area == G.deck or self.area == G.hand or self.area == G.discard or self.area == G.play) then
+MP.ACTIONS.set_card_suit(self, card.suit)
+end
+if card and card.value and MP and MP.LOBBY.code and MP.LOBBY.is_started and not MP.GAME.setting_deck and (self.area == G.deck or self.area == G.hand or self.area == G.discard or self.area == G.play) then
+MP.ACTIONS.set_card_rank(self, card.value)
+end
 SMODS.enh_cache:write(self, nil)
     card = card or {}
 
@@ -234,6 +240,9 @@ function Card:set_sprites(_center, _front)
 end
 
 function Card:set_ability(center, initial, delay_sprites)
+if MP and MP.LOBBY.code and MP.LOBBY.is_started and not MP.GAME.setting_deck and (self.area == G.deck or self.area == G.hand or self.area == G.discard or self.area == G.play) then
+MP.ACTIONS.set_card_enhancement(self, MP.UTILS.reverse_key_value_pairs(G.P_CENTERS)[center] or "none")
+end
 SMODS.enh_cache:write(self, nil)
     for key, _ in pairs(self.T) do
         self.T[key] = self.original_T[key]
@@ -260,9 +269,7 @@ SMODS.enh_cache:write(self, nil)
     end
     self.config.center = center
     if not G.OVERLAY_MENU and old_center and not next(SMODS.find_card(old_center.key, true)) then
-        if not G.OVERLAY_MENU then
-        	G.GAME.used_jokers[old_center.key] = nil
-        end
+        G.GAME.used_jokers[old_center.key] = nil
     end
     self.sticker_run = nil
     for k, v in pairs(G.P_CENTERS) do
@@ -570,6 +577,9 @@ function Card:set_edition(edition, immediate, silent)
 end
 
 function Card:set_seal(_seal, silent, immediate)
+if MP and MP.LOBBY.code and MP.LOBBY.is_started and not MP.GAME.setting_deck and (self.area == G.deck or self.area == G.hand or self.area == G.discard or self.area == G.play) then
+MP.ACTIONS.set_card_seal(self, _seal or "none")
+end
 SMODS.enh_cache:write(self, nil)
     self.seal = nil
     if _seal then
@@ -692,6 +702,9 @@ end
 
 function Card:change_suit(new_suit)
     local new_code = SMODS.Suits[new_suit].card_key
+if MP and new_code and MP.LOBBY.code and MP.LOBBY.is_started and not MP.GAME.setting_deck and (self.area == G.deck or self.area == G.hand or self.area == G.discard or self.area == G.play) then
+MP.ACTIONS.set_card_suit(self, new_code)
+end
     local new_val = SMODS.Ranks[self.base.value].card_key
     local new_card = G.P_CARDS[new_code..'_'..new_val]
 
@@ -700,6 +713,9 @@ function Card:change_suit(new_suit)
 end
 
 function Card:add_to_deck(from_debuff)
+if MP and MP.LOBBY.code and MP.LOBBY.is_started and not MP.GAME.setting_deck then
+MP.ACTIONS.add_card(self)
+end
     if not self.config.center.discovered then
         discover_card(self.config.center)
     end
@@ -2605,7 +2621,7 @@ function Card:calculate_joker(context)
         end
         if context.open_booster then
             if self.ability.name == 'Hallucination' and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-                if pseudorandom('halu'..MP.ante_based()) < G.GAME.probabilities.normal/self.ability.extra then
+                if pseudorandom('halu'..G.GAME.round_resets.ante) < G.GAME.probabilities.normal/self.ability.extra then
                     G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
                     G.E_MANAGER:add_event(Event({
                         trigger = 'before',
@@ -3695,7 +3711,6 @@ function Card:calculate_joker(context)
             end
         elseif context.other_joker then
             if self.ability.name == 'Baseball Card' and (context.other_joker.config.center.rarity == 2 or context.other_joker.config.center.rarity == "Uncommon") and self ~= context.other_joker then
-            if context.other_joker.edition and context.other_joker.edition.type == 'mp_phantom' then return end
                 G.E_MANAGER:add_event(Event({
                     func = function()
                         context.other_joker:juice_up(0.5, 0.5)
@@ -5043,6 +5058,9 @@ end
 
 function Card:remove()
     self.removed = true
+if MP and MP.LOBBY.code and MP.LOBBY.is_started and not MP.GAME.setting_deck and (self.area == G.deck or self.area == G.hand or self.area == G.discard or self.area == G.play) then
+MP.ACTIONS.remove_card(self)
+end
 
     if self.area then self.area:remove_card(self) end
 
