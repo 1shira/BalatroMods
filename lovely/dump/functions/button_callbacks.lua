@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '9ff72e735a2be6d4fd376a6f3beecb33250837b25c0e612103f156b441082897'
+LOVELY_INTEGRITY = '941c96fbbdc5df50eecfc073079ffc20c8e74e1f94369c2f7018a467b87c243f'
 
 --Moves the tutorial to the next step in queue
 --
@@ -2062,7 +2062,7 @@ G.FUNCS.hand_text_UI_set = function(e)
 end
 
   G.FUNCS.can_play = function(e)
-    if #G.hand.highlighted <= 0 or G.GAME.blind.block_play or #G.hand.highlighted > 5 then 
+    if #G.hand.highlighted <= 0 or G.GAME.blind.block_play or #G.hand.highlighted > math.max(G.GAME.starting_params.play_limit, 1) then 
         e.config.colour = G.C.UI.BACKGROUND_INACTIVE
         e.config.button = nil
     else
@@ -2106,7 +2106,7 @@ end
   end
 
   G.FUNCS.can_discard = function(e)
-    if G.GAME.current_round.discards_left <= 0 or #G.hand.highlighted <= 0 then 
+    if G.GAME.current_round.discards_left <= 0 or #G.hand.highlighted <= 0 or #G.hand.highlighted > math.max(G.GAME.starting_params.discard_limit, 0) then 
         e.config.colour = G.C.UI.BACKGROUND_INACTIVE
         e.config.button = nil
     else
@@ -2479,7 +2479,7 @@ G.FUNCS.buy_from_shop = function(e)
               G.jokers:emplace(c1)
             end
             G.E_MANAGER:add_event(Event({func = function()
-                local eval, post = eval_card(c1, {buying_card = true, card = c1})
+                local eval, post = eval_card(c1, {buying_card = true, buying_self = true, card = c1}) -- buying_card left for back compat, buying_self recommended to use
                 SMODS.trigger_effects({eval, post}, c1)
                 return true
                 end}))
@@ -2584,6 +2584,8 @@ end
               inc_steam_stat('demo_rounds')
               G:save_settings()
             end
+            local _tag = e.UIBox:get_UIE_by_ID('tag_container')
+            G.GAME.round_resets.blind_tag = _tag and _tag.config and _tag.config.ref_table or nil
             G.GAME.round_resets.blind = e.config.ref_table
             G.GAME.round_resets.blind_states[G.GAME.blind_on_deck] = 'Current'
             G.blind_select:remove()

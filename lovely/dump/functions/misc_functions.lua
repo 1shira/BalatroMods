@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '3a83c55d3408f88ca51b70cb78d83cb1bb3fc5da2c6998bcdb8b2ab6f0858f8a'
+LOVELY_INTEGRITY = '846cec9263f62f317662bc067685dfbaaf4988b83f71b725902d6a977e830941'
 
 --Updates all display information for all displays for a given screenmode. Returns the key for the resolution option cycle
 --
@@ -253,6 +253,7 @@ function get_first_legendary(_key)
 end
 
 function pseudorandom_element(_t, seed, args)
+    if seed and type(seed) == "string" then seed = pseudoseed(seed) end
     -- TODO special cases for now
     -- Preserves reverse nominal order for Suits, nominal+face_nominal order for Ranks
     -- for vanilla RNG
@@ -266,13 +267,13 @@ function pseudorandom_element(_t, seed, args)
   local keys = {}
   for k, v in pairs(_t) do
       local keep = true
-      local in_pool_func = 
+      local in_pool_func =
           args and args.in_pool
           or type(v) == 'table' and type(v.in_pool) == 'function' and v.in_pool
           or _t == G.P_CARDS and function(c)
                   --Handles special case for Erratic Deck
                   local initial_deck = args and args.starting_deck or false
-                  
+      
                   return not (
                       type(SMODS.Ranks[c.value].in_pool) == 'function' and not SMODS.Ranks[c.value]:in_pool({initial_deck = initial_deck, suit = c.suit})
                       or type(SMODS.Suits[c.suit].in_pool) == 'function' and not SMODS.Suits[c.suit]:in_pool({initial_deck = initial_deck, rank = c.value})
@@ -581,9 +582,9 @@ end
 
 function get_flush(hand)
   local ret = {}
-  local four_fingers = next(find_joker('Four Fingers'))
+  local four_fingers = SMODS.four_fingers()
   local suits = SMODS.Suit.obj_buffer
-  if #hand < (5 - (four_fingers and 1 or 0)) then return ret else
+  if #hand < four_fingers then return ret else
     for j = 1, #suits do
       local t = {}
       local suit = suits[j]
@@ -591,7 +592,7 @@ function get_flush(hand)
       for i=1, #hand do
         if hand[i]:is_suit(suit, nil, true) then flush_count = flush_count + 1;  t[#t+1] = hand[i] end 
       end
-      if flush_count >= (5 - (four_fingers and 1 or 0)) then
+      if flush_count >= four_fingers then
         table.insert(ret, t)
         return ret
       end
@@ -602,8 +603,8 @@ end
 
 function get_straight(hand)
   local ret = {}
-  local four_fingers = next(find_joker('Four Fingers'))
-  if #hand > 5 or #hand < (5 - (four_fingers and 1 or 0)) then return ret else
+  local four_fingers = SMODS.four_fingers()
+  if #hand < four_fingers then return ret else
     local t = {}
     local IDS = {}
     for i=1, #hand do
@@ -1341,6 +1342,7 @@ function set_consumeable_usage(card)
               trigger = 'immediate',
               func = function()
                 G.GAME.last_tarot_planet = card.config.center_key
+                G.GAME.paperback.last_tarot_energized = card.ability and card.ability.paperback_energized
                   return true
               end
             }))
@@ -1398,7 +1400,7 @@ function set_profile_progress()
       G.PROGRESS.deck_stakes.of = G.PROGRESS.deck_stakes.of + #G.P_CENTER_POOLS.Stake
       G.PROGRESS.deck_stakes.tally = G.PROGRESS.deck_stakes.tally + get_deck_win_stake(v.key)
     end
-    if v.set == 'Joker' then 
+    if v.set == 'Joker' and not v.no_collection and not v.omit then 
       G.PROGRESS.joker_stickers.of = G.PROGRESS.joker_stickers.of + #G.P_CENTER_POOLS.Stake
       G.PROGRESS.joker_stickers.tally = G.PROGRESS.joker_stickers.tally + get_joker_win_sticker(v, true)
     end
@@ -1616,6 +1618,15 @@ end
 
 function loc_colour(_c, _default)
   G.ARGS.LOC_COLOURS = G.ARGS.LOC_COLOURS or {
+    paperback_light_suit = G.C.PAPERBACK_LIGHT_SUIT,
+    paperback_dark_suit = G.C.PAPERBACK_DARK_SUIT,
+    paperback_stars = G.C.SUITS.paperback_Stars or G.C.PAPERBACK_STARS_LC,
+    paperback_crowns = G.C.SUITS.paperback_Crowns or G.C.PAPERBACK_CROWNS_LC,
+    paperback_minor_arcana = G.C.PAPERBACK_MINOR_ARCANA,
+    paperback_black = G.C.PAPERBACK_BLACK,
+    paperback_pink = G.C.PAPERBACK_PINK,
+    paperback_perishable = G.C.PERISHABLE,
+    paperback_temporary = G.C.PAPERBACK_TEMPORARY,
     red = G.C.RED,
     mult = G.C.MULT,
     blue = G.C.BLUE,
@@ -1886,12 +1897,28 @@ function localize(args, misc_cat)
       ret_string = assembled_string or 'ERROR'
     end
   elseif args.type == 'name_text' then
-    if pcall(function() ret_string = G.localization.descriptions[(args.set or args.node.config.center.set)][args.key or args.node.config.center.key].name end) then
+    if pcall(function()
+        local name_text = G.localization.descriptions[(args.set or args.node.config.center.set)][args.key or args.node.config.center.key].name
+        if type(name_text) == "table" then
+            ret_string = ""
+            for i, line in ipairs(name_text) do
+                ret_string = ret_string.. (i ~= 1 and " " or "")..line
+            end
+        else
+            ret_string = name_text
+        end
+    end) then
     else ret_string = "ERROR" end
   elseif args.type == 'name' then
-    loc_target = G.localization.descriptions[(args.set or args.node.config.center.set)][args.key or args.node.config.center.key]
+    loc_target = loc_target or {}
+    if pcall(function()
+    local name = G.localization.descriptions[(args.set or args.node.config.center.set)][args.key or args.node.config.center.key]
+    loc_target.name_parsed = name.name_parsed or {loc_parse_string(name.name)}
+    end) then
+    else loc_target.name_parsed = {} end
   end
 
+  if ret_string and type(ret_string) == 'string' then ret_string = string.gsub(ret_string, "{.-}", "") end
   if ret_string then return ret_string end
 
   if loc_target then 
@@ -1904,6 +1931,7 @@ function localize(args, misc_cat)
                 local final_line = SMODS.localize_box(line, args)
                 if i == 1 or next(args.AUT.info) then
                     args.nodes[#args.nodes+1] = final_line -- Sends main box to AUT.main
+                    if not next(args.AUT.info) then args.nodes.main_box_flag = true end
                 elseif not next(args.AUT.info) then 
                     args.AUT.multi_box[i-1] = args.AUT.multi_box[i-1] or {}
                     args.AUT.multi_box[i-1][#args.AUT.multi_box[i-1]+1] = final_line
@@ -1915,12 +1943,22 @@ function localize(args, misc_cat)
     end
     for _, lines in ipairs(args.type == 'unlocks' and loc_target.unlock_parsed or args.type == 'name' and loc_target.name_parsed or (args.type == 'text' or args.type == 'tutorial' or args.type == 'quips') and loc_target or loc_target.text_parsed) do
       local final_line = {}
+      local final_name_assembled_string = ''
+      if args.type == 'name' and loc_target.name_parsed then
+          for _, part in ipairs(lines) do
+              local assembled_string_part = ''
+              for _, subpart in ipairs(part.strings) do
+                  assembled_string_part = assembled_string_part..(type(subpart) == 'string' and subpart or format_ui_value(format_ui_value(args.vars[tonumber(subpart[1])])) or 'ERROR')
+              end
+              final_name_assembled_string = final_name_assembled_string..assembled_string_part
+          end
+      end
       for _, part in ipairs(lines) do
         local assembled_string = ''
         for _, subpart in ipairs(part.strings) do
           assembled_string = assembled_string..(type(subpart) == 'string' and subpart or format_ui_value(args.vars[tonumber(subpart[1])]) or 'ERROR')
         end
-        local desc_scale = G.LANG.font.DESCSCALE
+        local desc_scale = (SMODS.Fonts[part.control.f] or G.FONTS[tonumber(part.control.f)] or G.LANG.font).DESCSCALE
         if G.F_MOBILE_UI then desc_scale = desc_scale*1.5 end
         if args.type == 'name' then
           final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = part.control.B and args.vars.colours[tonumber(part.control.B)] or part.control.X and loc_colour(part.control.X) or nil, r = 0.05, padding = 0.03, res = 0.15}, nodes={}}
@@ -1934,8 +1972,9 @@ function localize(args, misc_cat)
               maxw = 5,
               shadow = true,
               y_offset = -0.6,
-              spacing = math.max(0, 0.32*(17 - #assembled_string)),
-              scale =  (0.55 - 0.004*#assembled_string)*(part.control.s and tonumber(part.control.s) or args.scale  or 1)
+              spacing = math.max(0, 0.32*(17 - #(final_name_assembled_string or assembled_string))),
+              font = SMODS.Fonts[part.control.f] or G.FONTS[tonumber(part.control.f)],
+              scale =  (0.55 - 0.004*#(final_name_assembled_string or assembled_string))*(part.control.s and tonumber(part.control.s) or args.scale  or 1)
             })
           }}
         elseif part.control.E then
@@ -1953,12 +1992,14 @@ function localize(args, misc_cat)
             pop_in = _pop_in,
             bump = _bump,
             spacing = _spacing,
+            font = SMODS.Fonts[part.control.f] or G.FONTS[tonumber(part.control.f)],
             scale = 0.32*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*desc_scale})
           }}
         elseif part.control.X or part.control.B then
           final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = part.control.B and args.vars.colours[tonumber(part.control.B)] or loc_colour(part.control.X), r = 0.05, padding = 0.03, res = 0.15}, nodes={
               {n=G.UIT.T, config={
                 text = assembled_string,
+                font = SMODS.Fonts[part.control.f] or G.FONTS[tonumber(part.control.f)],
                 colour = part.control.V and args.vars.colours[tonumber(part.control.V)] or loc_colour(part.control.C or nil),
                 scale = 0.32*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*desc_scale}},
           }}
@@ -1966,14 +2007,25 @@ function localize(args, misc_cat)
           final_line[#final_line+1] = {n=G.UIT.T, config={
           detailed_tooltip = part.control.T and (G.P_CENTERS[part.control.T] or G.P_TAGS[part.control.T]) or nil,
           text = assembled_string,
+          font = SMODS.Fonts[part.control.f] or G.FONTS[tonumber(part.control.f)],
           shadow = args.shadow,
           colour = part.control.V and args.vars.colours[tonumber(part.control.V)] or not part.control.C and args.text_colour or loc_colour(part.control.C or nil, args.default_col),
           scale = 0.32*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*desc_scale},}
         end
       end
-        if args.type == 'name' or args.type == 'text' then return final_line end
-        args.nodes[#args.nodes+1] = final_line
-    end
+            if args.type == 'text' then return final_line end
+            if not args.nodes and args.type == 'name' then args.nodes = {} end
+            args.nodes[#args.nodes+1] = final_line
+        end
+        if args.type == 'name' then
+            local final_name = {}
+        
+            for _, line in ipairs(args.nodes or {}) do
+                final_name[#final_name+1] = {n=G.UIT.R, config={align = "m"}, nodes=line}
+            end
+        
+            return final_name
+        end
   end
 end
 
@@ -2103,6 +2155,9 @@ return {
     reroll_cost = 5,
     joker_slots = 5,
     ante_scaling = 1,
+    play_limit = 5,
+    discard_limit = 5,
+    no_limit = '',
     consumable_slots = 2,
     no_faces = false,
     erratic_suits_and_ranks = false,

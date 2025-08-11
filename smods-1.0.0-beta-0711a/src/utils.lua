@@ -1,5 +1,3 @@
-LOVELY_INTEGRITY = '875a29432cb409db1077d1f948f727e53e2b1b93b789ca644447913d984176d7'
-
 --- STEAMODDED CORE
 --- UTILITY FUNCTIONS
 function inspect(table)
@@ -1770,7 +1768,6 @@ function SMODS.calculate_card_areas(_type, context, return_table, args)
             for _,v in ipairs(context.scoring_hand) do scoring_map[v] = true end
         end
         for _, area in ipairs(SMODS.get_card_areas('playing_cards')) do
-        if not area.cards then goto continue end
             if area == G.play and not context.scoring_hand then goto continue end
             if not args or not args.has_area then context.cardarea = area end
             for _, card in ipairs(area.cards) do
@@ -1854,7 +1851,6 @@ function SMODS.calculate_context(context, return_table, no_resolve)
 end
 
 function SMODS.in_scoring(card, scoring_hand)
-   if not scoring_hand then return false end
     for _, _card in pairs(scoring_hand) do
         if card == _card then return true end
     end

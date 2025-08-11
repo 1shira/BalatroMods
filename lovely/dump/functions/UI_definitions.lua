@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '4f9cec752ed37b12ef5f99116218910e55c186d86a203b908507bad8d0e9c162'
+LOVELY_INTEGRITY = 'a58d2838aec68744508c7a97f435f0f9e34a59363b1e8e329c7a6b371e008d4d'
 
 --Create a global UIDEF that contains all UI definition functions\
 --As a rule, these contain functions that return a table T representing the definition for a UIBox
@@ -810,13 +810,7 @@ end
                   end)
               }))
               if (v.type == 'Base' or v.type == 'Enhanced') and G.GAME.used_vouchers["v_illusion"] and pseudorandom(pseudoseed('illusion')) > 0.8 then 
-                local edition_poll = pseudorandom(pseudoseed('illusion'))
-                local edition = {}
-                if edition_poll > 1 - 0.15 then edition.polychrome = true
-                elseif edition_poll > 0.5 then edition.holo = true
-                else edition.foil = true
-                end
-                card:set_edition(edition)
+                card:set_edition(poll_edition('illusion', nil, true, true))
               end
               return card
             end
@@ -910,7 +904,7 @@ end
     args = args or {}
     args.text = args.text or 'test'
     args.scale = args.scale or 1
-    args.colour = copy_table(args.colour or G.C.WHITE)
+    args.colour = SMODS.shallow_copy(args.colour or G.C.WHITE)
     args.hold = (args.hold or 0) + 0.1*(G.SPEEDFACTOR)
     args.pos = args.pos or {x = 0, y = 0}
     args.align = args.align or 'cm'
@@ -919,9 +913,9 @@ end
     args.fade = 1
 
     if args.cover then
-      args.cover_colour = copy_table(args.cover_colour or G.C.RED)
-      args.cover_colour_l = copy_table(lighten(args.cover_colour, 0.2))
-      args.cover_colour_d = copy_table(darken(args.cover_colour, 0.2))
+      args.cover_colour = SMODS.shallow_copy(args.cover_colour or G.C.RED)
+      args.cover_colour_l = SMODS.shallow_copy(lighten(args.cover_colour, 0.2))
+      args.cover_colour_d = SMODS.shallow_copy(darken(args.cover_colour, 0.2))
     else
       args.cover_colour = copy_table(G.C.CLEAR)
     end
@@ -968,7 +962,7 @@ end
           })
           end
           if args.backdrop_colour then
-            args.backdrop_colour = copy_table(args.backdrop_colour)
+            args.backdrop_colour = SMODS.shallow_copy(args.backdrop_colour)
             Particles(args.pos.x,args.pos.y,0,0,{
               timer_type = 'TOTAL',
               timer = 5,
@@ -1016,12 +1010,18 @@ end
       {n=G.UIT.R, config={align = "bcm", padding = 0}, nodes={
         {n=G.UIT.T, config={text = localize('b_play_hand'), scale = text_scale, colour = G.C.UI.TEXT_LIGHT, focus_args = {button = 'x', orientation = 'bm'}, func = 'set_button_pip'}}
       }},
+      {n=G.UIT.R, config={align = "bcm", padding = 0}, nodes = {
+          {n=G.UIT.T, config={ref_table = SMODS.hand_limit_strings, ref_value = 'play', scale = text_scale * 0.65, colour = G.C.UI.TEXT_LIGHT}}
+      }},
     }}
 
     local discard_button = {n=G.UIT.C, config={id = 'discard_button',align = "tm", padding = 0.3, r = 0.1, minw = 2.5, minh = button_height, hover = true, colour = G.C.RED, button = "discard_cards_from_highlighted", one_press = true, shadow = true, func = 'can_discard'}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
-        {n=G.UIT.T, config={text = localize('b_discard'), scale = text_scale, colour = G.C.UI.TEXT_LIGHT, focus_args = {button = 'y', orientation = 'bm'}, func = 'set_button_pip'}}
-      }}
+          {n=G.UIT.T, config={text = localize('b_discard'), scale = text_scale, colour = G.C.UI.TEXT_LIGHT, focus_args = {button = 'y', orientation = 'bm'}, func = 'set_button_pip'}}
+      }},
+      {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+          {n=G.UIT.T, config={ref_table = SMODS.hand_limit_strings, ref_value = 'discard', scale = text_scale * 0.65, colour = G.C.UI.TEXT_LIGHT}}
+      }},
     }}
 
     local t = {
@@ -1055,7 +1055,7 @@ end
     for k, v in ipairs(desc_nodes) do
       t[#t+1] = {n=G.UIT.R, config={align = "cm", maxw = maxw}, nodes=v}
     end
-    return {n=G.UIT.R, config={align = "cm", colour = desc_nodes.background_colour or empty and G.C.CLEAR or G.C.UI.BACKGROUND_WHITE, r = 0.1, padding = 0.04, minw = 2, minh = 0.8, emboss = not empty and 0.05 or nil, filler = true}, nodes={
+    return {n=G.UIT.R, config={align = "cm", colour = desc_nodes.background_colour or empty and G.C.CLEAR or G.C.UI.BACKGROUND_WHITE, r = 0.1, padding = 0.04, minw = 2, minh = 0.8, emboss = not empty and 0.05 or nil, filler = true, main_box_flag = desc_nodes.main_box_flag and true or nil}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0.03}, nodes=t}
     }}
   end
@@ -1142,7 +1142,12 @@ end
       if AUT.badges then
         for k, v in ipairs(AUT.badges) do
           if v == 'negative_consumable' or v == 'negative_playing_card' then v = 'negative' end
+          local pb_key = PB_UTIL.has_paperclip(card)
+          if pb_key and v == pb_key then
+            badges[#badges + 1] = create_badge(localize(v, "labels"), get_badge_colour(v), SMODS.Stickers[pb_key].badge_text_colour)
+          else
           badges[#badges + 1] = create_badge(localize(v, "labels"), get_badge_colour(v))
+          end
         end
       end      if AUT.card_type ~= 'Locked' and AUT.card_type ~= 'Undiscovered' then
           SMODS.create_mod_badges(card.config.center, badges)
@@ -1152,6 +1157,12 @@ end
           end
           if card.config and card.config.tag then
               SMODS.create_mod_badges(SMODS.Tags[card.config.tag.key], badges)
+          end
+          if PB_UTIL and card and card.ability then
+            local key = PB_UTIL.has_paperclip(card)
+            if key then
+              SMODS.create_mod_badges(SMODS.Stickers[key], badges)
+            end
           end
           badges.mod_set = nil
       end
@@ -1210,10 +1221,17 @@ end
         }},
       }}
               if multi_boxes[1] then
-                  for i=#multi_boxes, 1, -1 do
-                      table.insert(ret_val.nodes[1].nodes[1].nodes[1].nodes, 3, multi_boxes[i])
+                  for i=1, #ret_val.nodes[1].nodes[1].nodes[1].nodes do -- find the main box
+                      if ret_val.nodes[1].nodes[1].nodes[1].nodes[i] and ret_val.nodes[1].nodes[1].nodes[1].nodes[i].config and ret_val.nodes[1].nodes[1].nodes[1].nodes[i].config.main_box_flag then
+                          for j=#multi_boxes, 1, -1 do -- add the extra boxes
+                              table.insert(ret_val.nodes[1].nodes[1].nodes[1].nodes, i+1, multi_boxes[j])
+                          end
+                          break
+                      end
                   end
+                  
               end
+              
               return ret_val
     end
   end
@@ -1291,8 +1309,7 @@ end
           {n=G.UIT.T, config={ref_table = text[i].ref_table, ref_value = text[i].ref_value,colour = G.C.UI.TEXT_DARK, scale = 0.4}}}}
         table.insert(rows, r)
       else
-        local r = {n=G.UIT.R, config={align = "cm", padding = 0.03}, nodes={
-                {n=G.UIT.T, config={text = text[i],colour = G.C.UI.TEXT_DARK, scale = 0.4}}}}
+        local r = {n=G.UIT.R, config={align = "cm", padding = 0.03}, nodes=SMODS.localize_box(loc_parse_string(text[i]), {scale = 1.25})}
         table.insert(rows, r)
       end
     end
@@ -1619,7 +1636,7 @@ function create_UIBox_blind_choice(type, run_info)
   if not G.GAME.orbital_choices[G.GAME.round_resets.ante][type] then 
     local _poker_hands = {}
     for k, v in pairs(G.GAME.hands) do
-        if v.visible then _poker_hands[#_poker_hands+1] = k end
+        if SMODS.is_poker_hand_visible(k) then _poker_hands[#_poker_hands+1] = k end
     end
 
     G.GAME.orbital_choices[G.GAME.round_resets.ante][type] = pseudorandom_element(_poker_hands, pseudoseed('orbital'))
@@ -3198,7 +3215,9 @@ function create_UIBox_hand_tip(handname)
     0.75*G.CARD_H, 
     {card_limit = 5, type = 'title', highlight_limit = 0})
   for k, v in ipairs(G.GAME.hands[handname].example) do
-      local card = Card(0,0, 0.5*G.CARD_W, 0.5*G.CARD_H, G.P_CARDS[v[1]], G.P_CENTERS.c_base)
+      local card = Card(0,0, 0.5*G.CARD_W, 0.5*G.CARD_H, G.P_CARDS[v[1]], G.P_CENTERS[v.enhancement or 'c_base'])
+      if v.edition then card:set_edition(v.edition, true, true) end
+      if v.seal then card:set_seal(v.seal, true, true) end
       if v[2] then card:juice_up(0.3, 0.2) end
       if k == 1 then play_sound('paper1',0.95 + math.random()*0.1, 0.3) end
       ease_value(card.T, 'scale',v[2] and 0.25 or -0.15,nil,'REAL',true,0.2)
@@ -3213,7 +3232,7 @@ function create_UIBox_hand_tip(handname)
 end
 
 function create_UIBox_current_hand_row(handname, simple)
-  return (G.GAME.hands[handname].visible) and
+  return SMODS.is_poker_hand_visible(handname) and
   (not simple and
     {n=G.UIT.R, config={align = "cm", padding = 0.05, r = 0.1, colour = darken(G.C.JOKER_GREY, 0.1), emboss = 0.05, hover = true, force_focus = true, on_demand_tooltip = {text = localize(handname, 'poker_hand_descriptions'), filler = {func = create_UIBox_hand_tip, args = handname}}}, nodes={
       {n=G.UIT.C, config={align = "cl", padding = 0, minw = 5}, nodes={
@@ -3791,7 +3810,16 @@ function create_UIBox_your_collection_tarots()
 
   INIT_COLLECTION_CARD_ALERTS()
   
-  local t = create_UIBox_generic_options({ back_func = G.ACTIVE_MOD_UI and "openModUI_"..G.ACTIVE_MOD_UI.id or 'your_collection', contents = {
+  local t = create_UIBox_generic_options({ 
+  colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).colour),
+  bg_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_bg_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).bg_colour),
+  back_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_back_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).back_colour),
+  outline_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_outline_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).outline_colour),
+  back_func = G.ACTIVE_MOD_UI and "openModUI_"..G.ACTIVE_MOD_UI.id or 'your_collection', contents = {
             {n=G.UIT.R, config={align = "cm", minw = 2.5, padding = 0.1, r = 0.1, colour = G.C.BLACK, emboss = 0.05}, nodes=deck_tables},
                   {n=G.UIT.R, config={align = "cm"}, nodes={
                     create_option_cycle({options = tarot_options, w = 4.5, cycle_shoulders = true, opt_callback = 'your_collection_tarot_page', focus_args = {snap_to = true, nav = 'wide'},current_option = 1, colour = G.C.RED, no_pips = true})
@@ -3833,7 +3861,16 @@ function create_UIBox_your_collection_boosters()
 
   INIT_COLLECTION_CARD_ALERTS()
   
-  local t = create_UIBox_generic_options({ back_func = G.ACTIVE_MOD_UI and "openModUI_"..G.ACTIVE_MOD_UI.id or 'your_collection', contents = {
+  local t = create_UIBox_generic_options({ 
+  colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).colour),
+  bg_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_bg_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).bg_colour),
+  back_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_back_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).back_colour),
+  outline_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_outline_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).outline_colour),
+  back_func = G.ACTIVE_MOD_UI and "openModUI_"..G.ACTIVE_MOD_UI.id or 'your_collection', contents = {
             {n=G.UIT.R, config={align = "cm", minw = 2.5, padding = 0.1, r = 0.1, colour = G.C.BLACK, emboss = 0.05}, nodes=deck_tables},
                   {n=G.UIT.R, config={align = "cm"}, nodes={
                     create_option_cycle({options = booster_options, w = 4.5, cycle_shoulders = true, opt_callback = 'your_collection_booster_page', focus_args = {snap_to = true, nav = 'wide'},current_option = 1, colour = G.C.RED, no_pips = true})
@@ -3870,7 +3907,16 @@ function create_UIBox_your_collection_planets()
 
   INIT_COLLECTION_CARD_ALERTS()
   
-  local t = create_UIBox_generic_options({ back_func = G.ACTIVE_MOD_UI and "openModUI_"..G.ACTIVE_MOD_UI.id or 'your_collection', contents = {
+  local t = create_UIBox_generic_options({ 
+  colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).colour),
+  bg_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_bg_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).bg_colour),
+  back_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_back_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).back_colour),
+  outline_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_outline_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).outline_colour),
+  back_func = G.ACTIVE_MOD_UI and "openModUI_"..G.ACTIVE_MOD_UI.id or 'your_collection', contents = {
             {n=G.UIT.R, config={align = "cm", minw = 2.5, padding = 0.1, r = 0.1, colour = G.C.BLACK, emboss = 0.05}, nodes=deck_tables},
             {n=G.UIT.R, config={align = "cm", padding = 0.7}, nodes={}},
           }})
@@ -3911,7 +3957,16 @@ function create_UIBox_your_collection_spectrals()
 
   INIT_COLLECTION_CARD_ALERTS()
   
-  local t = create_UIBox_generic_options({ back_func = G.ACTIVE_MOD_UI and "openModUI_"..G.ACTIVE_MOD_UI.id or 'your_collection', contents = {
+  local t = create_UIBox_generic_options({ 
+  colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).colour),
+  bg_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_bg_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).bg_colour),
+  back_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_back_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).back_colour),
+  outline_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_outline_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).outline_colour),
+  back_func = G.ACTIVE_MOD_UI and "openModUI_"..G.ACTIVE_MOD_UI.id or 'your_collection', contents = {
             {n=G.UIT.R, config={align = "cm", minw = 2.5, padding = 0.1, r = 0.1, colour = G.C.BLACK, emboss = 0.05}, nodes=deck_tables},
             {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
               create_option_cycle({options = spectral_options, w = 4.5, cycle_shoulders = true, opt_callback = 'your_collection_spectral_page', focus_args = {snap_to = true, nav = 'wide'},current_option = 1, colour = G.C.RED, no_pips = true})
@@ -4073,8 +4128,17 @@ function create_UIBox_your_collection_decks()
       ordered_names[#ordered_names+1] = v.key
   end
   
-  local t = create_UIBox_generic_options({ back_func = G.ACTIVE_MOD_UI and "openModUI_"..G.ACTIVE_MOD_UI.id or 'your_collection', contents = {
-    create_option_cycle({options = ordered_names, opt_callback = 'change_viewed_back', current_option = 1, colour = G.C.RED, w = 4.5, focus_args = {snap_to = true}, mid = 
+  local t = create_UIBox_generic_options({ 
+  colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).colour),
+  bg_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_bg_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).bg_colour),
+  back_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_back_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).back_colour),
+  outline_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_outline_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).outline_colour),
+  back_func = G.ACTIVE_MOD_UI and "openModUI_"..G.ACTIVE_MOD_UI.id or 'your_collection', contents = {
+    create_option_cycle({options = ordered_names, opt_callback = 'change_viewed_back', current_option = 1, colour = G.ACTIVE_MOD_UI and (G.ACTIVE_MOD_UI.ui_config or {}).collection_option_cycle_colour or G.C.RED, w = 4.5, focus_args = {snap_to = true}, mid = 
             {n=G.UIT.R, config={align = "cm", minw = 2.5, padding = 0.1, r = 0.1, colour = G.C.BLACK, emboss = 0.05}, nodes={
               {n=G.UIT.R, config={align = "cm", padding = 0.2, colour = G.C.BLACK, r = 0.2}, nodes={
                 {n=G.UIT.C, config={align = "cm", padding = 0}, nodes={
@@ -4148,7 +4212,16 @@ function create_UIBox_your_collection_tags()
           local table_nodes = {}
           for i = 1, math.ceil(counter / 6) do
               table.insert(table_nodes, {n=G.UIT.R, config={align = "cm"}, nodes=tag_matrix[i]})
-          end  local t = create_UIBox_generic_options({ back_func = G.ACTIVE_MOD_UI and "openModUI_"..G.ACTIVE_MOD_UI.id or 'your_collection', contents = {
+          end  local t = create_UIBox_generic_options({ 
+  colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).colour),
+  bg_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_bg_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).bg_colour),
+  back_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_back_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).back_colour),
+  outline_colour = G.ACTIVE_MOD_UI and ((G.ACTIVE_MOD_UI.ui_config or {}).collection_outline_colour or
+      (G.ACTIVE_MOD_UI.ui_config or {}).outline_colour),
+  back_func = G.ACTIVE_MOD_UI and "openModUI_"..G.ACTIVE_MOD_UI.id or 'your_collection', contents = {
     {n=G.UIT.C, config={align = "cm", r = 0.1, colour = G.C.BLACK, padding = 0.1, emboss = 0.05}, nodes={
       {n=G.UIT.C, config={align = "cm"}, nodes={
         {n=G.UIT.R, config={align = "cm"}, nodes=table_nodes}
@@ -4449,6 +4522,16 @@ function create_UIBox_deck_unlock(deck_center)
     card.facing = 'back'
   end
   local deck_criteria = {}
+  if deck_center.check_for_unlock and type(deck_center.check_for_unlock) == "function" then
+      local loc_args = {}
+      local key_override
+      if deck_center.locked_loc_vars and type(deck_center.locked_loc_vars) == 'function' then
+          local res = deck_center:locked_loc_vars() or {}
+          loc_args = res.vars or {}
+          key_override = res.key
+      end
+      localize{type = 'unlocks', key = key_override or deck_center.key, set = "Back", nodes = deck_criteria, vars = loc_args, default_col = G.C.WHITE, shadow = true}
+  end
   if deck_center.unlock_condition.type == 'win_deck' then
     local other_name = localize{type = 'name_text', set = 'Back', key = deck_center.unlock_condition.deck}
     localize{type = 'descriptions', key = 'deck_locked_win', set = "Other", nodes = deck_criteria, vars = {other_name}, default_col = G.C.WHITE, shadow = true}
@@ -4545,7 +4628,7 @@ function G.UIDEF.credits()
         {tabs = {
             {
               label = "Production",
-              chosen = true,
+              chosen = not SMODS.init_collab_credits,
               tab_definition_function = function() return 
                 {n=G.UIT.ROOT, config={align = "cm", padding = 0.2, colour = G.C.BLACK, r = 0.1, emboss = 0.05, minh = 6, minw = 10}, nodes={
                       {n=G.UIT.C, config={align = "cm", padding = 0.2,outline_colour = G.C.JOKER_GREY, r = 0.1, outline = 1}, nodes={
@@ -5012,6 +5095,7 @@ function G.UIDEF.credits()
             },
             {
               label = "Collabs",
+              chosen = SMODS.init_collab_credits,
               tab_definition_function = function()
                 G.collab_credits = G.collab_credits or {
 
@@ -5789,7 +5873,7 @@ function G.UIDEF.challenge_list_page(_page)
         {n=G.UIT.C, config={align = 'cl', minw = 0.8}, nodes = {
           {n=G.UIT.T, config={text = k..'', scale = 0.4, colour = G.C.WHITE}},
         }},
-        UIBox_button({id = k, col = true, label = {challenge_unlocked and localize(v.id, 'challenge_names') or localize('k_locked'),}, button = challenge_unlocked and 'change_challenge_description' or 'nil', colour = challenge_unlocked and G.C.RED or G.C.GREY, minw = 4, scale = 0.4, minh = 0.6, focus_args = {snap_to = not snapped}}),
+        UIBox_button({id = k, col = true, label = {challenge_unlocked and localize(v.id, 'challenge_names') or localize('k_locked'),}, button = challenge_unlocked and 'change_challenge_description' or 'nil', colour = challenge_unlocked and (v.button_colour or G.C.RED) or G.C.GREY, minw = 4, scale = 0.4, minh = 0.6, focus_args = {snap_to = not snapped}}),
         {n=G.UIT.C, config={align = 'cm', padding = 0.05, minw = 0.6}, nodes = {
           {n=G.UIT.C, config={minh = 0.4, minw = 0.4, emboss = 0.05, r = 0.1, colour = challenge_completed and G.C.GREEN or G.C.BLACK}, nodes = {
             challenge_completed and {n=G.UIT.O, config={object = Sprite(0,0,0.4,0.4, G.ASSET_ATLAS["icons"], {x=1, y=0})}} or nil

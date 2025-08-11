@@ -1,5 +1,3 @@
-LOVELY_INTEGRITY = 'a0b7ac4a0d5a943141162f72fbd4874a6732c54a0fee2bbdc8bb4b75f7b9af05'
-
 --- STEAMODDED CORE
 --- MODULE API
 
@@ -2268,8 +2266,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                         local _suit, _rank =
                             pseudorandom_element(SMODS.Suits, pseudoseed('grim_create')).card_key, 'A'
                         local cen_pool = {}
-                        for i, v in ipairs(MP.UTILS.get_culled_pool("Enhanced")) do
-                        	local v = G.P_CENTERS[v]
+                        for k, v in pairs(G.P_CENTER_POOLS["Enhanced"]) do
                             if v.key ~= 'm_stone' and not v.overrides_base_rank then
                                 cen_pool[#cen_pool + 1] = v
                             end
@@ -2307,8 +2304,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                             pseudorandom_element(SMODS.Suits, pseudoseed('familiar_create')).card_key,
                             pseudorandom_element(faces, pseudoseed('familiar_create')).card_key
                         local cen_pool = {}
-                        for i, v in ipairs(MP.UTILS.get_culled_pool("Enhanced")) do
-                        	local v = G.P_CENTERS[v]
+                        for k, v in pairs(G.P_CENTER_POOLS["Enhanced"]) do
                             if v.key ~= 'm_stone' and not v.overrides_base_rank then
                                 cen_pool[#cen_pool + 1] = v
                             end
@@ -2346,8 +2342,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                             pseudorandom_element(SMODS.Suits, pseudoseed('incantation_create')).card_key,
                             pseudorandom_element(numbers, pseudoseed('incantation_create')).card_key
                         local cen_pool = {}
-                        for i, v in ipairs(MP.UTILS.get_culled_pool("Enhanced")) do
-                        	local v = G.P_CENTERS[v]
+                        for k, v in pairs(G.P_CENTER_POOLS["Enhanced"]) do
                             if v.key ~= 'm_stone' and not v.overrides_base_rank then
                                 cen_pool[#cen_pool + 1] = v
                             end

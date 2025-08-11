@@ -1,5 +1,3 @@
-LOVELY_INTEGRITY = '18a05951dd70c20d288cb769a3b3b76571dec2b9c60ee28e3b33b66c19fb1a36'
-
 --- STEAMODDED CORE
 --- OVERRIDES
 
@@ -2163,16 +2161,6 @@ function get_pack(_key, _type)
     for k, v in ipairs(G.P_CENTER_POOLS['Booster']) do
 		local add
 		v.current_weight = v.get_weight and v:get_weight() or v.weight or 1
-		local is_paperback_antique = ((G.GAME.selected_back_key or {}).key == 'b_paperback_antique')
-		  or (G.GAME.selected_sleeve == 'sleeve_paperback_antique')
-		
-		if is_paperback_antique then
-		  if v.kind == "paperback_minor_arcana" then
-		    v.current_weight = v.current_weight * 3
-		  elseif v.kind == "Arcana" then
-		    v.current_weight = 0
-		  end
-		end
         if (not _type or _type == v.kind) then add = true end
 		if v.in_pool and type(v.in_pool) == 'function' then
 			local res, pool_opts = v:in_pool()
@@ -2181,7 +2169,7 @@ function get_pack(_key, _type)
 		end
 		if add and not G.GAME.banned_keys[v.key] then cume = cume + (v.current_weight or 1); temp_in_pool[v.key] = true end
     end
-    local poll = pseudorandom(pseudoseed((_key or 'pack_generic')..MP.ante_based()))*cume
+    local poll = pseudorandom(pseudoseed((_key or 'pack_generic')..G.GAME.round_resets.ante))*cume
     for k, v in ipairs(G.P_CENTER_POOLS['Booster']) do
         if temp_in_pool[v.key] then
             it = it + (v.current_weight or 1)

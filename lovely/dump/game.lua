@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'f57397b5d3fe7e5e2542749b01d756864f7603f417dfeaaa50f0b7c02fb6e288'
+LOVELY_INTEGRITY = 'e7c835582f55a4578f7268487461016012b089fd158ce1b2e57ba5da479257ed'
 
 --Class
 Game = Object:extend()
@@ -1161,6 +1161,7 @@ function Game:init_window(reset)
 end
 
 function Game:delete_run()
+    G.in_delete_run = true
     if self.ROOM then
         remove_all(G.STAGE_OBJECTS[G.STAGE])
         self.load_shop_booster = nil
@@ -1207,6 +1208,7 @@ function Game:delete_run()
     if G.GAME then G.GAME.won = false end
 
     G.STATE = -1
+    G.in_delete_run = false
 end
 
 
@@ -2053,6 +2055,7 @@ function Game:start_run(args)
     selected_back = get_deck_from_name(selected_back)
     self.GAME = saveTable and saveTable.GAME or self:init_game_object()
     Handy.UI.init()
+    SMODS.update_hand_limit_text(true, true)
     self.GAME.modifiers = self.GAME.modifiers or {}
     self.GAME.stake = args.stake or self.GAME.stake or 1
     self.GAME.STOP_USE = 0
@@ -2565,7 +2568,7 @@ function Game:update(dt)
             if v.gradient and type(v.gradient) == "function" then v:gradient(dt) end
         end
         for _,v in pairs(SMODS.Gradients) do
-           v:update(dt) 
+           v:update(dt)
         end
 
         
@@ -2581,7 +2584,7 @@ function Game:update(dt)
                             {n=G.UIT.O, config={object = DynaText({scale = 0.7, string = localize('ph_unscored_hand'), maxw = 9, colours = {G.C.WHITE},float = true, shadow = true, silent = true, pop_in = 0, pop_in_rate = 6})}},
                         }},
                         {n=G.UIT.R, config = {align = 'cm', maxw = 1}, nodes={
-                            {n=G.UIT.O, config={object = DynaText({scale = 0.6, string = SMODS.debuff_text or G.GAME.blind:get_loc_debuff_text(), maxw = 9, colours = {G.C.WHITE},float = true, shadow = true, silent = true, pop_in = 0, pop_in_rate = 6})}},
+                            {n=G.UIT.O, config={func = "update_blind_debuff_text", object = DynaText({scale = 0.6, string = SMODS.debuff_text or G.GAME.blind:get_loc_debuff_text(), maxw = 9, colours = {G.C.WHITE},float = true, shadow = true, silent = true, pop_in = 0, pop_in_rate = 6})}},
                         }}
                     }}, 
                     config = {

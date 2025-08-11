@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'cdd9e89d1533b1bf1a37702011981b84779de0c008ea531fc48249b0906557b3'
+LOVELY_INTEGRITY = 'a22894e828afea08e8db81c4b04c2c148ec0b8de57b5fa0b969cf0242497f4d3'
 
 --Class
 CardArea = Moveable:extend()
@@ -97,7 +97,7 @@ function CardArea:remove_card(card, discarded_only)
         end
     end
     self:set_ranks()
-    if self == G.deck then check_for_unlock({type = 'modify_deck', deck = self}) end
+    if not G.in_delete_run and self == G.deck then check_for_unlock({type = 'modify_deck', deck = self}) end
     return card
 end
 

@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '5b5527931f57a67363ae0f87dbb87ecf3ac02fad07017d6a0938765396caaf73'
+LOVELY_INTEGRITY = 'fec0a5e7e91c1959c981f20c13e6e0c1f64c4623a45de4d3312fdf8d1837c258'
 
 --class
 Blind = Moveable:extend()
@@ -649,7 +649,7 @@ function Blind:stay_flipped(area, card, from_area)
             return obj:stay_flipped(area, card, from_area)
         end
         if area == G.hand then
-            if self.name == 'The Wheel' and pseudorandom(pseudoseed('wheel')) < G.GAME.probabilities.normal/7 then
+            if self.name == 'The Wheel' and SMODS.pseudorandom_probability(self, pseudoseed('wheel'), 1, 7, 'wheel') then
                 return true
             elseif self.name == 'The House' and G.GAME.current_round.hands_played == 0 and G.GAME.current_round.discards_used == 0 then
                 return true
