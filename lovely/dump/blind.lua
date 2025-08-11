@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '21eff21b39e89b063945e126954e9f55c1da453a32e76dd4a281d6821e7f2a02'
+LOVELY_INTEGRITY = '5b5527931f57a67363ae0f87dbb87ecf3ac02fad07017d6a0938765396caaf73'
 
 --class
 Blind = Moveable:extend()
@@ -415,7 +415,7 @@ function Blind:disable()
     G.E_MANAGER:add_event(Event({
         trigger = 'immediate',
         func = function()
-        if self.boss and to_big(G.GAME.chips) - G.GAME.blind.chips >= to_big(0) then
+        if self.boss and G.GAME.chips - G.GAME.blind.chips >= 0 then
             G.STATE = G.STATES.NEW_ROUND
             G.STATE_COMPLETE = false
         end

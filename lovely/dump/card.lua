@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '6182c07f2a7322ce0b2d36b55936077ee89566f411552cf782821428022fffde'
+LOVELY_INTEGRITY = '85f968aaac0d7494da100f3e455519b08a077289782c08b9817c62c44bd0f456'
 
 --class
 Card = Moveable:extend()
@@ -58,6 +58,7 @@ function Card:init(X, Y, W, H, card, center, params)
     self.highlighted = false
     self.click_timeout = 0.3
     self.T.scale = 0.95
+    self.original_T = copy_table(self.T)
     self.debuff = false
 
     self.rank = nil
@@ -146,7 +147,7 @@ SMODS.enh_cache:write(self, nil)
     self.base.suit_nominal = suit.suit_nominal or 0
     self.base.suit_nominal_original = suit_base_nominal_original or suit.suit_nominal or 0
 
-    if not initial then G.GAME.blind:debuff_card(self) end
+    if not initial and delay_sprites ~= "quantum" and G.GAME.blind then G.GAME.blind:debuff_card(self) end
     if self.playing_card and not initial then check_for_unlock({type = 'modify_deck'}) end
 end
 
@@ -234,28 +235,26 @@ end
 
 function Card:set_ability(center, initial, delay_sprites)
 SMODS.enh_cache:write(self, nil)
+    for key, _ in pairs(self.T) do
+        self.T[key] = self.original_T[key]
+    end
     local X, Y, W, H = self.T.x, self.T.y, self.T.w, self.T.h
 
     local old_center = self.config.center
-    if old_center ~= center then
-        if center.name == "m_mp_glass" then
-          self.ability.mp_sticker_balanced = true
-        else
-          self.ability.mp_sticker_balanced = false
-        end
-      end
-    if old_center and not next(SMODS.find_card(old_center.key, true)) then
-        G.GAME.used_jokers[old_center.key] = nil
-    end
+    if delay_sprites == 'quantum' then self.from_quantum = true end
+    local was_added_to_deck = false
     if self.added_to_deck and old_center and not self.debuff then
         self:remove_from_deck()
-        self.added_to_deck = true
+        was_added_to_deck = true
     end
     if type(center) == 'string' then
-        assert(G.P_CENTERS[center])
+        assert(G.P_CENTERS[center], ("Could not find center \"%s\""):format(center))
         center = G.P_CENTERS[center]
     end
     self.config.center = center
+    if not G.OVERLAY_MENU and old_center and not next(SMODS.find_card(old_center.key, true)) then
+        G.GAME.used_jokers[old_center.key] = nil
+    end
     self.sticker_run = nil
     for k, v in pairs(G.P_CENTERS) do
         if center == v then self.config.center_key = k end
@@ -350,7 +349,7 @@ SMODS.enh_cache:write(self, nil)
         perma_x_mult = self.ability and self.ability.perma_x_mult or 0,
         perma_h_chips = self.ability and self.ability.perma_h_chips or 0,
         perma_h_x_chips = self.ability and self.ability.perma_h_x_chips or 0,
-        perma_h_mult = self.ability and self.ability.perma_hmult or 0,
+        perma_h_mult = self.ability and self.ability.perma_h_mult or 0,
         perma_h_x_mult = self.ability and self.ability.perma_h_x_mult or 0,
         perma_p_dollars = self.ability and self.ability.perma_p_dollars or 0,
         perma_h_dollars = self.ability and self.ability.perma_h_dollars or 0,
@@ -361,7 +360,7 @@ SMODS.enh_cache:write(self, nil)
     for k, v in pairs(new_ability) do
         self.ability[k] = v
     end
-    -- reset keys do not persist an ability change
+    -- reset keys do not persist on ability change
     local reset_keys = {'name', 'effect', 'set', 'extra', 'played_this_ante', 'perma_debuff'}
     for _, mod in ipairs(SMODS.mod_list) do
         if mod.set_ability_reset_keys then
@@ -385,6 +384,17 @@ SMODS.enh_cache:write(self, nil)
         end
     end
 
+    if old_center ~= center or initial then
+    	if MP.LOBBY.config.ruleset then
+    		local ruleset = string.sub(MP.LOBBY.config.ruleset, 12, #MP.LOBBY.config.ruleset)
+    		
+    		if center.mp_reworks and center.mp_reworks[ruleset] and ruleset ~= 'vanilla' then
+    			if not center.mp_silent[ruleset] then
+    				self.ability.mp_sticker_balanced = true
+    			end
+    		end
+    	end
+    end
     if center.consumeable then 
         self.ability.consumeable = center.config
     end
@@ -403,6 +413,9 @@ SMODS.enh_cache:write(self, nil)
         local old_hand = self.ability.to_do_poker_hand
         self.ability.to_do_poker_hand = nil
 
+        if MP.INTEGRATIONS.TheOrder then
+        	_poker_hands = MP.sorted_hand_list(self.ability.to_do_poker_hand)
+        end
         while not self.ability.to_do_poker_hand do
             self.ability.to_do_poker_hand = pseudorandom_element(_poker_hands, pseudoseed((self.area and self.area.config.type == 'title') and 'false_to_do' or 'to_do'))
             if self.ability.to_do_poker_hand == old_hand then self.ability.to_do_poker_hand = nil end
@@ -449,15 +462,15 @@ SMODS.enh_cache:write(self, nil)
         check_for_unlock({type = 'modify_jokers'})
     end
 
-    if self.added_to_deck and old_center and not self.debuff then
-        self.added_to_deck = false
+    if was_added_to_deck and not self.debuff then
         self:add_to_deck()
     end
+    self.from_quantum = nil
     if G.consumeables and self.area == G.consumeables then 
         check_for_unlock({type = 'modify_jokers'})
     end
 
-    if not initial then G.GAME.blind:debuff_card(self) end
+    if not initial and delay_sprites ~= "quantum" and G.GAME.blind then G.GAME.blind:debuff_card(self) end
     if self.playing_card and not initial then check_for_unlock({type = 'modify_deck'}) end
 end
 
@@ -529,7 +542,7 @@ function Card:set_edition(edition, immediate, silent)
         end
     end
 
-    if self.edition and (not Talisman.config_file.disable_anims or (not Talisman.calculating_joker and not Talisman.calculating_score and not Talisman.calculating_card)) and not silent then
+    if self.edition and not silent then
         G.CONTROLLER.locks.edition = true
         G.E_MANAGER:add_event(Event({
             trigger = 'after',
@@ -773,7 +786,7 @@ function Card:add_to_deck(from_debuff)
                 end
             end
         end
-        if G.GAME.blind and G.GAME.blind.in_blind then G.E_MANAGER:add_event(Event({ func = function() G.GAME.blind:set_blind(nil, true, nil); return true end })) end
+        if G.GAME.blind and G.GAME.blind.in_blind and not self.from_quantum then G.E_MANAGER:add_event(Event({ func = function() G.GAME.blind:set_blind(nil, true, nil); return true end })) end
         if not from_debuff and G.hand then
             local is_playing_card = self.ability.set == 'Default' or self.ability.set == 'Enhanced'
             
@@ -845,7 +858,7 @@ function Card:remove_from_deck(from_debuff)
                 end 
             end
         end
-        if G.GAME.blind and G.GAME.blind.in_blind then G.E_MANAGER:add_event(Event({ func = function() G.GAME.blind:set_blind(nil, true, nil); return true end })) end
+        if G.GAME.blind and G.GAME.blind.in_blind and not self.from_quantum then G.E_MANAGER:add_event(Event({ func = function() G.GAME.blind:set_blind(nil, true, nil); return true end })) end
     end
 end
 
@@ -927,6 +940,7 @@ function Card:generate_UIBox_ability_table(vars_only)
         elseif self.ability.name == 'Banner' then loc_vars = {self.ability.extra}
         elseif self.ability.name == 'Misprint' then
             local r_mults = {}
+            local mp_collection = self.area.config.type == "title" and MP.LOBBY.code
             for i = self.ability.extra.min, self.ability.extra.max do
                 r_mults[#r_mults+1] = tostring(i)
             end
@@ -935,7 +949,7 @@ function Card:generate_UIBox_ability_table(vars_only)
                 {n=G.UIT.T, config={text = '  +',colour = G.C.MULT, scale = 0.32}},
                 {n=G.UIT.O, config={object = DynaText({string = r_mults, colours = {G.C.RED},pop_in_rate = 9999999, silent = true, random_element = true, pop_delay = 0.5, scale = 0.32, min_cycle_time = 0})}},
                 {n=G.UIT.O, config={object = DynaText({string = {
-                    {string = 'rand()', colour = G.C.JOKER_GREY},{string = "#@"..(G.deck and G.deck.cards[1] and G.deck.cards[#G.deck.cards].base.id or 11)..(G.deck and G.deck.cards[1] and G.deck.cards[#G.deck.cards].base.suit:sub(1,1) or 'D'), colour = G.C.RED},
+                    {string = 'rand()', colour = G.C.JOKER_GREY},{string = "#@"..(mp_collection and 'NOPE' or G.deck and G.deck.cards[1] and G.deck.cards[#G.deck.cards].base.id or 11)..(mp_collection and '' or G.deck and G.deck.cards[1] and G.deck.cards[#G.deck.cards].base.suit:sub(1,1) or 'D'), colour = G.C.RED},
                     loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult},
                 colours = {G.C.UI.TEXT_DARK},pop_in_rate = 9999999, silent = true, random_element = true, pop_delay = 0.2011, scale = 0.32, min_cycle_time = 0})}},
             }
@@ -1153,6 +1167,7 @@ function Card:get_original_rank()
 end
 
 function Card:get_chip_bonus()
+    if self.ability.extra_enhancement then return self.ability.bonus end
 
     if self.ability.effect == 'Stone Card' or self.config.center.replace_base_card then
         return self.ability.bonus + (self.ability.perma_bonus or 0)
@@ -1163,7 +1178,7 @@ end
 function Card:get_chip_mult()
 
     if self.ability.set == 'Joker' then return 0 end
-    local ret = self.ability.perma_mult or 0
+    local ret = (not self.ability.extra_enhancement and self.ability.perma_mult) or 0
     if self.ability.effect == "Lucky Card" then
         if pseudorandom('lucky_mult') < G.GAME.probabilities.normal/5 then
             self.lucky_trigger = true
@@ -1179,49 +1194,49 @@ end
 function Card:get_chip_x_mult(context)
 
     if self.ability.set == 'Joker' then return 0 end
-    local ret = SMODS.multiplicative_stacking(self.ability.x_mult or 1, self.ability.perma_x_mult or 0)
+    local ret = SMODS.multiplicative_stacking(self.ability.x_mult or 1, (not self.ability.extra_enhancement and self.ability.perma_x_mult) or 0)
     -- TARGET: get_chip_x_mult
     return ret
 end
 
 function Card:get_chip_h_mult()
 
-    local ret = (self.ability.h_mult or 0) + (self.ability.perma_h_mult or 0)
+    local ret = (self.ability.h_mult or 0) + ((not self.ability.extra_enhancement and self.ability.perma_h_mult) or 0)
     -- TARGET: get_chip_h_mult
     return ret
 end
 
 function Card:get_chip_h_x_mult()
 
-    local ret = SMODS.multiplicative_stacking(self.ability.h_x_mult or 1, self.ability.perma_h_x_mult or 0)
+    local ret = SMODS.multiplicative_stacking(self.ability.h_x_mult or 1, (not self.ability.extra_enhancement and self.ability.perma_h_x_mult) or 0)
     -- TARGET: get_chip_h_x_mult
     return ret
 end
 
 function Card:get_chip_x_bonus()
     if self.debuff then return 0 end
-    local ret = SMODS.multiplicative_stacking(self.ability.x_chips or 1, self.ability.perma_x_chips or 0)
+    local ret = SMODS.multiplicative_stacking(self.ability.x_chips or 1, (not self.ability.extra_enhancement and self.ability.perma_x_chips) or 0)
     -- TARGET: get_chip_x_bonus
     return ret
 end
 
 function Card:get_chip_h_bonus()
     if self.debuff then return 0 end
-    local ret = (self.ability.h_chips or 0) + (self.ability.perma_h_chips or 0)
+    local ret = (self.ability.h_chips or 0) + ((not self.ability.extra_enhancement and self.ability.perma_h_chips) or 0)
     -- TARGET: get_chip_h_bonus
     return ret
 end
 
 function Card:get_chip_h_x_bonus()
     if self.debuff then return 0 end
-    local ret = SMODS.multiplicative_stacking(self.ability.h_x_chips or 1, self.ability.perma_h_x_chips or 0)
+    local ret = SMODS.multiplicative_stacking(self.ability.h_x_chips or 1, (not self.ability.extra_enhancement and self.ability.perma_h_x_chips) or 0)
     -- TARGET: get_chip_h_x_bonus
     return ret
 end
 
 function Card:get_h_dollars()
     if self.debuff then return 0 end
-    local ret = (self.ability.h_dollars or 0) + (self.ability.perma_h_dollars or 0)
+    local ret = (self.ability.h_dollars or 0) + ((not self.ability.extra_enhancement and self.ability.perma_h_dollars) or 0)
     -- TARGET: get_h_dollars
     return ret
 end
@@ -1249,6 +1264,7 @@ function Card:get_end_of_round_effect(context)
         ret.h_dollars = h_dollars
         ret.card = self
     end
+    if self.extra_enhancement then return ret end
     if self.seal == 'Blue' and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit and not self.ability.extra_enhancement then
         local card_type = 'Planet'
         G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
@@ -1263,6 +1279,7 @@ function Card:get_end_of_round_effect(context)
                             _planet = v.key
                         end
                     end
+                    if _planet == 0 then _planet = nil end
                     local card = create_card(card_type,G.consumeables, nil, nil, nil, nil, _planet, 'blusl')
                     card:add_to_deck()
                     G.consumeables:emplace(card)
@@ -1283,7 +1300,7 @@ function Card:get_p_dollars()
     local obj = G.P_SEALS[self.seal] or {}
     if obj.get_p_dollars and type(obj.get_p_dollars) == 'function' then
         ret = ret + obj:get_p_dollars(self)
-    elseif self.seal == 'Gold' then
+    elseif self.seal == 'Gold' and not self.ability.extra_enhancement then
         ret = ret +  3
     end
     if self.ability.p_dollars > 0 then
@@ -1298,11 +1315,11 @@ function Card:get_p_dollars()
     elseif self.ability.p_dollars < 0 then
         ret = ret + self.ability.p_dollars
     end
-    ret = ret + (self.ability.perma_p_dollars) or 0
+    ret = ret + ((not self.ability.extra_enhancement and self.ability.perma_p_dollars) or 0)
     -- TARGET: get_p_dollars
     if ret ~= 0 then
         G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + ret
-        if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+        G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
     end
     return ret
 end
@@ -1596,10 +1613,6 @@ function Card:use_consumeable(area, copier)
             if G.consumeables.config.card_limit > #G.consumeables.cards then
                 play_sound('timpani')
                 local card = create_card('Tarot_Planet', G.consumeables, nil, nil, nil, nil, G.GAME.last_tarot_planet, 'fool')
-                if G.GAME.paperback.last_tarot_energized then
-                  G.GAME.paperback.last_tarot_energized = false
-                  card.ability.paperback_energized = true
-                end
                 card:add_to_deck()
                 G.consumeables:emplace(card)
                 used_tarot:juice_up(0.3, 0.5)
@@ -1683,7 +1696,7 @@ function Card:use_consumeable(area, copier)
     if self.ability.name == 'Wraith' then
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
             play_sound('timpani')
-            local card = create_card('Joker', G.jokers, nil, 0.99, nil, nil, nil, 'wra')
+            local card = create_card('Joker', G.jokers, nil, MP.INTEGRATIONS.TheOrder and 1 or 0.99, nil, nil, nil, 'wra')
             card:add_to_deck()
             G.jokers:emplace(card)
             used_tarot:juice_up(0.3, 0.5)
@@ -1824,7 +1837,7 @@ function Card:check_use()
 end
 
 function Card:sell_card()
-if MP.LOBBY.code and self.area == G.jokers then
+if MP.LOBBY.code then
   MP.ACTIONS.sold_joker()
 end
     G.CONTROLLER.locks.selling_card = true
@@ -2375,6 +2388,8 @@ function Card:shatter()
 end
 
 function Card:start_dissolve(dissolve_colours, silent, dissolve_time_fac, no_juice)
+    dissolve_colours = dissolve_colours or (type(self.destroyed) == 'table' and self.destroyed.colours) or nil
+    dissolve_time_fac = dissolve_time_fac or (type(self.destroyed) == 'table' and self.destroyed.time) or nil
     local dissolve_time = 0.7*(dissolve_time_fac or 1)
     self.dissolve = 0
     self.dissolve_colours = dissolve_colours
@@ -2550,6 +2565,7 @@ function Card:calculate_joker(context)
         local o, t = obj:calculate(self, context)
         if o or t then return o, t end
     end
+    local context_blueprint_card = context.blueprint_card
 
     if self.ability.set == "Joker" then
         if self.ability.name == "Blueprint" then
@@ -2558,13 +2574,15 @@ function Card:calculate_joker(context)
                 if G.jokers.cards[i] == self then other_joker = G.jokers.cards[i+1] end
             end
             if other_joker and other_joker ~= self and not context.no_blueprint then
+                if (context.blueprint or 0) > #G.jokers.cards then return end
+                local old_context_blueprint = context.blueprint
                 context.blueprint = (context.blueprint and (context.blueprint + 1)) or 1
+                local old_context_blueprint_card = context.blueprint_card
                 context.blueprint_card = context.blueprint_card or self
-                if context.blueprint > #G.jokers.cards + 1 then return end
+                local eff_card = context.blueprint_card
                 local other_joker_ret = other_joker:calculate_joker(context)
-                context.blueprint = nil
-                local eff_card = context.blueprint_card or self
-                context.blueprint_card = nil
+                context.blueprint = old_context_blueprint
+                context.blueprint_card = old_context_blueprint_card
                 if other_joker_ret then 
                     other_joker_ret.card = eff_card
                     other_joker_ret.colour = G.C.BLUE
@@ -2575,13 +2593,15 @@ function Card:calculate_joker(context)
         if self.ability.name == "Brainstorm" then
             local other_joker = G.jokers.cards[1]
             if other_joker and other_joker ~= self and not context.no_blueprint then
+                if (context.blueprint or 0) > #G.jokers.cards then return end
+                local old_context_blueprint = context.blueprint
                 context.blueprint = (context.blueprint and (context.blueprint + 1)) or 1
+                local old_context_blueprint_card = context.blueprint_card
                 context.blueprint_card = context.blueprint_card or self
-                if context.blueprint > #G.jokers.cards + 1 then return end
+                local eff_card = context.blueprint_card
                 local other_joker_ret = other_joker:calculate_joker(context)
-                context.blueprint = nil
-                local eff_card = context.blueprint_card or self
-                context.blueprint_card = nil
+                context.blueprint = old_context_blueprint
+                context.blueprint_card = old_context_blueprint_card
                 if other_joker_ret then 
                     other_joker_ret.card = eff_card
                     other_joker_ret.colour = G.C.RED
@@ -2591,7 +2611,7 @@ function Card:calculate_joker(context)
         end
         if context.open_booster then
             if self.ability.name == 'Hallucination' and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-                if pseudorandom('halu'..G.GAME.round_resets.ante) < G.GAME.probabilities.normal/self.ability.extra then
+                if pseudorandom('halu'..MP.ante_based()) < G.GAME.probabilities.normal/self.ability.extra then
                     G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
                     G.E_MANAGER:add_event(Event({
                         trigger = 'before',
@@ -2612,7 +2632,7 @@ function Card:calculate_joker(context)
         elseif context.selling_self then
             if self.ability.name == 'Luchador' then
                 if G.GAME.blind and ((not G.GAME.blind.disabled) and (G.GAME.blind:get_type() == 'Boss')) then 
-                    card_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize('ph_boss_disabled')})
+                    card_eval_status_text(context_blueprint_card or self, 'extra', nil, nil, nil, {message = localize('ph_boss_disabled')})
                    G.GAME.blind:disable()
                     return nil, true
                 end
@@ -2639,17 +2659,18 @@ function Card:calculate_joker(context)
                 end
                 if #jokers > 0 then 
                     if #G.jokers.cards <= G.jokers.config.card_limit then 
-                        card_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_duplicated_ex')})
+                        card_eval_status_text(context_blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_duplicated_ex')})
                         local chosen_joker = pseudorandom_element(jokers, pseudoseed('invisible'))
                         local card = copy_card(chosen_joker, nil, nil, nil, chosen_joker.edition and chosen_joker.edition.negative)
                         if card.ability.invis_rounds then card.ability.invis_rounds = 0 end
                         card:add_to_deck()
-                        G.jokers:emplace(card)                        return nil, true
+                        G.jokers:emplace(card)                        
+                        return nil, true
                     else
-                        card_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_no_room_ex')})
+                        card_eval_status_text(context_blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_no_room_ex')})
                     end
                 else
-                    card_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_no_other_jokers')})
+                    card_eval_status_text(context_blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_no_other_jokers')})
                 end
             end
         elseif context.selling_card then
@@ -2681,7 +2702,7 @@ function Card:calculate_joker(context)
                             G.consumeables:emplace(card) 
                             return true
                         end}))
-                    card_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_duplicated_ex')})
+                    card_eval_status_text(context_blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_duplicated_ex')})
                     return nil, true
                 end
                 return
@@ -2698,7 +2719,8 @@ function Card:calculate_joker(context)
                         }) 
                         return true
                     end}))
-        return nil, true            end
+                return nil, true
+            end
             return
         elseif context.skipping_booster then
             if self.ability.name == 'Red Card' and not context.blueprint then
@@ -2713,14 +2735,16 @@ function Card:calculate_joker(context)
                         }) 
                         return true
                     end}))
-        return nil, true            end
+                return nil, true
+            end
             return
         elseif context.playing_card_added and not self.getting_sliced then
             if self.ability.name == 'Hologram' and (not context.blueprint)
                 and context.cards and context.cards[1] then
                     self.ability.x_mult = self.ability.x_mult + #context.cards*self.ability.extra
                     card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {self.ability.x_mult}}})
-        return nil, true            end
+                return nil, true
+            end
         elseif context.first_hand_drawn then
             if self.ability.name == 'Certificate' then
                 local _card = create_playing_card({
@@ -2733,12 +2757,13 @@ function Card:calculate_joker(context)
                         _card:start_materialize()
                         G.GAME.blind:debuff_card(_card)
                         G.hand:sort()
-                        if context.blueprint_card then context.blueprint_card:juice_up() else self:juice_up() end
+                        if context_blueprint_card then context_blueprint_card:juice_up() else self:juice_up() end
                         return true
                     end}))
                 playing_card_joker_effects({_card})
                 
-            return nil, true            end
+                return nil, true
+            end
             if self.ability.name == 'DNA' and not context.blueprint then
                 local eval = function() return G.GAME.current_round.hands_played == 0 end
                 juice_card_until(self, eval, true)
@@ -2758,7 +2783,8 @@ function Card:calculate_joker(context)
                         return true end }))
                     card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize('ph_boss_disabled')})
                 return true end }))
-            return nil, true            end
+                return nil, true
+            end
             if self.ability.name == 'Madness' and not context.blueprint and not context.blind.boss then
                 self.ability.x_mult = self.ability.x_mult + self.ability.extra
                 local destructable_jokers = {}
@@ -2777,14 +2803,16 @@ function Card:calculate_joker(context)
                 if not (context.blueprint_card or self).getting_sliced then
                     card_eval_status_text((context.blueprint_card or self), 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {self.ability.x_mult}}})
                 end
-            return nil, true            end
+                return nil, true
+            end
             if self.ability.name == 'Burglar' and not (context.blueprint_card or self).getting_sliced then
                 G.E_MANAGER:add_event(Event({func = function()
                     ease_discard(-G.GAME.current_round.discards_left, nil, true)
                     ease_hands_played(self.ability.extra)
-                    card_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_hands', vars = {self.ability.extra}}})
+                    card_eval_status_text(context_blueprint_card or self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_hands', vars = {self.ability.extra}}})
                 return true end }))
-            return nil, true            end
+                return nil, true
+            end
             if self.ability.name == 'Riff-raff' and not (context.blueprint_card or self).getting_sliced and #G.jokers.cards + G.GAME.joker_buffer < G.jokers.config.card_limit then
                 local jokers_to_create = math.min(2, G.jokers.config.card_limit - (#G.jokers.cards + G.GAME.joker_buffer))
                 G.GAME.joker_buffer = G.GAME.joker_buffer + jokers_to_create
@@ -2799,8 +2827,9 @@ function Card:calculate_joker(context)
                         end
                         return true
                     end}))   
-                    card_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_plus_joker'), colour = G.C.BLUE}) 
-            return nil, true            end
+                    card_eval_status_text(context_blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_plus_joker'), colour = G.C.BLUE}) 
+                return nil, true
+            end
             if self.ability.name == 'Cartomancer' and not (context.blueprint_card or self).getting_sliced and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
                 G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
                 G.E_MANAGER:add_event(Event({
@@ -2813,10 +2842,11 @@ function Card:calculate_joker(context)
                                 G.GAME.consumeable_buffer = 0
                                 return true
                             end}))   
-                            card_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_plus_tarot'), colour = G.C.PURPLE})                       
+                            card_eval_status_text(context_blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_plus_tarot'), colour = G.C.PURPLE})                       
                         return true
                     end)}))
-            return nil, true            end
+                return nil, true
+            end
             if self.ability.name == 'Ceremonial Dagger' and not context.blueprint then
                 local my_pos = nil
                 for i = 1, #G.jokers.cards do
@@ -2834,7 +2864,8 @@ function Card:calculate_joker(context)
                         play_sound('slice1', 0.96+math.random()*0.08)
                     return true end }))
                     card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_mult', vars = {self.ability.mult+2*sliced_card.sell_cost}}, colour = G.C.RED, no_juice = true})
-            return nil, true                end
+                    return nil, true
+                end
             end
             if self.ability.name == 'Marble Joker' and not (context.blueprint_card or self).getting_sliced  then
                 local front = pseudorandom_element(G.P_CARDS, pseudoseed('marb_fr'))
@@ -2847,7 +2878,7 @@ function Card:calculate_joker(context)
                         table.insert(G.playing_cards, card)
                         return true
                     end}))
-                card_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_plus_stone'), colour = G.C.SECONDARY_SET.Enhanced})
+                card_eval_status_text(context_blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_plus_stone'), colour = G.C.SECONDARY_SET.Enhanced})
                 
                 G.E_MANAGER:add_event(Event({
                     func = function()
@@ -2857,10 +2888,12 @@ function Card:calculate_joker(context)
                     draw_card(G.play,G.deck, 90,'up', nil)
                 
                 playing_card_joker_effects({card})
-        return nil, true            end
+                return nil, true
+            end
             return
         elseif context.destroying_card and not context.blueprint then
             if self.ability.name == 'Sixth Sense' and #context.full_hand == 1 and context.full_hand[1]:get_id() == 6 and G.GAME.current_round.hands_played == 0 then
+            if ( SMODS.find_card('j_sixth_sense') )[1] ~= self then return end
                 if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
                     G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
                     G.E_MANAGER:add_event(Event({
@@ -2873,7 +2906,7 @@ function Card:calculate_joker(context)
                                 G.GAME.consumeable_buffer = 0
                             return true
                         end)}))
-                    card_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_plus_spectral'), colour = G.C.SECONDARY_SET.Spectral})
+                    card_eval_status_text(context_blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_plus_spectral'), colour = G.C.SECONDARY_SET.Spectral})
                 end
                return true
             end
@@ -2938,7 +2971,8 @@ function Card:calculate_joker(context)
                     self.ability.caino_xmult = self.ability.caino_xmult + face_cards*self.ability.extra
                     G.E_MANAGER:add_event(Event({
                     func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {self.ability.caino_xmult}}}); return true
-                    end}))                    return nil, true
+                    end}))                    
+                    return nil, true
                 end
                 return
             end
@@ -2960,7 +2994,8 @@ function Card:calculate_joker(context)
                     card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {self.ability.x_mult + self.ability.extra*glass_cards}}})
                     return true
                         end
-                    }))                    return nil, true
+                    }))                    
+                    return nil, true
                 end
                 return
             end
@@ -2975,28 +3010,31 @@ function Card:calculate_joker(context)
                     G.E_MANAGER:add_event(Event({
                         func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type='variable',key='a_xmult',vars={self.ability.x_mult}}}); return true
                         end}))
-            return nil, true                end
+                    return nil, true
+                end
                 return
             end
             if self.ability.name == 'Fortune Teller' and not context.blueprint and (context.consumeable.ability.set == "Tarot") then
                 G.E_MANAGER:add_event(Event({
                     func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type='variable',key='a_mult',vars={G.GAME.consumeable_usage_total.tarot}}}); return true
                     end}))
-            return nil, true            end
+                return nil, true
+            end
             if self.ability.name == 'Constellation' and not context.blueprint and context.consumeable.ability.set == 'Planet' then
                 self.ability.x_mult = self.ability.x_mult + self.ability.extra
                 G.E_MANAGER:add_event(Event({
                     func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type='variable',key='a_xmult',vars={self.ability.x_mult}}}); return true
                     end}))
                 return
-        nil, true            end
+                nil, true
+            end
             return
         elseif context.debuffed_hand then 
             if self.ability.name == 'Matador' then
                 if G.GAME.blind.triggered then 
                     ease_dollars(self.ability.extra)
                     G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + self.ability.extra
-                    if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+                    G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                     return {
                         message = localize('$')..self.ability.extra,
                         colour = G.C.MONEY
@@ -3006,11 +3044,12 @@ function Card:calculate_joker(context)
         elseif context.pre_discard then
             if self.ability.name == 'Burnt Joker' and G.GAME.current_round.discards_used <= 0 and not context.hook then
                 local text,disp_text = G.FUNCS.get_poker_hand_info(G.hand.highlighted)
-                card_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_upgrade_ex')})
+                card_eval_status_text(context_blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_upgrade_ex')})
                 update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {handname=localize(text, 'poker_hands'),chips = G.GAME.hands[text].chips, mult = G.GAME.hands[text].mult, level=G.GAME.hands[text].level})
                 level_up_hand(context.blueprint_card or self, text, nil, 1)
                 update_hand_text({sound = 'button', volume = 0.7, pitch = 1.1, delay = 0}, {mult = 0, chips = 0, handname = '', level = ''})
-        return nil, true            end
+                return nil, true
+            end
         elseif context.discard then
             if self.ability.name == 'Ramen' and not context.blueprint then
                 if self.ability.x_mult - self.ability.extra <= 1 then 
@@ -3126,11 +3165,12 @@ function Card:calculate_joker(context)
                     G.E_MANAGER:add_event(Event({
                         func = function()
                             ease_dollars(self.ability.extra.dollars)
-                            card_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize('$')..self.ability.extra.dollars,colour = G.C.MONEY, delay = 0.45})
+                            card_eval_status_text(context_blueprint_card or self, 'extra', nil, nil, nil, {message = localize('$')..self.ability.extra.dollars,colour = G.C.MONEY, delay = 0.45})
                             return true
                         end}))
                     return
-        nil, true                end
+                    nil, true
+                end
             end
             return
         elseif context.end_of_round then
@@ -3240,6 +3280,9 @@ function Card:calculate_joker(context)
                     for k, v in pairs(G.GAME.hands) do
                         if v.visible and k ~= self.ability.to_do_poker_hand then _poker_hands[#_poker_hands+1] = k end
                     end
+                    if MP.INTEGRATIONS.TheOrder then
+                    	_poker_hands = MP.sorted_hand_list(self.ability.to_do_poker_hand)
+                    end
                     self.ability.to_do_poker_hand = pseudorandom_element(_poker_hands, pseudoseed('to_do'))
                     return {
                         message = localize('k_reset')
@@ -3308,7 +3351,7 @@ function Card:calculate_joker(context)
                     end
                 end
                 if self.ability.name == 'Mr. Bones' and context.game_over and 
-                to_big(G.GAME.chips)/G.GAME.blind.chips >= to_big(0.25) then
+                G.GAME.chips/G.GAME.blind.chips >= 0.25 then
                     G.E_MANAGER:add_event(Event({
                         func = function()
                             G.hand_text_area.blind_chips:juice_up()
@@ -3413,7 +3456,7 @@ function Card:calculate_joker(context)
                 if self.ability.name == 'Golden Ticket' and
                     SMODS.has_enhancement(context.other_card, 'm_gold') then
                         G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + self.ability.extra
-                        if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+                        G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                         return {
                             dollars = self.ability.extra,
                             card = self
@@ -3439,7 +3482,7 @@ function Card:calculate_joker(context)
                     context.other_card:is_face() and
                     pseudorandom('business') < G.GAME.probabilities.normal/self.ability.extra then
                         G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + 2
-                        if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+                        G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                         return {
                             dollars = 2,
                             card = self
@@ -3487,7 +3530,7 @@ function Card:calculate_joker(context)
                 if self.ability.name == 'Rough Gem' and
                 context.other_card:is_suit("Diamonds") then
                     G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + self.ability.extra
-                    if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+                    G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                     return {
                         dollars = self.ability.extra,
                         card = self
@@ -3573,7 +3616,7 @@ function Card:calculate_joker(context)
                             }
                         else
                             G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + self.ability.extra.dollars
-                            if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+                            G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                             return {
                                 dollars = self.ability.extra.dollars,
                                 card = self
@@ -3662,6 +3705,7 @@ function Card:calculate_joker(context)
             end
         elseif context.other_joker then
             if self.ability.name == 'Baseball Card' and (context.other_joker.config.center.rarity == 2 or context.other_joker.config.center.rarity == "Uncommon") and self ~= context.other_joker then
+            if context.other_joker.edition and context.other_joker.edition.type == 'mp_phantom' then return end
                 G.E_MANAGER:add_event(Event({
                     func = function()
                         context.other_joker:juice_up(0.5, 0.5)
@@ -3758,7 +3802,7 @@ function Card:calculate_joker(context)
                     if self.ability.name == 'To Do List' and context.scoring_name == self.ability.to_do_poker_hand then
                         ease_dollars(self.ability.extra.dollars)
                         G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + self.ability.extra.dollars
-                        if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+                        G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                         return {
                             message = localize('$')..self.ability.extra.dollars,
                             colour = G.C.MONEY
@@ -3986,7 +4030,7 @@ function Card:calculate_joker(context)
                             if G.GAME.blind.triggered then 
                                 ease_dollars(self.ability.extra)
                                 G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + self.ability.extra
-                                if not Talisman.config_file.disable_anims then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) else G.GAME.dollar_buffer = 0 end
+                                G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                                 return {
                                     message = localize('$')..self.ability.extra,
                                     colour = G.C.MONEY
@@ -4579,6 +4623,10 @@ if Handy.controller.process_card_hover(self) then return end
 end
 
 function Card:stop_hover()
+if Handy.last_hovered_card == self then
+    Handy.last_hovered_card = nil
+    Handy.last_hovered_area = nil
+end
     Node.stop_hover(self)
 end
 
@@ -4725,7 +4773,10 @@ function Card:draw(layer)
                 if self.seal then
                     G.shared_seals[self.seal].role.draw_major = self
                     G.shared_seals[self.seal]:draw_shader('dissolve', nil, nil, nil, self.children.center)
-                    if self.seal == 'Gold' then G.shared_seals[self.seal]:draw_shader('voucher', nil, self.ARGS.send_to_shader, nil, self.children.center) end
+                    local obj = G.P_SEALS[self.seal] or {}
+                    if obj.get_p_dollars and type(obj.get_p_dollars) == 'function' then
+                        ret = ret + obj:get_p_dollars(self)
+                    elseif self.seal == 'Gold' and not self.ability.extra_enhancement then G.shared_seals[self.seal]:draw_shader('voucher', nil, self.ARGS.send_to_shader, nil, self.children.center) end
                 end
                 if self.ability.eternal then
                     G.shared_sticker_eternal.role.draw_major = self
@@ -5046,4 +5097,1001 @@ function Card:remove()
         end
     end
     Moveable.remove(self)
+end
+
+--- Divvy's Simulation for Balatro - _Vanilla.lua
+--
+-- The simulation functions for all of the vanilla Balatro jokers.
+
+local FNSJ = FN.SIM.JOKERS
+
+FNSJ.simulate_joker = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_mult(joker_obj.ability.mult)
+   end
+end
+FNSJ.simulate_greedy_joker = function(joker_obj, context)
+   FN.SIM.JOKERS.add_suit_mult(joker_obj, context)
+end
+FNSJ.simulate_lusty_joker = function(joker_obj, context)
+   FN.SIM.JOKERS.add_suit_mult(joker_obj, context)
+end
+FNSJ.simulate_wrathful_joker = function(joker_obj, context)
+   FN.SIM.JOKERS.add_suit_mult(joker_obj, context)
+end
+FNSJ.simulate_gluttenous_joker = function(joker_obj, context)
+   FN.SIM.JOKERS.add_suit_mult(joker_obj, context)
+end
+FNSJ.simulate_jolly = function(joker_obj, context)
+   FN.SIM.JOKERS.add_type_mult(joker_obj, context)
+end
+FNSJ.simulate_zany = function(joker_obj, context)
+   FN.SIM.JOKERS.add_type_mult(joker_obj, context)
+end
+FNSJ.simulate_mad = function(joker_obj, context)
+   FN.SIM.JOKERS.add_type_mult(joker_obj, context)
+end
+FNSJ.simulate_crazy = function(joker_obj, context)
+   FN.SIM.JOKERS.add_type_mult(joker_obj, context)
+end
+FNSJ.simulate_droll = function(joker_obj, context)
+   FN.SIM.JOKERS.add_type_mult(joker_obj, context)
+end
+FNSJ.simulate_sly = function(joker_obj, context)
+   FN.SIM.JOKERS.add_type_chips(joker_obj, context)
+end
+FNSJ.simulate_wily = function(joker_obj, context)
+   FN.SIM.JOKERS.add_type_chips(joker_obj, context)
+end
+FNSJ.simulate_clever = function(joker_obj, context)
+   FN.SIM.JOKERS.add_type_chips(joker_obj, context)
+end
+FNSJ.simulate_devious = function(joker_obj, context)
+   FN.SIM.JOKERS.add_type_chips(joker_obj, context)
+end
+FNSJ.simulate_crafty = function(joker_obj, context)
+   FN.SIM.JOKERS.add_type_chips(joker_obj, context)
+end
+FNSJ.simulate_half = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      if #context.full_hand <= joker_obj.ability.extra.size then
+         FN.SIM.add_mult(joker_obj.ability.extra.mult)
+      end
+   end
+end
+FNSJ.simulate_stencil = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      local xmult = G.jokers.config.card_limit - #FN.SIM.env.jokers
+      for _, joker in ipairs(FN.SIM.env.jokers) do
+         if joker.ability.name == "Joker Stencil" then xmult = xmult + 1 end
+      end
+      if joker_obj.ability.x_mult > 1 then
+         FN.SIM.x_mult(joker_obj.ability.x_mult)
+      end
+   end
+end
+FNSJ.simulate_four_fingers = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_mime = function(joker_obj, context)
+   if context.cardarea == G.hand and context.repetition then
+      FN.SIM.add_reps(joker_obj.ability.extra)
+   end
+end
+FNSJ.simulate_credit_card = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_ceremonial = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_mult(joker_obj.ability.mult)
+   end
+end
+FNSJ.simulate_banner = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      if G.GAME.current_round.discards_left > 0 then
+         local chips = G.GAME.current_round.discards_left * joker_obj.ability.extra
+         FN.SIM.add_chips(chips)
+      end
+   end
+end
+FNSJ.simulate_mystic_summit = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      if G.GAME.current_round.discards_left == joker_obj.ability.extra.d_remaining then
+         FN.SIM.add_mult(joker_obj.ability.extra.mult)
+      end
+   end
+end
+FNSJ.simulate_marble = function(joker_obj, context)
+   -- Effect not relevant (Blind)
+end
+FNSJ.simulate_loyalty_card = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      local loyalty_diff = G.GAME.hands_played - joker_obj.ability.hands_played_at_create
+      local loyalty_remaining = ((joker_obj.ability.extra.every-1) - loyalty_diff) % (joker_obj.ability.extra.every+1)
+      if loyalty_remaining == joker_obj.ability.extra.every then
+         FN.SIM.x_mult(joker_obj.ability.extra.Xmult)
+      end
+   end
+end
+FNSJ.simulate_8_ball = function(joker_obj, context)
+   -- Effect might be relevant?
+end
+FNSJ.simulate_misprint = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      local exact_mult = pseudorandom("nope", joker_obj.ability.extra.min, joker_obj.ability.extra.max)
+      FN.SIM.add_mult(exact_mult, joker_obj.ability.extra.min, joker_obj.ability.extra.max)
+   end
+end
+FNSJ.simulate_dusk = function(joker_obj, context)
+   if context.cardarea == G.play and context.repetition then
+      -- Note: Checking against 1 is needed as hands_left is not decremented as part of simulation
+      if G.GAME.current_round.hands_left == 1 then
+         FN.SIM.add_reps(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_raised_fist = function(joker_obj, context)
+   if context.cardarea == G.hand and context.individual then
+      local cur_mult, cur_rank = 15, 15
+      local raised_card = nil
+      for _, card in ipairs(FN.SIM.env.held_cards) do
+         if cur_rank >= card.rank and card.ability.effect ~= 'Stone Card' then
+            cur_mult = card.base_chips
+            cur_rank = card.rank
+            raised_card = card
+         end
+      end
+      if raised_card == context.other_card and not context.other_card.debuff then
+         FN.SIM.add_mult(2 * cur_mult)
+      end
+   end
+end
+FNSJ.simulate_chaos = function(joker_obj, context)
+   -- Effect not relevant (Free Reroll)
+end
+FNSJ.simulate_fibonacci = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if FN.SIM.is_rank(context.other_card, {2, 3, 5, 8, 14}) and not context.other_card.debuff then
+         FN.SIM.add_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_steel_joker = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.x_mult(1 + joker_obj.ability.extra * joker_obj.ability.steel_tally)
+   end
+end
+FNSJ.simulate_scary_face = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if FN.SIM.is_face(context.other_card) and not context.other_card.debuff then
+         FN.SIM.add_chips(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_abstract = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_mult(#FN.SIM.env.jokers * joker_obj.ability.extra)
+   end
+end
+FNSJ.simulate_delayed_grat = function(joker_obj, context)
+   -- Effect not relevant (End of Round)
+end
+FNSJ.simulate_hack = function(joker_obj, context)
+   if context.cardarea == G.play and context.repetition then
+      if not context.other_card.debuff and FN.SIM.is_rank(context.other_card, {2, 3, 4, 5}) then
+         FN.SIM.add_reps(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_pareidolia = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_gros_michel = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_mult(joker_obj.ability.extra.mult)
+   end
+end
+FNSJ.simulate_even_steven = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if not context.other_card.debuff and FN.SIM.check_rank_parity(context.other_card, true) then
+         FN.SIM.add_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_odd_todd = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if not context.other_card.debuff and FN.SIM.check_rank_parity(context.other_card, false) then
+         FN.SIM.add_chips(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_scholar = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if FN.SIM.is_rank(context.other_card, 14) and not context.other_card.debuff then
+         FN.SIM.add_chips(joker_obj.ability.extra.chips)
+         FN.SIM.add_mult(joker_obj.ability.extra.mult)
+      end
+   end
+end
+FNSJ.simulate_business = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if FN.SIM.is_face(context.other_card) and not context.other_card.debuff then
+         local exact_dollars, min_dollars, max_dollars = FN.SIM.get_probabilistic_extremes(pseudorandom("false"), joker_obj.ability.extra, 2, 0)
+         FN.SIM.add_dollars(exact_dollars, min_dollars, max_dollars)
+      end
+   end
+end
+FNSJ.simulate_supernova = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_mult(G.GAME.hands[context.scoring_name].played)
+   end
+end
+FNSJ.simulate_ride_the_bus = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.before and not context.blueprint then
+      local faces = false
+      for _, scoring_card in ipairs(context.scoring_hand) do
+         if FN.SIM.is_face(scoring_card) then faces = true end
+      end
+      if faces then
+         joker_obj.ability.mult = 0
+      else
+         joker_obj.ability.mult = joker_obj.ability.mult + joker_obj.ability.extra
+      end
+   end
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_mult(joker_obj.ability.mult)
+   end
+end
+FNSJ.simulate_space = function(joker_obj, context)
+   -- TODO: Verify
+   if context.cardarea == G.jokers and context.before then
+      local hand_data = G.GAME.hands[FN.SIM.env.scoring_name]
+
+      local rand = pseudorandom("bad") -- Must reuse same pseudorandom value:
+      local exact_chips, min_chips, max_chips = FN.SIM.get_probabilistic_extremes(rand, joker_obj.ability.extra, hand_data.l_chips, 0)
+      local exact_mult,  min_mult,  max_mult  = FN.SIM.get_probabilistic_extremes(rand, joker_obj.ability.extra, hand_data.l_mult,  0)
+
+      FN.SIM.add_chips(exact_chips, min_chips, max_chips)
+      FN.SIM.add_mult(exact_mult, min_mult, max_mult)
+   end
+end
+FNSJ.simulate_egg = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_burglar = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_blackboard = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      local black_suits, all_cards = 0, 0
+      for _, card in ipairs(FN.SIM.env.held_cards) do
+         all_cards = all_cards + 1
+         if FN.SIM.is_suit(card, "Clubs", true) or FN.SIM.is_suit(card, "Spades", true) then
+            black_suits = black_suits + 1
+         end
+      end
+      if black_suits == all_cards then
+         FN.SIM.x_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_runner = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.before and not context.blueprint then
+      if next(context.poker_hands["Straight"]) then
+         joker_obj.ability.extra.chips = joker_obj.ability.extra.chips + joker_obj.ability.extra.chip_mod
+      end
+   end
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_chips(joker_obj.ability.extra.chips)
+   end
+end
+FNSJ.simulate_ice_cream = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_chips(joker_obj.ability.extra.chips)
+   end
+end
+FNSJ.simulate_dna = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.before then
+      if G.GAME.current_round.hands_played == 0 and #context.full_hand == 1 then
+         local new_card = copy_table(context.full_hand[1])
+         table.insert(FN.SIM.env.held_cards, new_card)
+      end
+   end
+end
+FNSJ.simulate_splash = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_blue_joker = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_chips(joker_obj.ability.extra * #G.deck.cards)
+   end
+end
+FNSJ.simulate_sixth_sense = function(joker_obj, context)
+   -- Effect might be relevant?
+end
+FNSJ.simulate_constellation = function(joker_obj, context)
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_hiker = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if not context.other_card.debuff then
+         context.other_card.ability.perma_bonus = (context.other_card.ability.perma_bonus or 0) + joker_obj.ability.extra
+      end
+   end
+end
+FNSJ.simulate_faceless = function(joker_obj, context)
+   -- Effect not relevant (Discard)
+end
+FNSJ.simulate_green_joker = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.before and not context.blueprint then
+      joker_obj.ability.mult = joker_obj.ability.mult + joker_obj.ability.extra.hand_add
+   end
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_mult(joker_obj.ability.mult)
+   end
+end
+FNSJ.simulate_superposition = function(joker_obj, context)
+   -- Effect might be relevant?
+end
+FNSJ.simulate_todo_list = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.before then
+      if context.scoring_name == joker_obj.ability.to_do_poker_hand then
+         FN.SIM.add_dollars(joker_obj.ability.extra.dollars)
+      end
+   end
+end
+FNSJ.simulate_cavendish = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.x_mult(joker_obj.ability.extra.Xmult)
+   end
+end
+FNSJ.simulate_card_sharp = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      if (G.GAME.hands[context.scoring_name]
+         and G.GAME.hands[context.scoring_name].played_this_round > 1)
+      then
+         FN.SIM.x_mult(joker_obj.ability.extra.Xmult)
+      end
+   end
+end
+FNSJ.simulate_red_card = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_mult(joker_obj.ability.mult)
+   end
+end
+FNSJ.simulate_madness = function(joker_obj, context)
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_square = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.before and not context.blueprint then
+      if #context.full_hand == 4 then
+         joker_obj.ability.extra.chips = joker_obj.ability.extra.chips + joker_obj.ability.extra.chip_mod
+      end
+   end
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_chips(joker_obj.ability.extra.chips)
+   end
+end
+FNSJ.simulate_seance = function(joker_obj, context)
+   -- Effect might be relevant? (Consumable)
+end
+FNSJ.simulate_riff_raff = function(joker_obj, context)
+   -- Effect not relevant (Blind)
+end
+FNSJ.simulate_vampire = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.before and not context.blueprint then
+      local num_enhanced = 0
+      for _, card in ipairs(context.scoring_hand) do
+         if card.ability.name ~= "Default Base" and not card.debuff then
+            num_enhanced = num_enhanced + 1
+            FN.SIM.set_ability(card, G.P_CENTERS.c_base)
+         end
+      end
+      if num_enhanced > 0 then
+         joker_obj.ability.x_mult = joker_obj.ability.x_mult + (joker_obj.ability.extra * num_enhanced)
+      end
+   end
+
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_shortcut = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_hologram = function(joker_obj, context)
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_vagabond = function(joker_obj, context)
+   -- Effect might be relevant? (Consumable)
+end
+FNSJ.simulate_baron = function(joker_obj, context)
+   if context.cardarea == G.hand and context.individual then
+      if FN.SIM.is_rank(context.other_card, 13) and not context.other_card.debuff then
+         FN.SIM.x_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_cloud_9 = function(joker_obj, context)
+   -- Effect not relevant (End of Round)
+end
+FNSJ.simulate_rocket = function(joker_obj, context)
+   -- Effect not relevant (End of Round)
+end
+FNSJ.simulate_obelisk = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.before and not context.blueprint then
+      local reset = true
+      local play_more_than = (G.GAME.hands[context.scoring_name].played or 0)
+      for hand_name, hand in pairs(G.GAME.hands) do
+         if hand_name ~= context.scoring_name and hand.played >= play_more_than and hand.visible then
+            reset = false
+         end
+      end
+      if reset then
+         joker_obj.ability.x_mult = 1
+      else
+         joker_obj.ability.x_mult = joker_obj.ability.x_mult + joker_obj.ability.extra
+      end
+   end
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_midas_mask = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.before and not context.blueprint then
+      for _, card in ipairs(context.scoring_hand) do
+         if FN.SIM.is_face(card) then
+            FN.SIM.set_ability(card, G.P_CENTERS.m_gold)
+         end
+      end
+   end
+end
+FNSJ.simulate_luchador = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_photograph = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      local first_face = nil
+      for i = 1, #context.scoring_hand do
+         if FN.SIM.is_face(context.scoring_hand[i]) then first_face = context.scoring_hand[i]; break end
+      end
+      if context.other_card == first_face and not context.other_card.debuff then
+         FN.SIM.x_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_gift = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_turtle_bean = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_erosion = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      local diff = G.GAME.starting_deck_size - #G.playing_cards
+      if (diff) > 0 then
+         FN.SIM.add_mult(joker_obj.ability.extra * diff)
+      end
+   end
+end
+FNSJ.simulate_reserved_parking = function(joker_obj, context)
+   if context.cardarea == G.hand and context.individual then
+      if FN.SIM.is_face(context.other_card) and not context.other_card.debuff then
+         local exact_dollars, min_dollars, max_dollars = FN.SIM.get_probabilistic_extremes(pseudorandom("notthistime"), joker_obj.ability.extra.odds, joker_obj.ability.extra.dollars, 0)
+         FN.SIM.add_dollars(exact_dollars, min_dollars, max_dollars)
+      end
+   end
+end
+FNSJ.simulate_mail = function(joker_obj, context)
+   if context.cardarea == G.hand and context.discard then
+      if context.other_card.id == G.GAME.current_round.mail_card.id and not context.other_card.debuff then
+         FN.SIM.add_dollars(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_to_the_moon = function(joker_obj, context)
+   -- Effect not relevant (End of Round)
+end
+FNSJ.simulate_hallucination = function(joker_obj, context)
+   -- Effect not relevant (Outside of Play)
+end
+FNSJ.simulate_fortune_teller = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      if G.GAME.consumeable_usage_total and G.GAME.consumeable_usage_total.tarot then
+         FN.SIM.add_mult(G.GAME.consumeable_usage_total.tarot)
+      end
+   end
+end
+FNSJ.simulate_juggler = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_drunkard = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_stone = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_chips(joker_obj.ability.extra * joker_obj.ability.stone_tally)
+   end
+end
+FNSJ.simulate_golden = function(joker_obj, context)
+   -- Effect not relevant (End of Round)
+end
+FNSJ.simulate_lucky_cat = function(joker_obj, context)
+   if not joker_obj.ability.x_mult_range then
+      joker_obj.ability.x_mult_range = {
+         min = joker_obj.ability.x_mult,
+         exact = joker_obj.ability.x_mult,
+         max = joker_obj.ability.x_mult,
+      }
+   end
+
+   if context.cardarea == G.play and context.individual and not context.blueprint then
+      local function lucky_cat(field)
+         if context.other_card.lucky_trigger and context.other_card.lucky_trigger[field] then
+            joker_obj.ability.x_mult_range[field] = joker_obj.ability.x_mult_range[field] + joker_obj.ability.extra
+            if joker_obj.ability.x_mult_range[field] < 1 then joker_obj.ability.x_mult_range[field] = 1 end -- Precaution
+         end
+      end
+      lucky_cat("min")
+      lucky_cat("exact")
+      lucky_cat("max")
+   end
+
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.x_mult(joker_obj.ability.x_mult_range.exact, joker_obj.ability.x_mult_range.min, joker_obj.ability.x_mult_range.max)
+   end
+end
+FNSJ.simulate_baseball = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.other_joker then
+      if context.other_joker.rarity == 2 and context.other_joker ~= joker_obj then
+         FN.SIM.x_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_bull = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      local function bull(data)
+         return joker_obj.ability.extra * math.max(0, G.GAME.dollars + data.dollars)
+      end
+      local min_chips = bull(FN.SIM.running.min)
+      local exact_chips = bull(FN.SIM.running.exact)
+      local max_chips = bull(FN.SIM.running.max)
+      FN.SIM.add_chips(exact_chips, min_chips, max_chips)
+   end
+end
+FNSJ.simulate_diet_cola = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_trading = function(joker_obj, context)
+   -- Effect not relevant (Discard)
+end
+FNSJ.simulate_flash = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_mult(joker_obj.ability.mult)
+   end
+end
+FNSJ.simulate_popcorn = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_mult(joker_obj.ability.mult)
+   end
+end
+FNSJ.simulate_trousers = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.before and not context.blueprint then
+      if (next(context.poker_hands["Two Pair"]) or next(context.poker_hands["Full House"])) then
+         joker_obj.ability.mult = joker_obj.ability.mult + joker_obj.ability.extra
+      end
+   end
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_mult(joker_obj.ability.mult)
+   end
+end
+FNSJ.simulate_ancient = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if FN.SIM.is_suit(context.other_card, G.GAME.current_round.ancient_card.suit) and not context.other_card.debuff then
+         FN.SIM.x_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_ramen = function(joker_obj, context)
+   if context.cardarea == G.hand and context.discard then
+      joker_obj.ability.x_mult = math.max(1, joker_obj.ability.x_mult - joker_obj.ability.extra)
+   end
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_walkie_talkie = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if FN.SIM.is_rank(context.other_card, {10, 4}) and not context.other_card.debuff then
+         FN.SIM.add_chips(joker_obj.ability.extra.chips)
+         FN.SIM.add_mult(joker_obj.ability.extra.mult)
+      end
+   end
+end
+FNSJ.simulate_selzer = function(joker_obj, context)
+   if context.cardarea == G.play and context.repetition then
+      FN.SIM.add_reps(1)
+   end
+end
+FNSJ.simulate_castle = function(joker_obj, context)
+   if context.cardarea == G.hand and context.discard and not context.blueprint then
+      if FN.SIM.is_suit(context.other_card, G.GAME.current_round.castle_card.suit) and not context.other_card.debuff then
+         joker_obj.ability.extra.chips = joker_obj.ability.extra.chips + joker_obj.ability.extra.chip_mod
+      end
+   end
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_chips(joker_obj.ability.extra.chips)
+   end
+end
+FNSJ.simulate_smiley = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if FN.SIM.is_face(context.other_card) and not context.other_card.debuff then
+         FN.SIM.add_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_campfire = function(joker_obj, context)
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_ticket = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if context.other_card.ability.effect == "Gold Card" and not context.other_card.debuff then
+         FN.SIM.add_dollars(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_mr_bones = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_acrobat = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      -- Note: Checking against 1 is needed as hands_left is not decremented as part of simulation
+      if G.GAME.current_round.hands_left == 1 then
+         FN.SIM.x_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_sock_and_buskin = function(joker_obj, context)
+   if context.cardarea == G.play and context.repetition then
+      if FN.SIM.is_face(context.other_card) and not context.other_card.debuff then
+         FN.SIM.add_reps(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_swashbuckler = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_mult(joker_obj.ability.mult)
+   end
+end
+FNSJ.simulate_troubadour = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_certificate = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_smeared = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_throwback = function(joker_obj, context)
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_hanging_chad = function(joker_obj, context)
+   if context.cardarea == G.play and context.repetition then
+      if context.other_card == context.scoring_hand[1] and not context.other_card.debuff then
+         FN.SIM.add_reps(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_rough_gem = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if FN.SIM.is_suit(context.other_card, "Diamonds") and not context.other_card.debuff then
+         FN.SIM.add_dollars(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_bloodstone = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if FN.SIM.is_suit(context.other_card, "Hearts") and not context.other_card.debuff then
+         local exact_xmult, min_xmult, max_xmult = FN.SIM.get_probabilistic_extremes(pseudorandom("nopeagain"), joker_obj.ability.extra.odds, joker_obj.ability.extra.Xmult, 1)
+         FN.SIM.x_mult(exact_xmult, min_xmult, max_xmult)
+      end
+   end
+end
+FNSJ.simulate_arrowhead = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if FN.SIM.is_suit(context.other_card, "Spades") and not context.other_card.debuff then
+         FN.SIM.add_chips(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_onyx_agate = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if FN.SIM.is_suit(context.other_card, "Clubs") and not context.other_card.debuff then
+         FN.SIM.add_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_glass = function(joker_obj, context)
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_ring_master = function(joker_obj, context)
+   -- Effect not relevant (Note: this is actually Showman)
+end
+FNSJ.simulate_flower_pot = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      local suit_count = {
+         ["Hearts"] = 0,
+         ["Diamonds"] = 0,
+         ["Spades"] = 0,
+         ["Clubs"] = 0
+      }
+
+      function inc_suit(suit)
+         suit_count[suit] = suit_count[suit] + 1
+      end
+
+      -- Account for all 'real' suits.
+      -- NOTE: Debuffed (non-wild) cards are still counted for their suits
+      for _, card in ipairs(context.scoring_hand) do
+         if card.ability.effect ~= "Wild Card" then
+            if     FN.SIM.is_suit(card, "Hearts", true)   and suit_count["Hearts"] == 0   then inc_suit("Hearts")
+            elseif FN.SIM.is_suit(card, "Diamonds", true) and suit_count["Diamonds"] == 0 then inc_suit("Diamonds")
+            elseif FN.SIM.is_suit(card, "Spades", true)   and suit_count["Spades"] == 0   then inc_suit("Spades")
+            elseif FN.SIM.is_suit(card, "Clubs", true)    and suit_count["Clubs"] == 0    then inc_suit("Clubs")
+            end
+         end
+      end
+
+      -- Let Wild Cards fill in the gaps.
+      -- NOTE: Debuffed wild cards are completely ignored
+      for _, card in ipairs(context.scoring_hand) do
+         if card.ability.effect == "Wild Card" then
+            if     FN.SIM.is_suit(card, "Hearts")   and suit_count["Hearts"] == 0   then inc_suit("Hearts")
+            elseif FN.SIM.is_suit(card, "Diamonds") and suit_count["Diamonds"] == 0 then inc_suit("Diamonds")
+            elseif FN.SIM.is_suit(card, "Spades")   and suit_count["Spades"] == 0   then inc_suit("Spades")
+            elseif FN.SIM.is_suit(card, "Clubs")    and suit_count["Clubs"] == 0    then inc_suit("Clubs")
+            end
+         end
+      end
+
+      if suit_count["Hearts"] > 0 and suit_count["Diamonds"] > 0 and suit_count["Spades"] > 0 and suit_count["Clubs"] > 0 then
+         FN.SIM.x_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_blueprint = function(joker_obj, context)
+   local joker_to_mimic = nil
+   for idx, joker in ipairs(FN.SIM.env.jokers) do
+      if joker == joker_obj then joker_to_mimic = FN.SIM.env.jokers[idx+1] end
+   end
+   if joker_to_mimic then
+      context.blueprint = (context.blueprint and (context.blueprint + 1)) or 1
+      if context.blueprint > #FN.SIM.env.jokers + 1 then return end
+      FN.SIM.simulate_joker(joker_to_mimic, context)
+   end
+end
+FNSJ.simulate_wee = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual and not context.blueprint then
+      if FN.SIM.is_rank(context.other_card, 2) and not context.other_card.debuff then
+         joker_obj.ability.extra.chips = joker_obj.ability.extra.chips + joker_obj.ability.extra.chip_mod
+      end
+   end
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_chips(joker_obj.ability.extra.chips)
+   end
+end
+FNSJ.simulate_merry_andy = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_oops = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_idol = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if FN.SIM.is_rank(context.other_card, G.GAME.current_round.idol_card.id) and
+         FN.SIM.is_suit(context.other_card, G.GAME.current_round.idol_card.suit) and
+         not context.other_card.debuff
+      then
+         FN.SIM.x_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_seeing_double = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      local suit_count = {
+         ["Hearts"] = 0,
+         ["Diamonds"] = 0,
+         ["Spades"] = 0,
+         ["Clubs"] = 0
+      }
+
+      function inc_suit(suit)
+         suit_count[suit] = suit_count[suit] + 1
+      end
+
+      -- Account for all 'real' suits:
+      for _, card in ipairs(context.scoring_hand) do
+         if card.ability.effect ~= "Wild Card" then
+            if FN.SIM.is_suit(card, "Hearts")   then inc_suit("Hearts") end
+            if FN.SIM.is_suit(card, "Diamonds") then inc_suit("Diamonds") end
+            if FN.SIM.is_suit(card, "Spades")   then inc_suit("Spades") end
+            if FN.SIM.is_suit(card, "Clubs")    then inc_suit("Clubs") end
+         end
+      end
+
+      -- Let Wild Cards fill in the gaps:
+      for _, card in ipairs(context.scoring_hand) do
+         if card.ability.effect == "Wild Card" then
+            -- IMPORTANT: Clubs must come first here, because Clubs are required for xmult. This is in line with game's implementation.
+            if     FN.SIM.is_suit(card, "Clubs")    and suit_count["Clubs"] == 0    then inc_suit("Clubs")
+            elseif FN.SIM.is_suit(card, "Hearts")   and suit_count["Hearts"] == 0   then inc_suit("Hearts")
+            elseif FN.SIM.is_suit(card, "Diamonds") and suit_count["Diamonds"] == 0 then inc_suit("Diamonds")
+            elseif FN.SIM.is_suit(card, "Spades")   and suit_count["Spades"] == 0   then inc_suit("Spades")
+            end
+         end
+      end
+
+      if suit_count["Clubs"] > 0 and (suit_count["Hearts"] > 0 or suit_count["Diamonds"] > 0 or suit_count["Spades"] > 0) then
+         FN.SIM.x_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_matador = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.debuffed_hand then
+      if G.GAME.blind.triggered then
+         FN.SIM.add_dollars(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_hit_the_road = function(joker_obj, context)
+   if context.cardarea == G.hand and context.discard and not context.blueprint then
+      if context.other_card.id == 11 and not context.other_card.debuff then
+         joker_obj.ability.x_mult = joker_obj.ability.x_mult + joker_obj.ability.extra
+      end
+   end
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_duo = function(joker_obj, context)
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_trio = function(joker_obj, context)
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_family = function(joker_obj, context)
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_order = function(joker_obj, context)
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_tribe = function(joker_obj, context)
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_stuntman = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_chips(joker_obj.ability.extra.chip_mod)
+   end
+end
+FNSJ.simulate_invisible = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_brainstorm = function(joker_obj, context)
+   local joker_to_mimic = FN.SIM.env.jokers[1]
+   if joker_to_mimic and joker_to_mimic ~= joker_obj then
+      context.blueprint = (context.blueprint and (context.blueprint + 1)) or 1
+      if context.blueprint > #FN.SIM.env.jokers + 1 then return end
+      FN.SIM.simulate_joker(joker_to_mimic, context)
+   end
+end
+FNSJ.simulate_satellite = function(joker_obj, context)
+   -- Effect not relevant (End of Round)
+end
+FNSJ.simulate_shoot_the_moon = function(joker_obj, context)
+   if context.cardarea == G.hand and context.individual then
+      if FN.SIM.is_rank(context.other_card, 12) and not context.other_card.debuff then
+         FN.SIM.add_mult(13)
+      end
+   end
+end
+FNSJ.simulate_drivers_license = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      if (joker_obj.ability.driver_tally or 0) >= 16 then
+         FN.SIM.x_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_cartomancer = function(joker_obj, context)
+   -- Effect not relevant (Blind)
+end
+FNSJ.simulate_astronomer = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_burnt = function(joker_obj, context)
+   -- Effect not relevant (Discard)
+end
+FNSJ.simulate_bootstraps = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      local function bootstraps(data)
+         return joker_obj.ability.extra.mult * math.floor((G.GAME.dollars + data.dollars) / joker_obj.ability.extra.dollars)
+      end
+      local min_mult = bootstraps(FN.SIM.running.min)
+      local exact_mult = bootstraps(FN.SIM.running.exact)
+      local max_mult = bootstraps(FN.SIM.running.max)
+      FN.SIM.add_mult(exact_mult, min_mult, max_mult)
+   end
+end
+FNSJ.simulate_caino = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      if joker_obj.ability.caino_xmult > 1 then
+         FN.SIM.x_mult(joker_obj.ability.caino_xmult)
+      end
+   end
+end
+FNSJ.simulate_triboulet = function(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if FN.SIM.is_rank(context.other_card, {12, 13}) and
+         not context.other_card.debuff
+      then
+         FN.SIM.x_mult(joker_obj.ability.extra)
+      end
+   end
+end
+FNSJ.simulate_yorick = function(joker_obj, context)
+   if context.cardarea == G.hand and context.discard and not context.blueprint then
+      -- This is only necessary for 'The Hook' blind.
+      if joker_obj.ability.yorick_discards > 1 then
+         joker_obj.ability.yorick_discards = joker_obj.ability.yorick_discards - 1
+      else
+         joker_obj.ability.yorick_discards = joker_obj.ability.extra.discards
+         joker_obj.ability.x_mult = joker_obj.ability.x_mult + joker_obj.ability.extra.xmult
+      end
+   end
+
+   FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+end
+FNSJ.simulate_chicot = function(joker_obj, context)
+   -- Effect not relevant (Meta)
+end
+FNSJ.simulate_perkeo = function(joker_obj, context)
+   -- Effect not relevant (Blind)
+end
+
+FNSJ.simulate_mp_defensive_joker= function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_chips(joker_obj.ability.t_chips)
+   end
+end
+
+FNSJ.simulate_mp_taxes = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      FN.SIM.add_mult(joker_obj.ability.extra.mult)
+   end
+end
+
+FNSJ.simulate_mp_pacifist = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global and not MP.is_pvp_boss() then
+      FN.SIM.x_mult(joker_obj.ability.extra.x_mult)
+   end
+end
+
+FNSJ.simulate_mp_conjoined_joker = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global and MP.is_pvp_boss() then
+      FN.SIM.x_mult(joker_obj.ability.extra.x_mult)
+   end
+end
+
+FNSJ.simulate_mp_hanging_chad = function(joker_obj, context)
+   if context.cardarea == G.play and context.repetition then
+      if context.other_card == context.scoring_hand[1] and not context.other_card.debuff then
+         FN.SIM.add_reps(joker_obj.ability.extra)
+      end
+      if context.other_card == context.scoring_hand[2] and not context.other_card.debuff then
+         FN.SIM.add_reps(joker_obj.ability.extra)
+      end
+   end
+end
+
+FNSJ.simulate_mp_lets_go_gambling = function(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+
+      local rand = pseudorandom("gambling") -- Must reuse same pseudorandom value:
+      local exact_xmult,  min_xmult, max_xmult = FN.SIM.get_probabilistic_extremes(rand, joker_obj.ability.extra.odds, joker_obj.ability.extra.xmult, 1)
+      local exact_money,  min_money,  max_money  = FN.SIM.get_probabilistic_extremes(rand, joker_obj.ability.extra.odds, joker_obj.ability.extra.dollars, 0)
+
+      FN.SIM.add_dollars(exact_money, min_money, max_money)
+      FN.SIM.x_mult(exact_xmult, min_xmult, max_xmult)
+   end
 end

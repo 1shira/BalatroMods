@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '9ff4f8868ba48e7959f063ce74e7ce3111b71166c890e2ba972b2448a2d44ece'
+LOVELY_INTEGRITY = 'c7023d990ce4b311f992f19dc74a9b3c7b392e2d6e904fc72be91e5496bdcf90'
 
 VERSION = '1.0.1o'
 VERSION = VERSION..'-FULL'
@@ -382,15 +382,6 @@ function Game:set_globals()
         ETERNAL = HEX('c75985'),
         PERISHABLE = HEX('4f5da1'),
         RENTAL = HEX('b18f43'),
-        PAPERBACK_LIGHT_SUIT = HEX('F06841'),
-        PAPERBACK_DARK_SUIT = HEX('3C4A4E'),
-        PAPERBACK_STARS_LC = HEX('BFBFBF'),
-        PAPERBACK_STARS_HC = HEX('9A9A9A'),
-        PAPERBACK_CROWNS_LC = HEX('A37E4D'),
-        PAPERBACK_CROWNS_HC = HEX('B38E5E'),
-        PAPERBACK_MINOR_ARCANA = HEX('BDA0D9'),
-        PAPERBACK_BLACK = HEX('1E2729'),
-        PAPERBACK_PINK = HEX('FF79AD'),
         DYN_UI = {
             MAIN = HEX('374244'),
             DARK = HEX('374244'),
@@ -532,3 +523,110 @@ function Game:set_globals()
 end
 
 G = Game()
+
+--- Original: Divvy's Simulation for Balatro - Init.lua
+--
+-- Global values that must be present for the rest of this mod to work.
+
+if not FN then FN = {} end
+
+FN.SIM = {
+   JOKERS = {},
+   
+   running = {
+      --- Table to store workings (ie. running totals):
+      min   = {chips = 0, mult = 0, dollars = 0},
+      exact = {chips = 0, mult = 0, dollars = 0},
+      max   = {chips = 0, mult = 0, dollars = 0},
+      reps = 0,
+   },
+
+   env = {
+      --- Table to store data about the simulated play:
+      jokers = {},        -- Derived from G.jokers.cards
+      played_cards = {},  -- Derived from G.hand.highlighted
+      scoring_cards = {}, -- Derived according to evaluate_play()
+      held_cards = {},    -- Derived from G.hand minus G.hand.highlighted
+      consumables = {},   -- Derived from G.consumeables.cards
+      scoring_name = ""   -- Derived according to evaluate_play()
+   },
+
+   orig = {
+      --- Table to store game data that gets modified during simulation:
+      random_data = {}, -- G.GAME.pseudorandom
+      hand_data = {}    -- G.GAME.hands
+   },
+
+   misc = {
+      --- Table to store ancillary status variables:
+      next_stone_id = -1
+   }
+}
+
+--- Original: Divvy's Preview for Balatro - Init.lua
+--
+-- Global values that must be present for the rest of this mod to work.
+
+if not FN then FN = {} end
+
+FN.PRE = {
+   data = {
+      score = {min = 0, exact = 0, max = 0},
+      dollars = {min = 0, exact = 0, max = 0}
+   },
+   text = {
+      score = {l = "", r = ""},
+      dollars = {top = "", bot = ""}
+   },
+   joker_order = {},
+   hand_order = {},
+   show_preview = false,
+   lock_updates = false,
+   on_startup = true,
+   five_second_coroutine = nil
+}
+
+function FN.PRE.start_new_coroutine()
+   if FN.PRE.five_second_coroutine and coroutine.status(FN.PRE.five_second_coroutine) ~= "dead" then
+      FN.PRE.five_second_coroutine = nil  -- Reset the coroutine
+   end
+
+   -- Create and start a new coroutine
+   FN.PRE.five_second_coroutine = coroutine.create(function()
+      -- Show UI updates
+      FN.PRE.lock_updates = true
+      FN.PRE.show_preview = true
+      FN.PRE.add_update_event("immediate")  -- Force UI refresh
+
+      local start_time = os.time()
+      while os.time() - start_time < 5 do
+         FN.PRE.simulate()  -- Force a simulation run
+         FN.PRE.add_update_event("immediate")  -- Ensure UI updates
+         coroutine.yield()  -- Allow game to continue running
+      end
+      -- Delay for 5 seconds
+      FN.PRE.lock_updates = false
+      FN.PRE.show_preview = true
+      FN.PRE.add_update_event("immediate")  -- Refresh UI again
+   end)
+
+   coroutine.resume(FN.PRE.five_second_coroutine)  -- Start it immediately
+end
+
+
+
+FN.PRE._start_up = Game.start_up
+function Game:start_up()
+   FN.PRE._start_up(self)
+
+   if not G.SETTINGS.FN then G.SETTINGS.FN = {} end
+   if not G.SETTINGS.FN.PRE then
+      G.SETTINGS.FN.PRE = true
+
+      G.SETTINGS.FN.preview_score = true
+      G.SETTINGS.FN.preview_dollars = true
+      G.SETTINGS.FN.hide_face_down = true
+      G.SETTINGS.FN.show_min_max = true
+   end
+
+end

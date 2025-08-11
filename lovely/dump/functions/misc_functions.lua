@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '401e74be6464d3d716c89313834b8cf3e1d301dc4998d0bf1f58bd5899e09195'
+LOVELY_INTEGRITY = '3a83c55d3408f88ca51b70cb78d83cb1bb3fc5da2c6998bcdb8b2ab6f0858f8a'
 
 --Updates all display information for all displays for a given screenmode. Returns the key for the resolution option cycle
 --
@@ -795,7 +795,7 @@ function modulate_sound(dt)
   --For ambient sound control
   G.SETTINGS.ambient_control = G.SETTINGS.ambient_control or {}
   G.ARGS.score_intensity = G.ARGS.score_intensity or {}
-  if not is_number(G.GAME.current_round.current_hand.chips) or not is_number(G.GAME.current_round.current_hand.mult) then
+  if type(G.GAME.current_round.current_hand.chips) ~= 'number' or type(G.GAME.current_round.current_hand.mult) ~= 'number' then
     G.ARGS.score_intensity.earned_score = 0
   else
     G.ARGS.score_intensity.earned_score = G.GAME.current_round.current_hand.chips*G.GAME.current_round.current_hand.mult
@@ -803,7 +803,7 @@ function modulate_sound(dt)
   G.ARGS.score_intensity.required_score = G.GAME.blind and G.GAME.blind.chips or 0
   G.ARGS.score_intensity.flames = math.min(1, (G.STAGE == G.STAGES.RUN and 1 or 0)*(
     (G.ARGS.chip_flames and (G.ARGS.chip_flames.real_intensity + G.ARGS.chip_flames.change) or 0))/10)
-  G.ARGS.score_intensity.organ = G.video_organ or to_big(G.ARGS.score_intensity.required_score) > to_big(0) and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0
+  G.ARGS.score_intensity.organ = G.video_organ or G.ARGS.score_intensity.required_score > 0 and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0
 
   local AC = G.SETTINGS.ambient_control
   G.ARGS.ambient_sounds = G.ARGS.ambient_sounds or {
@@ -884,10 +884,6 @@ function count_of_suit(area, suit)
 end
 
 function prep_draw(moveable, scale, rotate, offset)
-if Big and G.STATE == G.STATES.MENU then moveable.VT.x = to_big(moveable.VT.x):to_number()
-moveable.VT.y = to_big(moveable.VT.y):to_number()
-moveable.VT.w = to_big(moveable.VT.w):to_number()
-moveable.VT.h = to_big(moveable.VT.h):to_number() end
     love.graphics.push()
     love.graphics.scale(G.TILESCALE*G.TILESIZE)
     love.graphics.translate(
@@ -1015,7 +1011,7 @@ function find_joker(name, non_debuff)
 end
 
 function get_blind_amount(ante)
-if G.GAME.modifiers.scaling and G.GAME.modifiers.scaling > 3 then return SMODS.get_blind_amount(ante) end
+if G.GAME.modifiers.scaling and (G.GAME.modifiers.scaling ~= 1 and G.GAME.modifiers.scaling ~= 2 and G.GAME.modifiers.scaling ~= 3) then return SMODS.get_blind_amount(ante) end
   local k = 0.75
   if not G.GAME.modifiers.scaling or G.GAME.modifiers.scaling == 1 then 
     local amounts = {
@@ -1139,7 +1135,7 @@ end
 
 function check_and_set_high_score(score, amt)
   if not amt or type(amt) ~= 'number' then return end
-  if G.GAME.round_scores[score] and math.floor(amt) > (G.GAME.round_scores[score].amt or 0) then
+  if G.GAME.round_scores[score] and math.floor(amt) > G.GAME.round_scores[score].amt then
     G.GAME.round_scores[score].amt = math.floor(amt)
   end
   if  G.GAME.seeded  then return end
@@ -1345,7 +1341,6 @@ function set_consumeable_usage(card)
               trigger = 'immediate',
               func = function()
                 G.GAME.last_tarot_planet = card.config.center_key
-                G.GAME.paperback.last_tarot_energized = card.ability and card.ability.paperback_energized
                   return true
               end
             }))
@@ -1577,6 +1572,8 @@ function save_with_action(action)
 end
 
 function save_run()
+    if G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.SPECTRAL_PACK
+        or G.STATE == G.STATES.BUFFOON_PACK or G.STATE == G.STATES.STANDARD_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED then return end
   if G.F_NO_SAVING == true then return end
   local cardAreas = {}
   for k, v in pairs(G) do
@@ -1619,13 +1616,6 @@ end
 
 function loc_colour(_c, _default)
   G.ARGS.LOC_COLOURS = G.ARGS.LOC_COLOURS or {
-    paperback_light_suit = G.C.PAPERBACK_LIGHT_SUIT,
-    paperback_dark_suit = G.C.PAPERBACK_DARK_SUIT,
-    paperback_stars = G.C.SUITS.paperback_Stars or G.C.PAPERBACK_STARS_LC,
-    paperback_crowns = G.C.SUITS.paperback_Crowns or G.C.PAPERBACK_CROWNS_LC,
-    paperback_minor_arcana = G.C.PAPERBACK_MINOR_ARCANA,
-    paperback_black = G.C.PAPERBACK_BLACK,
-    paperback_pink = G.C.PAPERBACK_PINK,
     red = G.C.RED,
     mult = G.C.MULT,
     blue = G.C.BLUE,
@@ -1704,7 +1694,14 @@ function init_localization()
           center.text_parsed = {}
           if not center.text then else
           for _, line in ipairs(center.text) do
-            center.text_parsed[#center.text_parsed+1] = loc_parse_string(line)
+              if type(line) == 'table' then
+                  center.text_parsed[#center.text_parsed+1] = {}
+                  for _, new_line in ipairs(line) do
+                       center.text_parsed[#center.text_parsed][#center.text_parsed[#center.text_parsed]+1] = loc_parse_string(new_line)
+                  end
+              else
+                  center.text_parsed[#center.text_parsed+1] = loc_parse_string(line)
+              end
           end
           center.name_parsed = {}
           for _, line in ipairs(type(center.name) == 'table' and center.name or {center.name}) do
@@ -1833,6 +1830,7 @@ utf8.chars =
 	end
 
 function localize(args, misc_cat)
+   if not args then return "ERROR" end
   if args and not (type(args) == 'table') then
     if misc_cat and G.localization.misc[misc_cat] then return G.localization.misc[misc_cat][args] or 'ERROR' end
     return G.localization.misc.dictionary[args] or 'ERROR'
@@ -1897,6 +1895,24 @@ function localize(args, misc_cat)
   if ret_string then return ret_string end
 
   if loc_target then 
+    args.AUT = args.AUT or {}
+    args.AUT.box_colours = {}
+    if (args.type == 'descriptions' or args.type == 'other') and type(loc_target.text) == 'table' and type(loc_target.text[1]) == 'table' then
+        args.AUT.multi_box = {}
+        for i, box in ipairs(loc_target.text_parsed) do
+            for j, line in ipairs(box) do
+                local final_line = SMODS.localize_box(line, args)
+                if i == 1 or next(args.AUT.info) then
+                    args.nodes[#args.nodes+1] = final_line -- Sends main box to AUT.main
+                elseif not next(args.AUT.info) then 
+                    args.AUT.multi_box[i-1] = args.AUT.multi_box[i-1] or {}
+                    args.AUT.multi_box[i-1][#args.AUT.multi_box[i-1]+1] = final_line
+                end
+                if not next(args.AUT.info) then args.AUT.box_colours[i] = args.vars.box_colours and args.vars.box_colours[i] or G.C.UI.BACKGROUND_WHITE end
+            end
+        end
+        return
+    end
     for _, lines in ipairs(args.type == 'unlocks' and loc_target.unlock_parsed or args.type == 'name' and loc_target.name_parsed or (args.type == 'text' or args.type == 'tutorial' or args.type == 'quips') and loc_target or loc_target.text_parsed) do
       local final_line = {}
       for _, part in ipairs(lines) do

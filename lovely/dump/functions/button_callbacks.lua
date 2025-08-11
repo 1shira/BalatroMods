@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'a699559c1b1c8e2a8f1dff9a08dc2f0f51042522539d098ecb160030d0427523'
+LOVELY_INTEGRITY = '9ff72e735a2be6d4fd376a6f3beecb33250837b25c0e612103f156b441082897'
 
 --Moves the tutorial to the next step in queue
 --
@@ -413,6 +413,7 @@ end
 ---@param e {}
 --**e** Is the UIE that called this function
 G.FUNCS.set_button_pip = function(e)
+if Handy.controller.override_node_button(e) then return end
   if G.CONTROLLER.HID.controller and e.config.focus_args and not e.children.button_pip then
     e.children.button_pip = UIBox{
       definition = create_button_binding_pip{button = e.config.focus_args.button, scale = e.config.focus_args.scale},
@@ -1935,7 +1936,7 @@ G.FUNCS.hand_mult_UI_set = function(e)
     G.GAME.current_round.current_hand.mult_text = new_mult_text
     e.config.object.scale = scale_number(G.GAME.current_round.current_hand.mult, 0.9, 1000)
     e.config.object:update_text()
-    if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.min(2,math.max(0,math.floor(math.log10(is_number(G.GAME.current_round.current_hand.mult) and G.GAME.current_round.current_hand.mult or 1))))) end
+    if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.max(0,math.floor(math.log10(type(G.GAME.current_round.current_hand.mult) == 'number' and G.GAME.current_round.current_hand.mult or 1)))) end
   end
 end
 
@@ -1945,12 +1946,12 @@ G.FUNCS.hand_chip_UI_set = function(e)
       G.GAME.current_round.current_hand.chip_text = new_chip_text
       e.config.object.scale = scale_number(G.GAME.current_round.current_hand.chips, 0.9, 1000)
       e.config.object:update_text()
-      if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.min(2,math.max(0,math.floor(math.log10(is_number(G.GAME.current_round.current_hand.chips) and G.GAME.current_round.current_hand.chips or 1))))) end
+      if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.max(0,math.floor(math.log10(type(G.GAME.current_round.current_hand.chips) == 'number' and G.GAME.current_round.current_hand.chips or 1)))) end
     end
 end
 
 G.FUNCS.hand_chip_total_UI_set = function(e)
-  if to_big(G.GAME.current_round.current_hand.chip_total) < to_big(1) then
+  if G.GAME.current_round.current_hand.chip_total < 1 then
     G.GAME.current_round.current_hand.chip_total_text = ''
   else
     local new_chip_total_text = number_format(G.GAME.current_round.current_hand.chip_total)
@@ -1958,7 +1959,7 @@ G.FUNCS.hand_chip_total_UI_set = function(e)
       e.config.object.scale = scale_number(G.GAME.current_round.current_hand.chip_total, 0.95, 100000000)
       
       G.GAME.current_round.current_hand.chip_total_text = new_chip_total_text
-      if not G.ARGS.hand_chip_total_UI_set or to_big(G.ARGS.hand_chip_total_UI_set) < to_big(G.GAME.current_round.current_hand.chip_total) then
+      if not G.ARGS.hand_chip_total_UI_set or G.ARGS.hand_chip_total_UI_set <  G.GAME.current_round.current_hand.chip_total then 
          G.FUNCS.text_super_juice(e, math.floor(math.log10(G.GAME.current_round.current_hand.chip_total)))
       end
       G.ARGS.hand_chip_total_UI_set = G.GAME.current_round.current_hand.chip_total
@@ -2033,7 +2034,7 @@ G.FUNCS.flame_handler = function(e)
       local _F = G.ARGS[v.arg_tab]
       local exptime = math.exp(-0.4*G.real_dt)
       
-      if to_big(G.ARGS.score_intensity.earned_score) >= to_big(G.ARGS.score_intensity.required_score) and to_big(G.ARGS.score_intensity.required_score) > to_big(0) then
+      if G.ARGS.score_intensity.earned_score >= G.ARGS.score_intensity.required_score and G.ARGS.score_intensity.required_score > 0 then
         _F.intensity = ((G.pack_cards and not G.pack_cards.REMOVED) or (G.TAROT_INTERRUPT)) and 0 or math.max(0., math.log(G.ARGS.score_intensity.earned_score, 5)-2)
       else
         _F.intensity = 0
@@ -2435,8 +2436,8 @@ G.FUNCS.check_for_buy_space = function(card)
   if card.ability.set ~= 'Voucher' and
     card.ability.set ~= 'Enhanced' and
     card.ability.set ~= 'Default' and
-    not (card.ability.set == 'Joker' and #G.jokers.cards < G.jokers.config.card_limit + ((card.edition and card.edition.negative) and 1 or 0)) and
-    not (card.ability.consumeable and #G.consumeables.cards < G.consumeables.config.card_limit + ((card.edition and card.edition.negative) and 1 or 0)) then
+        not (card.ability.set == 'Joker' and #G.jokers.cards < G.jokers.config.card_limit + (card.edition and card.edition.card_limit or 0)) and
+        not (card.ability.consumeable and #G.consumeables.cards < G.consumeables.config.card_limit + (card.edition and card.edition.card_limit or 0)) then
       alert_no_space(card, card.ability.consumeable and G.consumeables or G.jokers)
     return false
   end
@@ -2971,7 +2972,7 @@ if Handy.insta_cash_out.is_skipped and e.config.button then return end
         e.config.button = nil
         G.round_eval.alignment.offset.y = G.ROOM.T.y + 15
         G.round_eval.alignment.offset.x = 0
-        G.deck:shuffle('cashout'..G.GAME.round_resets.ante)
+        G.deck:shuffle('cashout'..MP.order_round_based(true))
         G.deck:hard_set_T()
         delay(0.3)
         G.E_MANAGER:add_event(Event({
@@ -3003,7 +3004,7 @@ if Handy.insta_cash_out.is_skipped and e.config.button then return end
         play_sound("coin7")
         G.VIBRATION = G.VIBRATION + 1
       end
-      ease_chips(to_big(0))
+      ease_chips(0)
       if G.GAME.round_resets.blind_states.Boss == 'Defeated' then 
         G.GAME.round_resets.blind_ante = G.GAME.round_resets.ante
         G.GAME.round_resets.blind_tags.Small = get_next_tag_key()

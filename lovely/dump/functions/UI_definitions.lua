@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '5a8a4b19f3e13a8c0c1e21f5194014c7325734cd1db267810c0b5eea32c43022'
+LOVELY_INTEGRITY = '4f9cec752ed37b12ef5f99116218910e55c186d86a203b908507bad8d0e9c162'
 
 --Create a global UIDEF that contains all UI definition functions\
 --As a rule, these contain functions that return a table T representing the definition for a UIBox
@@ -782,7 +782,7 @@ end
           for _,v in ipairs(SMODS.ConsumableType.ctype_buffer) do
               total_rate = total_rate + G.GAME[v:lower()..'_rate']
           end
-          local polled_rate = pseudorandom(pseudoseed('cdt'..G.GAME.round_resets.ante))*total_rate
+          local polled_rate = pseudorandom(pseudoseed('cdt'..MP.ante_based()))*total_rate
           local check_rate = 0
           -- need to preserve order to leave RNG unchanged
           local rates = {
@@ -1142,12 +1142,7 @@ end
       if AUT.badges then
         for k, v in ipairs(AUT.badges) do
           if v == 'negative_consumable' or v == 'negative_playing_card' then v = 'negative' end
-          local pb_key = PB_UTIL.has_paperclip(card)
-          if pb_key and v == pb_key then
-            badges[#badges + 1] = create_badge(localize(v, "labels"), get_badge_colour(v), SMODS.Stickers[pb_key].badge_text_colour)
-          else
           badges[#badges + 1] = create_badge(localize(v, "labels"), get_badge_colour(v))
-          end
         end
       end      if AUT.card_type ~= 'Locked' and AUT.card_type ~= 'Undiscovered' then
           SMODS.create_mod_badges(card.config.center, badges)
@@ -1158,15 +1153,17 @@ end
           if card.config and card.config.tag then
               SMODS.create_mod_badges(SMODS.Tags[card.config.tag.key], badges)
           end
-          if PB_UTIL and card and card.ability then
-            local key = PB_UTIL.has_paperclip(card)
-            if key then
-              SMODS.create_mod_badges(SMODS.Stickers[key], badges)
-            end
-          end
           badges.mod_set = nil
       end
 
+      AUT.main.background_colour = AUT.main.background_colour or AUT.box_colours and AUT.box_colours[1] or nil
+      local multi_boxes = {}
+      if AUT.multi_box then
+          for i, box in ipairs(AUT.multi_box) do
+              box.background_colour = box.background_colour or AUT.box_colours and AUT.box_colours[i+1] or nil
+              multi_boxes[#multi_boxes+1] = desc_from_rows(box)
+          end
+      end
       if AUT.info then
         for k, v in ipairs(AUT.info) do
           info_boxes[#info_boxes+1] =
@@ -1201,8 +1198,8 @@ end
           table.insert(info_cols, {n=G.UIT.C, config = {align="cm"}, nodes = col})
       end
       info_boxes = {{n=G.UIT.R, config = {align="cm", padding = 0.05, card_pos = card.T.x }, nodes = info_cols}}
-      return {n=G.UIT.ROOT, config = {align = 'cm', colour = G.C.CLEAR}, nodes={
-        {n=G.UIT.C, config={align = "cm", func = 'show_infotip',object = Moveable(),ref_table = next(info_boxes) and info_boxes or nil}, nodes={
+      local ret_val = {n=G.UIT.ROOT, config = {align = 'cm', colour = G.C.CLEAR}, nodes={
+          {n=G.UIT.C, config={align = "cm", func = 'show_infotip',object = Moveable(),ref_table = next(info_boxes) and info_boxes or nil}, nodes={
           {n=G.UIT.R, config={padding = outer_padding, r = 0.12, colour = lighten(G.C.JOKER_GREY, 0.5), emboss = 0.07}, nodes={
             {n=G.UIT.R, config={align = "cm", padding = 0.07, r = 0.1, colour = adjust_alpha(card_type_background, 0.8)}, nodes={
               name_from_rows(AUT.name, is_playing_card and G.C.WHITE or nil),
@@ -1212,6 +1209,12 @@ end
           }}
         }},
       }}
+              if multi_boxes[1] then
+                  for i=#multi_boxes, 1, -1 do
+                      table.insert(ret_val.nodes[1].nodes[1].nodes[1].nodes, 3, multi_boxes[i])
+                  end
+              end
+              return ret_val
     end
   end
 
@@ -1339,6 +1342,12 @@ end
 function add_tag(_tag)
   G.HUD_tags = G.HUD_tags or {}
   local tag_sprite_ui = _tag:generate_UI()
+  local _handy_tag_click_target = _tag.tag_sprite
+  local _handy_tag_click_ref = _handy_tag_click_target.click
+  _handy_tag_click_target.click = function(...)
+      if Handy.controller.process_tag_click(_tag) then return end
+      return _handy_tag_click_ref(...)
+  end
   G.HUD_tags[#G.HUD_tags+1] = UIBox{
       definition = {n=G.UIT.ROOT, config={align = "cm",padding = 0.05, colour = G.C.CLEAR}, nodes={
         tag_sprite_ui
@@ -1409,14 +1418,14 @@ function create_UIBox_HUD()
                   {n=G.UIT.T, config={text = localize('k_ante'), scale = 0.85*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
                 }},
                 {n=G.UIT.R, config={align = "cm", r = 0.1, minw = 1.2, colour = temp_col2}, nodes={
-                  {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.GAME.round_resets, ref_value = 'ante_disp'}}, colours = {G.C.IMPORTANT},shadow = true, font = G.LANGUAGES['en-us'].font, scale = scale_number(G.GAME.round_resets.ante, 2*scale, 100)}),id = 'ante_UI_count'}},--{n=G.UIT.T, config={text = number_format(G.GAME.round_resets.ante), lang = G.LANGUAGES['en-us'], scale = scale_number(G.GAME.round_resets.ante, 2*scale, 100), colour = G.C.IMPORTANT, shadow = true,id = 'ante_UI_count'}},
+                  {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.GAME.round_resets, ref_value = 'ante'}}, colours = {G.C.IMPORTANT},shadow = true, font = G.LANGUAGES['en-us'].font, scale = 2*scale}),id = 'ante_UI_count'}},
                   {n=G.UIT.T, config={text = " ", scale = 0.3*scale}},
                   {n=G.UIT.T, config={text = "/ ", scale = 0.7*scale, colour = G.C.WHITE, shadow = true}},
                   {n=G.UIT.T, config={ref_table = G.GAME, ref_value='win_ante', scale = scale, colour = G.C.WHITE, shadow = true}}
                 }},
               }},
               {n=G.UIT.C, config={minw = spacing},nodes={}},
-              MP.LOBBY.code and MP.UI.timer_hud() or {n=G.UIT.C, config={align = "cm", padding = 0.05, minw = 1.45, minh = 1, colour = temp_col, emboss = 0.05, r = 0.1}, nodes={
+              MP.LOBBY.code and (not MP.LOBBY.config.disable_live_and_timer_hud) and MP.UI.timer_hud() or {n=G.UIT.C, config={align = "cm", padding = 0.05, minw = 1.45, minh = 1, colour = temp_col, emboss = 0.05, r = 0.1}, nodes={
                 {n=G.UIT.R, config={align = "cm", maxw = 1.35}, nodes={
                   {n=G.UIT.T, config={text = localize('k_round'), minh = 0.33, scale = 0.85*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
                 }},
@@ -1488,12 +1497,12 @@ function create_UIBox_HUD()
               ,
               MP.LOBBY.code and {n=G.UIT.R, config={id = 'lobby_info_button', align = "cm", minh = 1.2, minw = 1.5,padding = 0.05, r = 0.1, hover = true, colour = G.C.BLUE, button = "lobby_info", shadow = true}, nodes={
                   {n=G.UIT.R, config={align = "cm", padding = 0, maxw = 1.4}, nodes={
-                      {n=G.UIT.T, config={text = "Lobby", scale = 1.2*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}}
+                      {n=G.UIT.T, config={text = localize("ml_lobby_info")[1], scale = 1.2*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true}}
                   }},
                   {n=G.UIT.R, config={align = "cm", padding = 0, maxw = 1.4}, nodes={
-                      {n=G.UIT.T, config={text = "Info", scale = 1*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true, focus_args = {button = G.F_GUIDE and 'guide' or 'back', orientation = 'bm'}, func = 'set_button_pip'}}
+                      {n=G.UIT.T, config={text = localize("ml_lobby_info")[2], scale = 1*scale, colour = G.C.UI.TEXT_LIGHT, shadow = true, focus_args = {button = G.F_GUIDE and 'guide' or 'back', orientation = 'bm'}, func = 'set_button_pip'}}
                   }}
-              }} or nil,
+              }} or nil
         }}
     }
 
@@ -2190,6 +2199,8 @@ function create_tabs(args)
   local tab_buttons = {}
 
   for k, v in ipairs(args.tabs) do
+    if Handy.override_create_tabs_chosen then v.chosen = k == Handy.override_create_tabs_chosen
+    elseif Handy.override_create_tabs_chosen_by_label then v.chosen = v.label == Handy.override_create_tabs_chosen_by_label end
     if v.chosen then args.current = {k = k, v = v} end
     tab_buttons[#tab_buttons+1] = UIBox_button({id = 'tab_but_'..(v.label or ''), ref_table = v, button = 'change_tab', label = {v.label}, minh = 0.8*args.scale, minw = 2.5*args.scale, col = true, choice = true, scale = args.text_scale, chosen = v.chosen, func = v.func, colour = args.colour, focus_args = {type = 'none'}})
   end
@@ -3672,13 +3683,13 @@ function create_UIBox_your_collection()
     end
   }))
   local consumable_nodes = {}
-  if #SMODS.ConsumableType.ctype_buffer <= 3 then
-      for _, key in ipairs(SMODS.ConsumableType.ctype_buffer) do
+  if #SMODS.ConsumableType.visible_buffer <= 3 then
+      for _, key in ipairs(SMODS.ConsumableType.visible_buffer) do
           local id = 'your_collection_'..key:lower()..'s'
           consumable_nodes[#consumable_nodes+1] = UIBox_button({button = id, label = {localize('b_'..key:lower()..'_cards')}, count = G.DISCOVER_TALLIES[key:lower()..'s'], minw = 4, id = id, colour = G.C.SECONDARY_SET[key]})
       end
   else
-      consumable_nodes[#consumable_nodes+1] = UIBox_button({ button = 'your_collection_consumables', label = {localize('b_stat_consumables'), localize{ type = 'variable', key = 'c_types', vars = {#SMODS.ConsumableType.ctype_buffer} } }, count = G.DISCOVER_TALLIES['consumeables'], minw = 4, minh = 4, id = 'your_collection_consumables', colour = G.C.FILTER })
+      consumable_nodes[#consumable_nodes+1] = UIBox_button({ button = 'your_collection_consumables', label = {localize('b_stat_consumables'), localize{ type = 'variable', key = 'c_types', vars = {#SMODS.ConsumableType.visible_buffer} } }, count = G.DISCOVER_TALLIES['consumeables'], minw = 4, minh = 4, id = 'your_collection_consumables', colour = G.C.FILTER })
   end
   local t = create_UIBox_generic_options({ back_func = G.STAGE == G.STAGES.RUN and 'options' or 'exit_overlay_menu', contents = {
     {n=G.UIT.C, config={align = "cm", padding = 0.15}, nodes={
@@ -5503,11 +5514,24 @@ function G.UIDEF.run_setup(from_game_over)
   local _can_continue = G.MAIN_MENU_UI and G.FUNCS.can_continue({config = {func = true}})
   G.FUNCS.false_ret = function() return false end
   local t = MP.LOBBY.code and create_UIBox_generic_options({contents ={
-      {n=G.UIT.R, config={padding = 0.0, align = "cm", colour = G.C.CLEAR}, nodes={
-        {n=G.UIT.R, config={align = 'cm', padding = 0.1, no_fill = true, minh = 0, minw = 0}, nodes={
-          {n=G.UIT.O, config={id = 'tab_contents', object = UIBox{definition = ((Galdur and Galdur.config.use) and G.UIDEF.run_setup_option_new_model or G.UIDEF.run_setup_option)('New Run'), config = {offset = {x=0,y=0}}}}}
+        {n=G.UIT.R, config={align = "cm", padding = 0, draw_layer = 1}, nodes={
+          create_tabs(
+          {tabs = {
+              {
+                  label = localize('b_new_run'),
+                  chosen = true,
+                  tab_definition_function = (Galdur and Galdur.config.use) and G.UIDEF.run_setup_option_new_model or G.UIDEF.run_setup_option,
+                  tab_definition_function_args = 'New Run'
+              },
+              {
+                label = localize('b_challenges'),
+                tab_definition_function = G.UIDEF.challenges,
+                tab_definition_function_args = from_game_over,
+                chosen = false
+              },
+          },
+          snap_to_nav = true}),
         }},
-      }},
     }}) or create_UIBox_generic_options({no_back = from_game_over, no_esc = from_game_over, contents ={
       {n=G.UIT.R, config={align = "cm", padding = 0, draw_layer = 1}, nodes={
         create_tabs(
@@ -5796,6 +5820,7 @@ function G.UIDEF.challenge_description(_id, daily, is_row)
       if v.edition then card:set_edition({[v.edition] = true}, true, true) end
       if v.eternal then card:set_eternal(true) end
       if v.pinned then card.pinned = true end
+      if v.rental then card:set_rental(true) end
       jokers:emplace(card)
     end
   end
@@ -5884,7 +5909,7 @@ function G.UIDEF.challenge_description(_id, daily, is_row)
         no_shoulders = true,
         no_loop = true}
     )}},
-    (not MP.LOBBY.code) and (not is_row) and {n=G.UIT.R, config={align = "cm", minh = 0.9}, nodes={
+    (not (MP.LOBBY.code and G.STAGE == G.STAGES.RUN)) and (not is_row) and {n=G.UIT.R, config={align = "cm", minh = 0.9}, nodes={
       {n=G.UIT.R, config={align = "cm", padding = 0.1, minh = 0.7, minw = 9, r = 0.1, hover = true, colour = G.C.BLUE, button = "start_challenge_run", shadow = true, id = _id}, nodes={
         {n=G.UIT.T, config={text = localize('b_play_cap'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT,func = 'set_button_pip', focus_args = {button = 'x',set_button_pip = true}}}
       }}
@@ -6662,4 +6687,132 @@ function UIBox_button(args)
     }, nodes=
     but_UI_label
     }}}
+end
+
+--- Original: Divvy's Preview for Balatro - Interface.lua
+--
+-- The user interface components that display simulation results.
+
+-- Append node for preview text to the HUD:
+local orig_hud = create_UIBox_HUD
+function create_UIBox_HUD()
+   local contents = orig_hud()
+   
+
+   local score_node_wrap = {n=G.UIT.R, config={id = "fn_pre_score_wrap", align = "cm", padding = 0.1}, nodes={}}
+   table.insert(score_node_wrap.nodes, FN.PRE.get_score_node())
+   local calculate_score_button_wrap = {n=G.UIT.R, config={id = "fn_calculate_score_button_wrap", align = "cm", padding = 0.1}, nodes={}}
+   table.insert(calculate_score_button_wrap.nodes, FN.PRE.get_calculate_score_button())
+      
+   table.insert(contents.nodes[1].nodes[1].nodes[4].nodes[1].nodes, score_node_wrap)
+   table.insert(contents.nodes[1].nodes[1].nodes[4].nodes[1].nodes, calculate_score_button_wrap)
+
+   --[[local dollars_node_wrap = {n=G.UIT.C, config={id = "fn_pre_dollars_wrap", align = "cm"}, nodes={}}
+   if G.SETTINGS.FN.preview_dollars then table.insert(dollars_node_wrap.nodes, FN.PRE.get_dollars_node()) end
+   table.insert(contents.nodes[1].nodes[1].nodes[5].nodes[2].nodes[3].nodes[1].nodes[1].nodes[1].nodes, dollars_node_wrap) --]]
+
+   return contents
+end
+
+function G.FUNCS.calculate_score_button()
+   FN.PRE.start_new_coroutine()
+end
+
+function FN.PRE.get_calculate_score_button()
+
+   return {n=G.UIT.C, config={id = "calculate_score_button", button = "calculate_score_button", align = "cm", minh = 0.42, padding = 0.05, r = 0.02, colour = G.C.RED, hover = true, shadow = true}, nodes={
+      {n=G.UIT.R, config={align = "cm"}, nodes={
+         {n=G.UIT.T, config={text = "  Calculate Score  ", colour = G.C.UI.TEXT_LIGHT, shadow = true, scale = 0.36}}
+      }}
+   }}
+end
+
+
+function FN.PRE.get_score_node()
+   local text_scale = nil
+   if true then text_scale = 0.5
+   else text_scale = 0.75 end
+
+   return {n = G.UIT.C, config = {id = "fn_pre_score", align = "cm"}, nodes={
+              {n=G.UIT.O, config={id = "fn_pre_l", func = "fn_pre_score_UI_set", object = DynaText({string = {{ref_table = FN.PRE.text.score, ref_value = "l"}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, float = true, scale = text_scale})}},
+              {n=G.UIT.O, config={id = "fn_pre_r", func = "fn_pre_score_UI_set", object = DynaText({string = {{ref_table = FN.PRE.text.score, ref_value = "r"}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, float = true, scale = text_scale})}},
+   }}
+end
+
+--[[function FN.PRE.get_dollars_node()
+   local top_color = FN.PRE.get_dollar_colour(0)
+   local bot_color = top_color
+   if FN.PRE.data ~= nil then
+      top_color = FN.PRE.get_dollar_colour(FN.PRE.data.dollars.max)
+      bot_color = FN.PRE.get_dollar_colour(FN.PRE.data.dollars.min)
+   else
+   end
+   return {n=G.UIT.C, config={id = "fn_pre_dollars", align = "cm"}, nodes={
+       {n=G.UIT.R, config={align = "cm"}, nodes={
+           {n=G.UIT.O, config={id = "fn_pre_dollars_top", func = "fn_pre_dollars_UI_set", object = DynaText({string = {{ref_table = FN.PRE.text.dollars, ref_value = "top"}}, colours = {top_color}, shadow = true, spacing = 2, bump = true, scale = 0.5})}}
+       }},
+       {n=G.UIT.R, config={minh = 0.05}, nodes={}},
+       {n=G.UIT.R, config={align = "cm"}, nodes={
+           {n=G.UIT.O, config={id = "fn_pre_dollars_bot", func = "fn_pre_dollars_UI_set", object = DynaText({string = {{ref_table = FN.PRE.text.dollars, ref_value = "bot"}}, colours = {bot_color}, shadow = true, spacing = 2, bump = true, scale = 0.5})}},
+       }}
+   }}
+end--]]
+
+--
+-- SETTINGS:
+--
+
+function FN.get_preview_settings_page()
+   local function preview_score_toggle_callback(e)
+      if not G.HUD then return end
+
+      if G.SETTINGS.FN.preview_score then
+         -- Preview was just enabled, so add preview node:
+         G.HUD:add_child(FN.PRE.get_score_node(), G.HUD:get_UIE_by_ID("fn_pre_score_wrap"))
+         FN.PRE.data = FN.PRE.simulate()
+      else
+         -- Preview was just disabled, so remove preview node:
+         G.HUD:get_UIE_by_ID("fn_pre_score").parent:remove()
+      end
+      G.HUD:recalculate()
+   end
+
+   local function preview_dollars_toggle_callback(_)
+      if not G.HUD then return end
+
+      if G.SETTINGS.FN.preview_dollars then
+         -- Preview was just enabled, so add preview node:
+         G.HUD:add_child(FN.PRE.get_dollars_node(), G.HUD:get_UIE_by_ID("fn_pre_dollars_wrap"))
+         FN.PRE.data = FN.PRE.simulate()
+      else
+         -- Preview was just disabled, so remove preview node:
+         G.HUD:get_UIE_by_ID("fn_pre_dollars").parent:remove()
+      end
+      G.HUD:recalculate()
+   end
+
+   local function face_down_toggle_callback(_)
+      if not G.HUD then return end
+
+      FN.PRE.data = FN.PRE.simulate()
+      G.HUD:recalculate()
+   end
+
+   return
+      {n=G.UIT.ROOT, config={align = "cm", padding = 0.05, colour = G.C.CLEAR}, nodes={
+          create_toggle({id = "score_toggle",
+                         label = "Enable Score Preview",
+                         ref_table = G.SETTINGS.FN,
+                         ref_value = "preview_score",
+                         callback = preview_score_toggle_callback}),
+          create_toggle({id = "dollars_toggle",
+                         label = "Enable Money Preview",
+                         ref_table = G.SETTINGS.FN,
+                         ref_value = "preview_dollars",
+                         callback = preview_dollars_toggle_callback}),
+          create_toggle({label = "Hide Preview if Any Card is Face-Down",
+                         ref_table = G.SETTINGS.FN,
+                         ref_value = "hide_face_down",
+                         callback = face_down_toggle_callback})
+      }}
 end

@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '744e500c021e9d0a80250dbb98a34f7296d8cae61d6fc476116795d11eae6fb3'
+LOVELY_INTEGRITY = '174c6edb638db8d90d155fef681b62ff3056db9f06c211d0e8d8b4b5e81b7fe1'
 
 --- STEAMODDED CORE
 --- MODULE STACKTRACE
@@ -32,7 +32,7 @@ function loadStackTracePlus()
     local pcall, type, pairs, ipairs = pcall, type, pairs, ipairs
     local error = error
 
-    assert(debug, "debug table must be available at this point")
+    assert(debug, "Internal: Debug table must be available at this point")
 
     local io_open = io.open
     local string_gmatch = string.gmatch
@@ -102,7 +102,7 @@ function loadStackTracePlus()
     -- Parses a line, looking for possible function definitions (in a very naïve way)
     -- Returns '(anonymous)' if no function name was found in the line
     local function ParseLine(line)
-        assert(type(line) == "string")
+        assert(type(line) == "string", ("Internal: line \"%s\" is type \"%s\", should be a string"):format(tostring(line), type(line)))
         -- print(line)
         local match = line:match("^%s*function%s+(%w+)")
         if match then
@@ -958,11 +958,11 @@ function love.load()
 			local old_cpath = package.cpath
 			package.cpath = package.cpath .. ';' .. dir .. '/?.so'
 			local success, _st = pcall(require, 'luasteam')
-			if success then st = _st else sendWarnMessage(_st); st = {} end
+			if success then st = _st else sendWarnMessage(_st, "LuaSteam"); st = {} end
 			package.cpath = old_cpath
 		else
 			local success, _st = pcall(require, 'luasteam')
-			if success then st = _st else sendWarnMessage(_st); st = {} end
+			if success then st = _st else sendWarnMessage(_st, "LuaSteam"); st = {} end
 		end
 
 		st.send_control = {
@@ -1335,393 +1335,24 @@ for _, path in ipairs {
     assert(load(NFS.read(SMODS.path..path), ('=[SMODS _ "%s"]'):format(path)))()
 end
 
-local lovely = require("lovely")
-local nfs = require("nativefs")
-
-Brainstorm = {}
-
-Brainstorm.VERSION = "Brainstorm v2.2.0-alpha"
-
-Brainstorm.SMODS = nil
-
-Brainstorm.config = {
-  enable = true,
-  keybind_autoreroll = "r",
-  keybinds = {
-    options = "t",
-    modifier = "lctrl",
-    f_reroll = "r",
-    a_reroll = "a",
-  },
-  ar_filters = {
-    pack = {},
-    pack_id = 1,
-    voucher_name = "",
-    voucher_id = 1,
-    tag_name = "tag_charm",
-    tag_id = 2,
-    soul_skip = 1,
-    inst_observatory = false,
-    inst_perkeo = false,
-  },
-  ar_prefs = {
-    spf_id = 3,
-    spf_int = 1000,
-  },
-}
-
-Brainstorm.ar_timer = 0
-Brainstorm.ar_frames = 0
-Brainstorm.ar_text = nil
-Brainstorm.ar_active = false
-Brainstorm.AR_INTERVAL = 0.01
-
--- Cache frequently used functions
-local math_abs = math.abs
-local string_format = string.format
-local string_lower = string.lower
-
-local function findBrainstormDirectory(directory)
-  for _, item in ipairs(nfs.getDirectoryItems(directory)) do
-    local itemPath = directory .. "/" .. item
-    if
-      nfs.getInfo(itemPath, "directory")
-      and string_lower(item):find("brainstorm")
-    then
-      return itemPath
-    end
-  end
-  return nil
-end
-
-local function fileExists(filePath)
-  return nfs.getInfo(filePath) ~= nil
-end
-
-function Brainstorm.loadConfig()
-  local configPath = Brainstorm.PATH .. "/config.lua"
-  if not fileExists(configPath) then
-    Brainstorm.writeConfig()
-  else
-    local configFile, err = nfs.read(configPath)
-    if not configFile then
-      error("Failed to read config file: " .. (err or "unknown error"))
-    end
-    Brainstorm.config = STR_UNPACK(configFile) or Brainstorm.config
-  end
-end
-
-function Brainstorm.writeConfig()
-  local configPath = Brainstorm.PATH .. "/config.lua"
-  local success, err = nfs.write(configPath, STR_PACK(Brainstorm.config))
-  if not success then
-    error("Failed to write config file: " .. (err or "unknown error"))
-  end
-end
-
-function Brainstorm.init()
-  Brainstorm.PATH = findBrainstormDirectory(lovely.mod_dir)
-  Brainstorm.loadConfig()
-  assert(load(nfs.read(Brainstorm.PATH .. "/UI/ui.lua")))()
-end
-
-local key_press_update_ref = Controller.key_press_update
-function Controller:key_press_update(key, dt)
-  key_press_update_ref(self, key, dt)
-  local keybinds = Brainstorm.config.keybinds
-  if love.keyboard.isDown(keybinds.modifier) then
-    if key == keybinds.f_reroll then
-      Brainstorm.reroll()
-    elseif key == keybinds.a_reroll then
-      Brainstorm.ar_active = not Brainstorm.ar_active
-    end
-  end
-end
-
-function Brainstorm.reroll()
-  local G = G -- Cache global G for performance
-  G.GAME.viewed_back = nil
-  G.run_setup_seed = G.GAME.seeded
-  G.challenge_tab = G.GAME and G.GAME.challenge and G.GAME.challenge_tab or nil
-  G.forced_seed = G.GAME.seeded and G.GAME.pseudorandom.seed or nil
-
-  local seed = G.run_setup_seed and G.setup_seed or G.forced_seed
-  local stake = (
-    G.GAME.stake
-    or G.PROFILES[G.SETTINGS.profile].MEMORY.stake
-    or 1
-  ) or 1
-
-  G:delete_run()
-  G:start_run({ stake = stake, seed = seed, challenge = G.challenge_tab })
-end
-
-local update_ref = Game.update
-function Game:update(dt)
-  update_ref(self, dt)
-
-  if Brainstorm.ar_active then
-    Brainstorm.ar_frames = Brainstorm.ar_frames + 1
-    Brainstorm.ar_timer = Brainstorm.ar_timer + dt
-
-    if Brainstorm.ar_timer >= Brainstorm.AR_INTERVAL then
-      Brainstorm.ar_timer = Brainstorm.ar_timer - Brainstorm.AR_INTERVAL
-      if Brainstorm.autoReroll() then
-        Brainstorm.ar_active = false
-        Brainstorm.ar_frames = 0
-        if Brainstorm.ar_text then
-          Brainstorm.removeAttentionText(Brainstorm.ar_text)
-          Brainstorm.ar_text = nil
-        end
-      end
-    end
-
-    if Brainstorm.ar_frames == 60 and not Brainstorm.ar_text then
-      Brainstorm.ar_text = Brainstorm.attentionText({
-        scale = 1.4,
-        text = "Rerolling...",
-        align = "cm",
-        offset = { x = 0, y = -3.5 },
-        major = G.STAGE == G.STAGES.RUN and G.play or G.title_top,
-      })
-    end
-  end
-end
-
-function Brainstorm.autoReroll()
-  local seed_found = random_string(
-    8,
-    G.CONTROLLER.cursor_hover.T.x * 0.33411983
-      + G.CONTROLLER.cursor_hover.T.y * 0.874146
-      + 0.412311010 * G.CONTROLLER.cursor_hover.time
-  )
-  local ffi = require("ffi")
-  local lovely = require("lovely")
-  ffi.cdef([[
-	const char* brainstorm(const char* seed, const char* voucher, const char* pack, const char* tag, double souls, bool observatory, bool perkeo);
-    ]])
-  local immolate = ffi.load(Brainstorm.PATH .. "/Immolate.dll")
-  local pack
-  if #Brainstorm.config.ar_filters.pack > 0 then
-    pack = Brainstorm.config.ar_filters.pack[1]:match("^(.*)_")
-  else
-    pack = {}
-  end
-  local pack_name = localize({ type = "name_text", set = "Other", key = pack })
-  local tag_name = localize({
-    type = "name_text",
-    set = "Tag",
-    key = Brainstorm.config.ar_filters.tag_name,
-  })
-  local voucher_name = localize({
-    type = "name_text",
-    set = "Voucher",
-    key = Brainstorm.config.ar_filters.voucher_name,
-  })
-  print(pack_name, tag_name, voucher_name)
-  seed_found = ffi.string(
-    immolate.brainstorm(
-      seed_found,
-      voucher_name,
-      pack_name,
-      tag_name,
-      Brainstorm.config.ar_filters.soul_skip,
-      Brainstorm.config.ar_filters.inst_observatory,
-      Brainstorm.config.ar_filters.inst_perkeo
-    )
-  )
-  if seed_found then
-    _stake = G.GAME.stake
-    G:delete_run()
-    G:start_run({
-      stake = _stake,
-      seed = seed_found,
-      challenge = G.GAME and G.GAME.challenge and G.GAME.challenge_tab,
-    })
-    G.GAME.used_filter = true
-    G.GAME.filter_info = {
-      filter_params = {
-        seed_found,
-        voucher_name,
-        pack_name,
-        tag_name,
-        Brainstorm.config.ar_filters.soul_skip,
-        Brainstorm.config.ar_filters.inst_observatory,
-        Brainstorm.config.ar_filters.inst_perkeo,
-      },
-    }
-    G.GAME.seeded = false
-  end
-  return seed_found
-end
-
-local cursr = create_UIBox_round_scores_row
-function create_UIBox_round_scores_row(score, text_colour)
-  local ret = cursr(score, text_colour)
-  ret.nodes[2].nodes[1].config.colour = (score == "seed" and G.GAME.seeded)
-      and G.C.RED
-    or (score == "seed" and G.GAME.used_filter) and G.C.BLUE
-    or G.C.BLACK
-  return ret
-end
-
--- TODO: Rework attention text.
-function Brainstorm.attentionText(args)
-  args = args or {}
-  args.text = args.text or "test"
-  args.scale = args.scale or 1
-  args.colour = copy_table(args.colour or G.C.WHITE)
-  args.hold = (args.hold or 0) + 0.1 * G.SPEEDFACTOR
-  args.pos = args.pos or { x = 0, y = 0 }
-  args.align = args.align or "cm"
-  args.emboss = args.emboss or nil
-
-  args.fade = 1
-
-  if args.cover then
-    args.cover_colour = copy_table(args.cover_colour or G.C.RED)
-    args.cover_colour_l = copy_table(lighten(args.cover_colour, 0.2))
-    args.cover_colour_d = copy_table(darken(args.cover_colour, 0.2))
-  else
-    args.cover_colour = copy_table(G.C.CLEAR)
-  end
-
-  args.uibox_config = {
-    align = args.align or "cm",
-    offset = args.offset or { x = 0, y = 0 },
-    major = args.cover or args.major or nil,
-  }
-
-  G.E_MANAGER:add_event(Event({
-    trigger = "after",
-    delay = 0,
-    blockable = false,
-    blocking = false,
-    func = function()
-      args.AT = UIBox({
-        T = { args.pos.x, args.pos.y, 0, 0 },
-        definition = {
-          n = G.UIT.ROOT,
-          config = {
-            align = args.cover_align or "cm",
-            minw = (args.cover and args.cover.T.w or 0.001)
-              + (args.cover_padding or 0),
-            minh = (args.cover and args.cover.T.h or 0.001)
-              + (args.cover_padding or 0),
-            padding = 0.03,
-            r = 0.1,
-            emboss = args.emboss,
-            colour = args.cover_colour,
-          },
-          nodes = {
-            {
-              n = G.UIT.O,
-              config = {
-                draw_layer = 1,
-                object = DynaText({
-                  scale = args.scale,
-                  string = args.text,
-                  maxw = args.maxw,
-                  colours = { args.colour },
-                  float = true,
-                  shadow = true,
-                  silent = not args.noisy,
-                  args.scale,
-                  pop_in = 0,
-                  pop_in_rate = 6,
-                  rotate = args.rotate or nil,
-                }),
-              },
-            },
-          },
-        },
-        config = args.uibox_config,
-      })
-      args.AT.attention_text = true
-
-      args.text = args.AT.UIRoot.children[1].config.object
-      args.text:pulse(0.5)
-
-      if args.cover then
-        Particles(args.pos.x, args.pos.y, 0, 0, {
-          timer_type = "TOTAL",
-          timer = 0.01,
-          pulse_max = 15,
-          max = 0,
-          scale = 0.3,
-          vel_variation = 0.2,
-          padding = 0.1,
-          fill = true,
-          lifespan = 0.5,
-          speed = 2.5,
-          attach = args.AT.UIRoot,
-          colours = {
-            args.cover_colour,
-            args.cover_colour_l,
-            args.cover_colour_d,
-          },
-        })
-      end
-      if args.backdrop_colour then
-        args.backdrop_colour = copy_table(args.backdrop_colour)
-        Particles(args.pos.x, args.pos.y, 0, 0, {
-          timer_type = "TOTAL",
-          timer = 5,
-          scale = 2.4 * (args.backdrop_scale or 1),
-          lifespan = 5,
-          speed = 0,
-          attach = args.AT,
-          colours = { args.backdrop_colour },
-        })
-      end
-      return true
-    end,
-  }))
-  return args
-end
-
-function Brainstorm.removeAttentionText(args)
-  G.E_MANAGER:add_event(Event({
-    trigger = "after",
-    delay = 0,
-    blockable = false,
-    blocking = false,
-    func = function()
-      if not args.start_time then
-        args.start_time = G.TIMERS.TOTAL
-        if args.text.pop_out then
-          args.text:pop_out(2)
-        end
-      else
-        --args.AT:align_to_attach()
-        args.fade = math.max(0, 1 - 3 * (G.TIMERS.TOTAL - args.start_time))
-        if args.cover_colour then
-          args.cover_colour[4] = math.min(args.cover_colour[4], 2 * args.fade)
-        end
-        if args.cover_colour_l then
-          args.cover_colour_l[4] = math.min(args.cover_colour_l[4], args.fade)
-        end
-        if args.cover_colour_d then
-          args.cover_colour_d[4] = math.min(args.cover_colour_d[4], args.fade)
-        end
-        if args.backdrop_colour then
-          args.backdrop_colour[4] = math.min(args.backdrop_colour[4], args.fade)
-        end
-        args.colour[4] = math.min(args.colour[4], args.fade)
-        if args.fade <= 0 then
-          args.AT:remove()
-          return true
-        end
-      end
-    end,
-  }))
-end
+sendInfoMessage("Steamodded v" .. SMODS.version, "SMODS")
 
 Handy = setmetatable({
+	version = "1.4.2b",
+
 	last_clicked_area = nil,
 	last_clicked_card = nil,
 
+	last_hovered_area = nil,
+	last_hovered_card = nil,
+
 	utils = {},
+
+	meta = {
+		["1.4.1b_patched_select_blind_and_skip"] = true,
+	},
+
+	__disable_gamepad = true,
 }, {})
 
 --- @generic T
@@ -1769,31 +1400,100 @@ function Handy.utils.table_contains(t, value)
 	return false
 end
 
+function Handy.utils.serialize_string(s)
+	return string.format("%q", s)
+end
+
+function Handy.utils.serialize(t, indent)
+	indent = indent or ""
+	local str = "{\n"
+	for k, v in ipairs(t) do
+		str = str .. indent .. "\t"
+		if type(v) == "number" then
+			str = str .. v
+		elseif type(v) == "boolean" then
+			str = str .. (v and "true" or "false")
+		elseif type(v) == "string" then
+			str = str .. Handy.utils.serialize_string(v)
+		elseif type(v) == "table" then
+			str = str .. Handy.utils.serialize(v, indent .. "\t")
+		else
+			-- not serializable
+			str = str .. "nil"
+		end
+		str = str .. ",\n"
+	end
+	for k, v in pairs(t) do
+		if type(k) == "string" then
+			str = str .. indent .. "\t" .. "[" .. Handy.utils.serialize_string(k) .. "] = "
+
+			if type(v) == "number" then
+				str = str .. v
+			elseif type(v) == "boolean" then
+				str = str .. (v and "true" or "false")
+			elseif type(v) == "string" then
+				str = str .. Handy.utils.serialize_string(v)
+			elseif type(v) == "table" then
+				str = str .. Handy.utils.serialize(v, indent .. "\t")
+			else
+				-- not serializable
+				str = str .. "nil"
+			end
+			str = str .. ",\n"
+		end
+	end
+	str = str .. indent .. "}"
+	return str
+end
+
 --
 
 Handy.config = {
 	default = {
+		handy = {
+			enabled = true,
+		},
+
 		notifications_level = 3,
 		keybinds_trigger_mode = 1,
+		insta_actions_trigger_mode = 1,
 		hide_in_menu = false,
 
 		insta_highlight = {
 			enabled = true,
+
+			key_1 = "Left Mouse",
+			key_2 = "None",
+			-- key_1_gamepad = "(A)",
+			-- key_2_gamepad = "None",
 		},
 		insta_highlight_entire_f_hand = {
 			enabled = true,
 			key_1 = "None",
 			key_2 = "None",
+			-- key_1_gamepad = "None",
+			-- key_2_gamepad = "None",
+		},
+		insta_buy_n_sell = {
+			enabled = true,
+			key_1 = "None",
+			key_2 = "None",
+			-- key_1_gamepad = "None",
+			-- key_2_gamepad = "None",
 		},
 		insta_buy_or_sell = {
 			enabled = true,
 			key_1 = "Shift",
 			key_2 = "None",
+			-- key_1_gamepad = "None",
+			-- key_2_gamepad = "None",
 		},
 		insta_use = {
 			enabled = true,
 			key_1 = "Ctrl",
 			key_2 = "None",
+			-- key_1_gamepad = "None",
+			-- key_2_gamepad = "None",
 		},
 		move_highlight = {
 			enabled = true,
@@ -1802,11 +1502,15 @@ Handy.config = {
 				enabled = true,
 				key_1 = "Shift",
 				key_2 = "None",
+				-- key_1_gamepad = "None",
+				-- key_2_gamepad = "None",
 			},
 			to_end = {
 				enabled = true,
 				key_1 = "Ctrl",
 				key_2 = "None",
+				-- key_1_gamepad = "None",
+				-- key_2_gamepad = "None",
 			},
 
 			dx = {
@@ -1814,11 +1518,15 @@ Handy.config = {
 					enabled = true,
 					key_1 = "Left",
 					key_2 = "None",
+					-- key_1_gamepad = "None",
+					-- key_2_gamepad = "None",
 				},
 				one_right = {
 					enabled = true,
 					key_1 = "Right",
 					key_2 = "None",
+					-- key_1_gamepad = "None",
+					-- key_2_gamepad = "None",
 				},
 			},
 		},
@@ -1827,33 +1535,67 @@ Handy.config = {
 			enabled = true,
 			key_1 = "Enter",
 			key_2 = "None",
+			-- key_1_gamepad = "None",
+			-- key_2_gamepad = "None",
 		},
 		insta_booster_skip = {
 			enabled = true,
 			key_1 = "Enter",
 			key_2 = "None",
+			-- key_1_gamepad = "(Y)",
+			-- key_2_gamepad = "None",
 		},
 		show_deck_preview = {
 			enabled = true,
 			key_1 = "None",
 			key_2 = "None",
+			-- key_1_gamepad = "Left Trigger",
+			-- key_2_gamepad = "None",
 		},
 
 		dangerous_actions = {
 			enabled = false,
 
+			-- Use it as basic modifier for all dangerous controls
+			-- Maybe I should change this but idk, backwards compatibility
 			immediate_buy_and_sell = {
-				enabled = true,
+				enabled = false,
 				key_1 = "Middle Mouse",
 				key_2 = "None",
+				-- key_1_gamepad = "None",
+				-- key_2_gamepad = "None",
 
 				queue = {
 					enabled = false,
 				},
 			},
 
+			sell_all_same = {
+				enabled = false,
+				key_1 = "None",
+				key_2 = "None",
+				-- key_1_gamepad = "None",
+				-- key_2_gamepad = "None",
+			},
+
+			sell_all = {
+				enabled = false,
+				key_1 = "None",
+				key_2 = "None",
+				-- key_1_gamepad = "None",
+				-- key_2_gamepad = "None",
+			},
+
+			card_remove = {
+				enabled = false,
+				key_1 = "None",
+				key_2 = "None",
+				-- key_1_gamepad = "None",
+				-- key_2_gamepad = "None",
+			},
+
 			nopeus_unsafe = {
-				enabled = true,
+				enabled = false,
 			},
 		},
 
@@ -1862,12 +1604,35 @@ Handy.config = {
 
 			key_1 = "Alt",
 			key_2 = "None",
+			-- key_1_gamepad = "None",
+			-- key_2_gamepad = "None",
+
+			no_hold = {
+				enabled = false,
+			},
+
+			multiply = {
+				enabled = true,
+				key_1 = "Wheel Up",
+				key_2 = "None",
+				-- key_1_gamepad = "None",
+				-- key_2_gamepad = "None",
+			},
+			divide = {
+				enabled = true,
+				key_1 = "Wheel Down",
+				key_2 = "None",
+				-- key_1_gamepad = "None",
+				-- key_2_gamepad = "None",
+			},
 		},
 
 		deselect_hand = {
 			enabled = true,
 			key_1 = "Right Mouse",
 			key_2 = "None",
+			-- key_1_gamepad = "Right Stick",
+			-- key_2_gamepad = "None",
 		},
 
 		regular_keybinds = {
@@ -1877,55 +1642,82 @@ Handy.config = {
 				enabled = true,
 				key_1 = "None",
 				key_2 = "None",
+				-- key_1_gamepad = "(X)",
+				-- key_2_gamepad = "None",
 			},
 			discard = {
 				enabled = true,
 				key_1 = "None",
 				key_2 = "None",
+				-- key_1_gamepad = "(Y)",
+				-- key_2_gamepad = "None",
 			},
 			sort_by_rank = {
 				enabled = true,
 				key_1 = "None",
 				key_2 = "None",
+				-- key_1_gamepad = "Right Bumper",
+				-- key_2_gamepad = "None",
 			},
 			sort_by_suit = {
 				enabled = true,
 				key_1 = "None",
 				key_2 = "None",
+				-- key_1_gamepad = "Left Bumper",
+				-- key_2_gamepad = "None",
 			},
 
 			reroll_shop = {
 				enabled = true,
 				key_1 = "Q",
 				key_2 = "None",
+				-- key_1_gamepad = "(X)",
+				-- key_2_gamepad = "None",
 			},
 			leave_shop = {
 				enabled = true,
 				key_1 = "None",
 				key_2 = "None",
+				-- key_1_gamepad = "(Y)",
+				-- key_2_gamepad = "None",
 			},
 
 			skip_blind = {
 				enabled = true,
 				key_1 = "None",
 				key_2 = "None",
+				-- key_1_gamepad = "None",
+				-- key_2_gamepad = "None",
 			},
 			select_blind = {
 				enabled = true,
 				key_1 = "None",
 				key_2 = "None",
+				-- key_1_gamepad = "None",
+				-- key_2_gamepad = "None",
 			},
 
 			run_info = {
 				enabled = true,
 				key_1 = "None",
 				key_2 = "None",
+				-- key_1_gamepad = "(Guide)",
+				-- key_2_gamepad = "None",
+			},
+			run_info_blinds = {
+				enabled = true,
+				key_1 = "None",
+				key_2 = "None",
+				-- key_1_gamepad = "None",
+				-- key_2_gamepad = "None",
 			},
 
 			view_deck = {
 				enabled = true,
 				key_1 = "None",
 				key_2 = "None",
+				-- key_1_gamepad = "Right Trigger",
+				-- key_2_gamepad = "None",
 			},
 		},
 
@@ -1934,19 +1726,66 @@ Handy.config = {
 
 			key_1 = "]",
 			key_2 = "None",
+			-- key_1_gamepad = "None",
+			-- key_2_gamepad = "None",
+
+			no_hold = {
+				enabled = false,
+			},
+
+			increase = {
+				enabled = true,
+				key_1 = "Wheel Up",
+				key_2 = "None",
+				-- key_1_gamepad = "None",
+				-- key_2_gamepad = "None",
+			},
+			decrease = {
+				enabled = true,
+				key_1 = "Wheel Down",
+				key_2 = "None",
+				-- key_1_gamepad = "None",
+				-- key_2_gamepad = "None",
+			},
 		},
 
 		not_just_yet_interaction = {
 			enabled = true,
 			key_1 = "Enter",
 			key_2 = "None",
+			-- key_1_gamepad = "None",
+			-- key_2_gamepad = "None",
+		},
+
+		cryptid_code_use_last_interaction = {
+			enabled = true,
+			key_1 = "None",
+			key_2 = "None",
+			-- key_1_gamepad = "None",
+			-- key_2_gamepad = "None",
 		},
 	},
 	current = {},
 
+	get_module = function(module)
+		if not module then
+			return nil
+		end
+		local override = Handy.get_module_override(module)
+		if override then
+			return Handy.utils.table_merge({}, module, override)
+		end
+		return module
+	end,
 	save = function()
-		love.filesystem.createDirectory("config")
-		compress_and_save("config/Handy.jkr", Handy.config.current)
+		if SMODS and SMODS.save_mod_config and Handy.current_mod then
+			Handy.current_mod.config = Handy.config.current
+			SMODS.save_mod_config(Handy.current_mod)
+		else
+			love.filesystem.createDirectory("config")
+			local serialized = "return " .. Handy.utils.serialize(Handy.config.current)
+			love.filesystem.write("config/Handy.jkr", serialized)
+		end
 	end,
 	load = function()
 		Handy.config.current = Handy.utils.table_merge({}, Handy.config.default)
@@ -1954,43 +1793,303 @@ Handy.config = {
 		if lovely_mod_config then
 			Handy.config.current = Handy.utils.table_merge(Handy.config.current, STR_UNPACK(lovely_mod_config))
 		end
+		Handy.cc = Handy.config.current
 	end,
 }
 
+-- Shorthand for `Handy.config.current`
+Handy.cc = Handy.config.current
 Handy.config.load()
+
+function Handy.is_mod_active()
+	return Handy.cc.handy.enabled
+end
+function Handy.is_dangerous_actions_active()
+	return Handy.cc.dangerous_actions.enabled
+end
+function Handy.get_module_override(module)
+	return nil
+end
+
+-- Ha-ha, funny Cryptid reference
+
+-- Resolve module with overrides
+function Handy.m(module)
+	return Handy.config.get_module(module)
+end
 
 --
 
 Handy.fake_events = {
 	check = function(arg)
-		local fake_event = {
-			UIBox = arg.UIBox,
-			config = {
-				ref_table = arg.card,
-				button = arg.button,
-				id = arg.id,
-			},
-		}
-		arg.func(fake_event)
-		return fake_event.config.button ~= nil, fake_event.config.button
-	end,
-	execute = function(arg)
-		if type(arg.func) == "function" then
-			arg.func({
+		if type(arg.func) ~= "function" then
+			return false, nil
+		end
+		if arg.node then
+			arg.func(arg.node)
+			return arg.node.config.button ~= nil, arg.node.config.button
+		else
+			local fake_event = {
 				UIBox = arg.UIBox,
 				config = {
 					ref_table = arg.card,
 					button = arg.button,
 					id = arg.id,
 				},
+			}
+			arg.func(fake_event)
+			return fake_event.config.button ~= nil, fake_event.config.button
+		end
+	end,
+	execute = function(arg)
+		if type(arg.func) == "function" then
+			if arg.node then
+				arg.func(arg.node)
+			else
+				arg.func({
+					UIBox = arg.UIBox,
+					config = {
+						ref_table = arg.card,
+						button = arg.button,
+						id = arg.id,
+					},
+				})
+			end
+		end
+	end,
+	check_button = function(selector, options)
+		options = options or {}
+		local success, button = pcall(selector)
+		if not success or not button or not button.config or not button.states then
+			return false, button and button.config and button.config.button or nil
+		end
+		if options.visible and not button.states.visible then
+			return false, button.config.button
+		end
+		local check_func = button.config.func
+		if (options.require_func or options.require_exact_func) and not check_func then
+			return false, button.config.button
+		end
+		if options.require_exact_func and check_func ~= options.require_exact_func then
+			return false, button.config.button
+		end
+		if check_func then
+			return Handy.fake_events.check({
+				func = G.FUNCS[check_func],
+				node = button,
 			})
+		else
+			return true, button.config.button
+		end
+	end,
+	execute_button = function(selector)
+		local success, button = pcall(selector)
+		if not success or not button or not button.config then
+			return
+		end
+		if type(button.click) == "function" then
+			button:click()
+		else
+			if button.config.button then
+				Handy.fake_events.check({
+					func = G.FUNCS[button.config.button],
+					node = button,
+				})
+			end
 		end
 	end,
 }
 Handy.controller = {
+	device_type = "keyboard",
+
+	get_device_type = function(options)
+		if Handy.__disable_gamepad then
+			return "keyboard"
+		end
+		options = options or {}
+		if options.joystick or options.gamepad or G.CONTROLLER.HID.controller then
+			return "gamepad"
+		elseif options.mouse or options.keyboard then
+			return "keyboard"
+		end
+		return "keyboard"
+	end,
+	update_device_type = function(options)
+		if Handy.__disable_gamepad then
+			return false
+		end
+		options = options or {}
+		local new_type = Handy.controller.get_device_type(options)
+		if Handy.controller.device_type == new_type then
+			return false
+		end
+		Handy.controller.device_type = new_type
+
+		Handy.controller.cancel_bind()
+
+		G.E_MANAGER:add_event(Event({
+			blocking = false,
+			blockable = false,
+			no_delete = true,
+			func = function()
+				Handy.UI.rerender(false)
+				return true
+			end,
+		}))
+		return true
+	end,
+
+	is_gamepad = function()
+		if Handy.__disable_gamepad then
+			return false
+		end
+		return Handy.controller.device_type == "gamepad"
+	end,
+
+	gamepad_patched_buttons = {},
+
+	override_node_button = function(e)
+		if e.REMOVED or Handy.__disable_gamepad then
+			return false
+		end
+
+		local remove_from_registry = function()
+			for k, registry in pairs(G.CONTROLLER.button_registry) do
+				for i = #registry, 1, -1 do
+					if registry[i].node == (e.config.button_UIE or e) then
+						table.remove(registry, i)
+						return true
+					end
+				end
+			end
+		end
+		local add_to_registry = function()
+			-- TODO: fix it
+			for k, registry in pairs(G.CONTROLLER.button_registry) do
+				for i = #registry, 1, -1 do
+					if registry[i].node == (e.config.button_UIE or e) then
+						return false
+					end
+				end
+			end
+			G.CONTROLLER:add_to_registry(e.config.button_UIE or e, e.config.focus_args.button)
+		end
+
+		local patched_button = e.handy_gamepad_override
+			and Handy.controller.gamepad_patched_buttons[e.handy_gamepad_override]
+		if patched_button and patched_button.node == e then
+			local new_button
+			if Handy.is_mod_active() and patched_button.enabled_func() then
+				remove_from_registry()
+				new_button = Handy.controller.resolve_first_module_key(patched_button.module)
+				e.config.focus_args.button = new_button
+			else
+				new_button = e.handy_replaced_button
+				e.config.focus_args.button = e.handy_replaced_button
+				add_to_registry()
+			end
+			if e.handy_previous_button ~= new_button then
+				e.handy_previous_button = new_button
+				if e.children.button_pip then
+					e.children.button_pip:remove()
+					e.children.button_pip = nil
+				end
+				if not e.config.focus_args.button then
+					return true
+				end
+			end
+			return false
+		end
+
+		local override_key, override_module, override_enabled_func = nil, nil, nil
+		if e.config.focus_args and not e.handy_gamepad_override and not G.OVERLAY_MENU then
+			local button = e.config.focus_args.button
+			if button == "triggerleft" then
+				override_key, override_module = "show_deck_preview", Handy.cc.show_deck_preview
+			elseif button == "triggerright" then
+				override_key, override_module, override_enabled_func =
+					"view_deck", Handy.cc.regular_keybinds.view_deck, function()
+						return Handy.controller.is_module_enabled(Handy.cc.regular_keybinds) and Handy.controller.is_module_enabled(Handy.cc.regular_keybinds.view_deck)
+					end
+			elseif button == "y" then
+				if e.parent then
+					if e.parent.config.id == "next_round_button" then
+						override_key, override_module, override_enabled_func =
+							"leave_shop", Handy.cc.regular_keybinds.leave_shop, function()
+								return Handy.controller.is_module_enabled(Handy.cc.regular_keybinds) and Handy.controller.is_module_enabled(Handy.cc.regular_keybinds.leave_shop)
+							end
+					elseif e.parent.config.func == "can_skip_booster" then
+						override_key, override_module = "skip_booster", Handy.cc.insta_booster_skip
+					elseif e.parent.parent then
+						if e.parent.parent.config.id == "discard_button" then
+							override_key, override_module, override_enabled_func =
+								"discard", Handy.cc.regular_keybinds.discard, function()
+									return Handy.controller.is_module_enabled(Handy.cc.regular_keybinds) and Handy.controller.is_module_enabled(Handy.cc.regular_keybinds.discard)
+								end
+						end
+					end
+				end
+			elseif button == "x" then
+				if e.parent then
+					if e.parent.config.func == "can_reroll" then
+						override_key, override_module, override_enabled_func =
+							"reroll_shop", Handy.cc.regular_keybinds.reroll_shop, function()
+								return Handy.controller.is_module_enabled(Handy.cc.regular_keybinds) and Handy.controller.is_module_enabled(Handy.cc.regular_keybinds.reroll_shop)
+							end
+					elseif e.parent.parent then
+						if e.parent.parent.config.id == "play_button" then
+							override_key, override_module, override_enabled_func =
+								"play", Handy.cc.regular_keybinds.play, function()
+									return Handy.controller.is_module_enabled(Handy.cc.regular_keybinds) and Handy.controller.is_module_enabled(Handy.cc.regular_keybinds.play)
+								end
+						end
+					end
+				end
+			elseif button == G.F_GUIDE and "guide" or "back" then
+				if e.parent then
+					if e.parent.parent then
+						if e.parent.parent.config.id == "run_info_button" then
+							override_key, override_module, override_enabled_func =
+								"run_info", Handy.cc.regular_keybinds.run_info, function()
+									return Handy.controller.is_module_enabled(Handy.cc.regular_keybinds) and Handy.controller.is_module_enabled(Handy.cc.regular_keybinds.run_info)
+								end
+						end
+					end
+				end
+			end
+		end
+		if override_key and override_module then
+			local enabled_func = override_enabled_func
+				or function()
+					return Handy.controller.is_module_enabled(override_module)
+				end
+			e.handy_gamepad_override = override_key
+			e.handy_replaced_button = e.config.focus_args.button
+
+			if Handy.is_mod_active() and enabled_func() then
+				remove_from_registry()
+				local new_button = Handy.controller.resolve_first_module_key(override_module)
+				e.config.focus_args.button = new_button
+				e.handy_previous_button = new_button
+			end
+			Handy.controller.gamepad_patched_buttons[override_key] = {
+				node = e,
+				module = override_module,
+				enabled_func = enabled_func,
+			}
+		end
+		if not e.config.focus_args.button and e.children.button_pip then
+			e.children.button_pip:remove()
+			e.children.button_pip = nil
+			return true
+		end
+		return false
+	end,
+
 	bind_module = nil,
 	bind_key = nil,
 	bind_button = nil,
+	rerender_after_bind = nil,
 
 	update_bind_button_text = function(text)
 		local button_text = Handy.controller.bind_button.children[1].children[1]
@@ -2004,35 +2103,53 @@ Handy.controller = {
 		Handy.controller.bind_button = button
 		Handy.controller.bind_module = button.config.ref_table.module
 		Handy.controller.bind_key = button.config.ref_table.key
+		Handy.controller.rerender_after_bind = button.config.ref_table.rerender or nil
 
 		Handy.controller.update_bind_button_text(
 			"[" .. (Handy.controller.bind_module[Handy.controller.bind_key] or "None") .. "]"
 		)
 	end,
 	complete_bind = function(key)
-		Handy.controller.bind_module[Handy.controller.bind_key] = key
+		Handy.controller.bind_module[Handy.controller.bind_key] = key or "None"
 		Handy.controller.update_bind_button_text(key or "None")
 
 		Handy.controller.bind_button.config.button = "handy_init_keybind_change"
 		Handy.controller.bind_button = nil
 		Handy.controller.bind_module = nil
 		Handy.controller.bind_key = nil
+
+		if Handy.controller.rerender_after_bind then
+			Handy.controller.rerender_after_bind = nil
+			G.E_MANAGER:add_event(Event({
+				blocking = false,
+				blockable = false,
+				no_delete = true,
+				func = function()
+					Handy.UI.rerender(true)
+					return true
+				end,
+			}))
+		end
 	end,
 	cancel_bind = function()
+		if not Handy.controller.bind_module or not Handy.controller.bind_key or not Handy.controller.bind_button then
+			return
+		end
 		Handy.controller.update_bind_button_text(Handy.controller.bind_module[Handy.controller.bind_key] or "None")
 
 		Handy.controller.bind_button.config.button = "handy_init_keybind_change"
 		Handy.controller.bind_button = nil
 		Handy.controller.bind_module = nil
 		Handy.controller.bind_key = nil
+		Handy.controller.rerender_after_bind = nil
 	end,
 
-	process_bind = function(key)
+	process_bind = function(key, options)
 		if not Handy.controller.bind_button then
 			return false
 		end
-		local parsed_key = Handy.controller.parse(key)
-		if parsed_key == "Escape" then
+		local parsed_key, is_discard_key = Handy.controller.parse(key, options)
+		if is_discard_key then
 			parsed_key = "None"
 		end
 		Handy.controller.complete_bind(parsed_key)
@@ -2084,6 +2201,71 @@ Handy.controller = {
 		["Scroll Lock"] = { "scrolllock" },
 	},
 
+	parse_gamepad_table = {
+		["a"] = "(A)",
+		["b"] = "(B)",
+		["x"] = "(X)",
+		["y"] = "(Y)",
+		["back"] = "(Back)",
+		["guide"] = "(Guide)",
+		["start"] = "(Start)",
+		["leftstick"] = "Left Stick",
+		["rightstick"] = "Right Stick",
+		["leftshoulder"] = "Left Bumper",
+		["rightshoulder"] = "Right Bumper",
+		["dpup"] = "(Up)",
+		["dpdown"] = "(Down)",
+		["dpleft"] = "(Left)",
+		["dpright"] = "(Right)",
+		-- Not present in current Love version (11.5.0)
+		["misc1"] = "Misc. Button",
+		["paddle1"] = "First Paddle",
+		["paddle2"] = "Second Paddle",
+		["paddle3"] = "Third Paddle",
+		["paddle4"] = "Fourth Paddle",
+		["touchpad"] = "Touchpad Press",
+		-- Axis as button
+		["triggerleft"] = "Left Trigger",
+		["triggerright"] = "Right Trigger",
+	},
+	resolve_gamepad_table = {
+		["(A)"] = { "a" },
+		["(B)"] = { "b" },
+		["(X)"] = { "x" },
+		["(Y)"] = { "y" },
+		["(Back)"] = { "back" },
+		["(Guide)"] = { "guide" },
+		["(Start)"] = { "start" },
+		["Left Stick"] = { "leftstick" },
+		["Right Stick"] = { "rightstick" },
+		["Left Bumper"] = { "leftshoulder" },
+		["Right Bumper"] = { "rightshoulder" },
+		["(Up)"] = { "dpup" },
+		["(Down)"] = { "dpdown" },
+		["(Left)"] = { "dpleft" },
+		["(Right)"] = { "dpright" },
+		-- Not present in current Love version (11.5.0)
+		["Misc. Button"] = { "misc1" },
+		["First Paddle"] = { "paddle1" },
+		["Second Paddle"] = { "paddle2" },
+		["Third Paddle"] = { "paddle3" },
+		["Fourth Paddle"] = { "paddle4" },
+		["Touchpad Press"] = { "touchpad" },
+		-- Axis as button
+		["Left Trigger"] = {
+			"triggerleft",
+			axis_check = function()
+				return G.CONTROLLER.axis_buttons.l_trig.current == "triggerleft"
+			end,
+		},
+		["Right Trigger"] = {
+			"triggerright",
+			axis_check = function()
+				return G.CONTROLLER.axis_buttons.r_trig.current == "triggerright"
+			end,
+		},
+	},
+
 	mouse_to_key_table = {
 		[1] = "mouse1",
 		[2] = "mouse2",
@@ -2108,30 +2290,59 @@ Handy.controller = {
 		["Wheel Down"] = 2,
 	},
 
-	parse = function(raw_key)
+	parse = function(raw_key, options)
 		if not raw_key then
-			return nil
+			return nil, false
 		end
+		options = options or {}
+
+		if options.gamepad or options.any then
+			local gamepad_result = Handy.controller.parse_gamepad_table[raw_key]
+			if gamepad_result or options.gamepad then
+				return gamepad_result, gamepad_result == "(Back)"
+			end
+		end
+
+		local result
 		if Handy.controller.parse_table[raw_key] then
-			return Handy.controller.parse_table[raw_key]
+			result = Handy.controller.parse_table[raw_key]
 		elseif string.sub(raw_key, 1, 2) == "kp" then
-			return "NUM " .. string.sub(raw_key, 3)
+			result = "NUM " .. string.sub(raw_key, 3)
 		else
-			return string.upper(string.sub(raw_key, 1, 1)) .. string.sub(raw_key, 2)
+			result = string.upper(string.sub(raw_key, 1, 1)) .. string.sub(raw_key, 2)
 		end
+		return result, result == "Escape"
 	end,
-	resolve = function(parsed_key)
+	resolve = function(parsed_key, options)
 		if not parsed_key then
 			return nil
+		end
+		options = options or {}
+
+		if options.gamepad or options.any then
+			local result = Handy.controller.resolve_gamepad_table[parsed_key]
+			if result or options.gamepad then
+				return unpack(result or { nil })
+			end
 		end
 		if Handy.controller.resolve_table[parsed_key] then
 			return unpack(Handy.controller.resolve_table[parsed_key])
 		elseif string.sub(parsed_key, 1, 4) == "NUM " then
 			return "kp" .. string.sub(parsed_key, 5)
 		else
-			local str = string.gsub(string.lower(parsed_key), "%s+", "")
-			return str
+			return string.gsub(string.lower(parsed_key), "%s+", "")
 		end
+	end,
+	resolve_first_module_key = function(module)
+		module = Handy.m(module)
+		if module and (allow_disabled or module.enabled) then
+			if force_gamepad or Handy.controller.is_gamepad() then
+				return Handy.controller.resolve(module.key_1_gamepad, { gamepad = true })
+					or Handy.controller.resolve(module.key_2_gamepad, { gamepad = true })
+			end
+			return Handy.controller.resolve(module.key_1) or Handy.controller.resolve(module.key_2)
+		end
+		return nil
 	end,
 	is_down = function(...)
 		local parsed_keys = { ... }
@@ -2143,6 +2354,23 @@ Handy.controller = {
 				elseif Handy.controller.mouse_buttons[parsed_key] then
 					if love.mouse.isDown(Handy.controller.mouse_buttons[parsed_key]) then
 						return true
+					end
+				elseif Handy.controller.resolve(parsed_key, { gamepad = true }) then
+					local resolved_raw_value = Handy.controller.resolve_gamepad_table[parsed_key]
+					if resolved_raw_value and resolved_raw_value.axis_check then
+						local success, is_active = pcall(resolved_raw_value.axis_check)
+						if success and is_active then
+							return true
+						end
+					else
+						local success, is_down = pcall(function()
+							return G.GAMEPAD.object:isGamepadDown(
+								Handy.controller.resolve(parsed_key, { gamepad = true })
+							)
+						end)
+						if success and is_down then
+							return true
+						end
 					end
 				else
 					local success, is_down = pcall(function()
@@ -2157,20 +2385,15 @@ Handy.controller = {
 		return false
 	end,
 	is = function(raw_key, ...)
-		if not raw_key then
+		if not raw_key or raw_key == "Unknown" or raw_key == "None" then
 			return false
 		end
 		local parsed_keys = { ... }
 		for i = 1, #parsed_keys do
 			local parsed_key = parsed_keys[i]
 			if parsed_key then
-				local resolved_key_1, resolved_key_2 = Handy.controller.resolve(parsed_key)
-				if
-					raw_key
-					and raw_key ~= "Unknown"
-					and raw_key ~= "None"
-					and (raw_key == resolved_key_1 or raw_key == resolved_key_2)
-				then
+				local resolved_key_1, resolved_key_2 = Handy.controller.resolve(parsed_key, { any = true })
+				if raw_key == resolved_key_1 or raw_key == resolved_key_2 then
 					return true
 				end
 			end
@@ -2178,17 +2401,34 @@ Handy.controller = {
 		return false
 	end,
 
-	is_module_key_down = function(module, allow_disabled)
-		return module and (allow_disabled or module.enabled) and Handy.controller.is_down(module.key_1, module.key_2)
+	is_module_key_down = function(module, allow_disabled, force_gamepad)
+		module = Handy.m(module)
+		if module and (allow_disabled or module.enabled) then
+			if force_gamepad or Handy.controller.is_gamepad() then
+				return Handy.controller.is_down(module.key_1_gamepad, module.key_2_gamepad)
+			end
+			return Handy.controller.is_down(module.key_1, module.key_2)
+		end
+		return false
 	end,
-	is_module_key = function(module, raw_key, allow_disabled)
-		return module
-			and (allow_disabled or module.enabled)
-			and Handy.controller.is(raw_key, module.key_1, module.key_2)
+	is_module_key = function(module, raw_key, allow_disabled, force_gamepad)
+		module = Handy.m(module)
+		if module and (allow_disabled or module.enabled) then
+			if force_gamepad or Handy.controller.is_gamepad() then
+				return Handy.controller.is(raw_key, module.key_1_gamepad, module.key_2_gamepad)
+			else
+				return Handy.controller.is(raw_key, module.key_1, module.key_2)
+			end
+		end
+		return false
+	end,
+	is_module_enabled = function(module)
+		module = Handy.m(module)
+		return module and module.enabled
 	end,
 
 	is_trigger_on_release = function()
-		return Handy.config.current.keybinds_trigger_mode == 2
+		return Handy.cc.keybinds_trigger_mode == 2
 	end,
 	is_triggered = function(released)
 		if Handy.controller.is_trigger_on_release() then
@@ -2198,6 +2438,13 @@ Handy.controller = {
 	end,
 
 	process_key = function(key, released)
+		G.njy_keybind = nil
+
+		Handy.controller.update_device_type({ keyboard = true })
+
+		if not Handy.is_mod_active() then
+			return false
+		end
 		if G.CONTROLLER.text_input_hook then
 			return false
 		end
@@ -2211,10 +2458,12 @@ Handy.controller = {
 
 		if not released then
 			Handy.speed_multiplier.use(key)
+			Handy.insta_highlight.use_on_hovered(key)
 		end
 
 		if G.STAGE == G.STAGES.RUN and not G.SETTINGS.paused then
 			if Handy.controller.is_triggered(released) then
+				Handy.insta_actions.use_alt(key)
 				Handy.move_highlight.use(key)
 				Handy.regular_keybinds.use(key)
 				Handy.insta_highlight_entire_f_hand.use(key)
@@ -2229,6 +2478,13 @@ Handy.controller = {
 		return false
 	end,
 	process_mouse = function(mouse, released)
+		G.njy_keybind = nil
+
+		Handy.controller.update_device_type({ mouse = true })
+
+		if not Handy.is_mod_active() then
+			return false
+		end
 		if G.CONTROLLER.text_input_hook then
 			return false
 		end
@@ -2240,10 +2496,12 @@ Handy.controller = {
 
 		if not released then
 			Handy.speed_multiplier.use(key)
+			Handy.insta_highlight.use_on_hovered(key)
 		end
 
-		if G.STAGE == G.STAGES.RUN and not G.SETTINGS.paused then
+		if G.STAGE == G.STAGES.RUN and not G.SETTINGS.paused and not G.OVERLAY_MENU then
 			if Handy.controller.is_triggered(released) then
+				Handy.insta_actions.use_alt(key)
 				Handy.move_highlight.use(key)
 				Handy.regular_keybinds.use(key)
 				Handy.insta_highlight_entire_f_hand.use(key)
@@ -2258,6 +2516,11 @@ Handy.controller = {
 		return false
 	end,
 	process_wheel = function(wheel)
+		Handy.controller.update_device_type({ mouse = true })
+
+		if not Handy.is_mod_active() then
+			return false
+		end
 		if G.CONTROLLER.text_input_hook then
 			return false
 		end
@@ -2270,7 +2533,8 @@ Handy.controller = {
 		Handy.speed_multiplier.use(key)
 		Handy.nopeus_interaction.use(key)
 
-		if G.STAGE == G.STAGES.RUN and not G.SETTINGS.paused then
+		if G.STAGE == G.STAGES.RUN and not G.SETTINGS.paused and not G.OVERLAY_MENU then
+			Handy.insta_actions.use_alt(key)
 			Handy.move_highlight.use(key)
 			Handy.regular_keybinds.use(key)
 			Handy.insta_highlight_entire_f_hand.use(key)
@@ -2281,9 +2545,60 @@ Handy.controller = {
 
 		return false
 	end,
-	process_card_click = function(card)
+	process_gamepad_button = function(joystick, button, released)
+		if Handy.__disable_gamepad then
+			return false
+		end
+		Handy.controller.update_device_type({ gamepad = true })
+
+		if not Handy.is_mod_active() then
+			return false
+		end
+		if G.CONTROLLER.text_input_hook then
+			return false
+		end
+
+		if not released and Handy.controller.process_bind(button, { gamepad = true }) then
+			return true
+		end
+
+		if button == "back" then
+			return false
+		end
+
 		if G.STAGE == G.STAGES.RUN and not G.SETTINGS.paused then
+			if Handy.controller.is_triggered(released) then
+				local _ = false
+					-- or Handy.insta_actions.use_alt(button)
+					-- or Handy.move_highlight.use(key)
+					or Handy.regular_keybinds.use(button)
+					or Handy.insta_highlight_entire_f_hand.use(button)
+					or Handy.deselect_hand.use(button)
+			end
+
+			-- Handy.dangerous_actions.toggle_queue(button, released)
+		end
+
+		Handy.UI.state_panel.update(button, released)
+
+		return false
+	end,
+	process_gamepad_axis = function(joystick, axis, value)
+		if Handy.__disable_gamepad then
+			return false
+		end
+		Handy.controller.update_device_type({ gamepad = true })
+		return false
+	end,
+	process_card_click = function(card)
+		if not Handy.is_mod_active() then
+			return false
+		end
+		if G.STAGE == G.STAGES.RUN and not G.SETTINGS.paused and not G.OVERLAY_MENU then
 			if Handy.insta_actions.use(card) then
+				return true
+			end
+			if Handy.dangerous_actions.use_click(card) then
 				return true
 			end
 			Handy.last_clicked_card = card
@@ -2292,22 +2607,48 @@ Handy.controller = {
 		return false
 	end,
 	process_card_hover = function(card)
-		if G.STAGE == G.STAGES.RUN and not G.SETTINGS.paused then
+		if not Handy.is_mod_active() then
+			return false
+		end
+		if G.STAGE == G.STAGES.RUN and not G.SETTINGS.paused and not G.OVERLAY_MENU then
 			if Handy.insta_highlight.use(card) then
 				return true
 			end
-			if Handy.dangerous_actions.use(card) then
+			if Handy.dangerous_actions.use_hover(card) then
 				return true
 			end
+			Handy.last_hovered_card = card
+			Handy.last_hovered_area = card.area
 		end
 
 		return false
 	end,
+
+	process_tag_click = function(tag)
+		if not Handy.is_mod_active() then
+			return false
+		end
+		if G.STAGE == G.STAGES.RUN and not G.SETTINGS.paused and not G.OVERLAY_MENU then
+			if Handy.dangerous_actions.use_tag_click(tag) then
+				return true
+			end
+		end
+		return false
+	end,
+
 	process_update = function(dt)
+		Handy.controller.update_device_type()
+
 		Handy.insta_booster_skip.update()
 		Handy.insta_cash_out.update()
 		Handy.show_deck_preview.update()
 		Handy.not_just_yet_interaction.update()
+
+		for key, button in pairs(Handy.controller.gamepad_patched_buttons) do
+			if button.node.REMOVED then
+				Handy.controller.gamepad_patched_buttons[key] = nil
+			end
+		end
 
 		Handy.UI.update(dt)
 	end,
@@ -2347,7 +2688,9 @@ Handy.insta_cash_out = {
 
 	update = function()
 		Handy.insta_cash_out.is_hold = (
-			G.STAGE == G.STAGES.RUN and Handy.controller.is_module_key_down(Handy.config.current.insta_cash_out)
+			G.STAGE == G.STAGES.RUN
+			and Handy.is_mod_active()
+			and Handy.controller.is_module_key_down(Handy.cc.insta_cash_out)
 		)
 		return Handy.insta_cash_out.can_execute() and Handy.insta_cash_out.execute() or false
 	end,
@@ -2360,9 +2703,13 @@ Handy.insta_booster_skip = {
 	is_skipped = false,
 
 	can_execute = function(check)
-		if check then
-			return not not (Handy.insta_booster_skip.is_hold and G.booster_pack)
-		end
+		-- if check then
+		-- 	return not not (
+		-- 		Handy.insta_booster_skip.is_hold
+		-- 		and not Handy.insta_booster_skip.is_skipped
+		-- 		and G.booster_pack
+		-- 	)
+		-- end
 		return not not (
 			Handy.insta_booster_skip.is_hold
 			and not Handy.insta_booster_skip.is_skipped
@@ -2387,37 +2734,46 @@ Handy.insta_booster_skip = {
 
 	update = function()
 		Handy.insta_booster_skip.is_hold = (
-			G.STAGE == G.STAGES.RUN and Handy.controller.is_module_key_down(Handy.config.current.insta_booster_skip)
+			G.STAGE == G.STAGES.RUN
+			and Handy.is_mod_active()
+			and Handy.controller.is_module_key_down(Handy.cc.insta_booster_skip)
 		)
 		return Handy.insta_booster_skip.can_execute() and Handy.insta_booster_skip.execute() or false
 	end,
 
 	update_state_panel = function(state, key, released)
-		if G.STAGE ~= G.STAGES.RUN then
-			return false
-		end
-		if Handy.config.current.notifications_level < 4 then
-			return false
-		end
-		if Handy.insta_booster_skip.can_execute(true) then
-			state.items.insta_booster_skip = {
-				text = "Skip Booster Packs",
-				hold = Handy.insta_booster_skip.is_hold,
-				order = 10,
-			}
-			return true
-		end
-		return false
+		-- if G.STAGE ~= G.STAGES.RUN then
+		-- 	return false
+		-- end
+		-- if Handy.cc.notifications_level < 4 then
+		-- 	return false
+		-- end
+		-- if Handy.insta_booster_skip.can_execute(true) then
+		-- 	state.items.insta_booster_skip = {
+		-- 		text = "Skip Booster Packs",
+		-- 		hold = Handy.insta_booster_skip.is_hold,
+		-- 		order = 10,
+		-- 	}
+		-- 	return true
+		-- end
+		-- return false
 	end,
 }
 
 Handy.show_deck_preview = {
 	is_hold = false,
 
+	get_is_hold = function()
+		if Handy.is_mod_active() and Handy.controller.is_module_enabled(Handy.cc.show_deck_preview) then
+			return G.STAGE == G.STAGES.RUN and (Handy.__disable_gamepad and G.CONTROLLER.held_buttons.triggerleft)
+				or Handy.controller.is_module_key_down(Handy.cc.show_deck_preview)
+		else
+			return G.CONTROLLER.held_buttons.triggerleft
+		end
+	end,
+
 	update = function()
-		Handy.show_deck_preview.is_hold = (
-			G.STAGE == G.STAGES.RUN and Handy.controller.is_module_key_down(Handy.config.current.show_deck_preview)
-		)
+		Handy.show_deck_preview.is_hold = Handy.show_deck_preview.get_is_hold()
 	end,
 }
 
@@ -2425,7 +2781,7 @@ Handy.show_deck_preview = {
 
 Handy.deselect_hand = {
 	should_prevent = function()
-		return Handy.config.current.deselect_hand.enabled
+		return Handy.is_mod_active() and Handy.controller.is_module_enabled(Handy.cc.deselect_hand)
 	end,
 
 	can_execute = function(key)
@@ -2434,11 +2790,13 @@ Handy.deselect_hand = {
 			and G.hand.highlighted[1]
 			-- Vanilla check
 			and not ((G.play and #G.play.cards > 0) or G.CONTROLLER.locked or G.CONTROLLER.locks.frame or (G.GAME.STOP_USE and G.GAME.STOP_USE > 0))
-			and Handy.controller.is_module_key(Handy.config.current.deselect_hand, key)
+			and Handy.is_mod_active()
+			and Handy.controller.is_module_key(Handy.cc.deselect_hand, key)
 		)
 	end,
 	execute = function()
 		G.hand:unhighlight_all()
+		return true
 	end,
 
 	use = function(key)
@@ -2448,37 +2806,59 @@ Handy.deselect_hand = {
 
 Handy.regular_keybinds = {
 	shop_reroll_blocker = false,
+	play_blocker = false,
+	discard_blocker = false,
+
+	shop_loaded = false,
 
 	can_play = function(key)
-		return not not (
-			Handy.fake_events.check({
-				func = G.FUNCS.can_play,
-			}) and Handy.controller.is_module_key(Handy.config.current.regular_keybinds.play, key)
-		)
+		return not Handy.regular_keybinds.play_blocker
+			and Handy.controller.is_module_key(Handy.cc.regular_keybinds.play, key)
+			and Handy.fake_events.check_button(function()
+				return G.buttons.states.visible and G.buttons:get_UIE_by_ID("play_button")
+			end, { visible = true })
 	end,
 	play = function()
-		Handy.fake_events.execute({
-			func = G.FUNCS.play_cards_from_highlighted,
-		})
+		Handy.regular_keybinds.play_blocker = true
+		Handy.fake_events.execute_button(function()
+			return G.buttons:get_UIE_by_ID("play_button")
+		end)
+		G.E_MANAGER:add_event(Event({
+			no_delete = true,
+			func = function()
+				Handy.regular_keybinds.play_blocker = false
+				return true
+			end,
+		}))
+		return true
 	end,
 
 	can_discard = function(key)
-		return not not (
-			Handy.fake_events.check({
-				func = G.FUNCS.can_discard,
-			}) and Handy.controller.is_module_key(Handy.config.current.regular_keybinds.discard, key)
-		)
+		return not Handy.regular_keybinds.discard_blocker
+			and Handy.controller.is_module_key(Handy.cc.regular_keybinds.discard, key)
+			and Handy.fake_events.check_button(function()
+				return G.buttons.states.visible and G.buttons:get_UIE_by_ID("discard_button")
+			end, { visible = true })
 	end,
 	discard = function()
-		Handy.fake_events.execute({
-			func = G.FUNCS.discard_cards_from_highlighted,
-		})
+		Handy.regular_keybinds.discard_blocker = true
+		Handy.fake_events.execute_button(function()
+			return G.buttons:get_UIE_by_ID("discard_button")
+		end)
+		G.E_MANAGER:add_event(Event({
+			no_delete = true,
+			func = function()
+				Handy.regular_keybinds.discard_blocker = false
+				return true
+			end,
+		}))
+		return true
 	end,
 
 	can_change_sort = function(key)
-		if Handy.controller.is_module_key(Handy.config.current.regular_keybinds.sort_by_rank, key) then
+		if Handy.controller.is_module_key(Handy.cc.regular_keybinds.sort_by_rank, key) then
 			return true, "rank"
-		elseif Handy.controller.is_module_key(Handy.config.current.regular_keybinds.sort_by_suit, key) then
+		elseif Handy.controller.is_module_key(Handy.cc.regular_keybinds.sort_by_suit, key) then
 			return true, "suit"
 		else
 			return false, nil
@@ -2489,119 +2869,162 @@ Handy.regular_keybinds = {
 			Handy.fake_events.execute({
 				func = G.FUNCS.sort_hand_value,
 			})
+			return true
 		elseif sorter == "suit" then
 			Handy.fake_events.execute({
 				func = G.FUNCS.sort_hand_suit,
 			})
+			return true
 		end
 	end,
 
+	on_shop_loaded = function()
+		if not G.shop then
+			return
+		end
+		Handy.regular_keybinds.shop_loaded = true
+		local remove_func_ref = G.shop.remove
+		function G.shop:remove(...)
+			Handy.regular_keybinds.shop_loaded = false
+			return remove_func_ref(self, ...)
+		end
+	end,
 	can_reroll_shop = function(key)
 		return not not (
 			not Handy.regular_keybinds.shop_reroll_blocker
-			and Handy.fake_events.check({ func = G.FUNCS.can_reroll, button = "reroll_shop" })
-			and Handy.controller.is_module_key(Handy.config.current.regular_keybinds.reroll_shop, key)
+			and Handy.regular_keybinds.shop_loaded
+			and Handy.controller.is_module_key(Handy.cc.regular_keybinds.reroll_shop, key)
+			and Handy.fake_events.check_button(function()
+				return G.shop:get_UIE_by_ID("next_round_button").parent.children[2]
+			end, { visible = true, require_exact_func = "can_reroll" })
 		)
 	end,
 	reroll_shop = function()
 		Handy.regular_keybinds.shop_reroll_blocker = true
-		Handy.fake_events.execute({
-			func = G.FUNCS.reroll_shop,
-		})
+		Handy.fake_events.execute_button(function()
+			return G.shop:get_UIE_by_ID("next_round_button").parent.children[2]
+		end)
 		G.E_MANAGER:add_event(Event({
+			no_delete = true,
 			func = function()
 				Handy.regular_keybinds.shop_reroll_blocker = false
 				return true
 			end,
 		}))
+		return true
 	end,
 
 	can_leave_shop = function(key)
-		return not not (Handy.controller.is_module_key(Handy.config.current.regular_keybinds.leave_shop, key))
+		return Handy.controller.is_module_key(Handy.cc.regular_keybinds.leave_shop, key)
+			and Handy.regular_keybinds.shop_loaded
+			and Handy.fake_events.check_button(function()
+				return G.shop:get_UIE_by_ID("next_round_button")
+			end, { visible = true })
 	end,
 	leave_shop = function()
-		Handy.fake_events.execute({
-			func = G.FUNCS.toggle_shop,
-		})
+		Handy.regular_keybinds.shop_loaded = false
+		Handy.fake_events.execute_button(function()
+			return G.shop:get_UIE_by_ID("next_round_button")
+		end)
+		return true
 	end,
 
 	can_select_blind = function(key)
-		return not not (
-			Handy.controller.is_module_key(Handy.config.current.regular_keybinds.select_blind, key)
+		return Handy.controller.is_module_key(Handy.cc.regular_keybinds.select_blind, key)
+			and G.GAME
 			and G.GAME.blind_on_deck
+			and G.blind_select
 			and G.GAME.round_resets.blind_choices[G.GAME.blind_on_deck]
-		)
+			and Handy.fake_events.check_button(function()
+				return G.blind_select_opts[string.lower(G.GAME.blind_on_deck)]:get_UIE_by_ID("select_blind_button")
+			end)
 	end,
 	select_blind = function()
-		Handy.fake_events.execute({
-			func = G.FUNCS.select_blind,
-			card = G.P_BLINDS[G.GAME.round_resets.blind_choices[G.GAME.blind_on_deck]],
-		})
+		Handy.fake_events.execute_button(function()
+			return G.blind_select_opts[string.lower(G.GAME.blind_on_deck)]:get_UIE_by_ID("select_blind_button")
+		end)
+		return true
 	end,
 
 	can_skip_blind = function(key)
 		return not not (
-			Handy.controller.is_module_key(Handy.config.current.regular_keybinds.skip_blind, key)
-			and G.GAME.blind_on_deck
-			and G.blind_select_opts[string.lower(G.GAME.blind_on_deck)]
+			Handy.controller.is_module_key(Handy.cc.regular_keybinds.skip_blind, key)
+			and Handy.fake_events.check_button(function()
+				local container = G.blind_select_opts[string.lower(G.GAME.blind_on_deck)]:get_UIE_by_ID(
+					"tag_" .. G.GAME.blind_on_deck
+				)
+				return container.states.visible and container.children[2]
+			end, { visible = true })
 		)
 	end,
 	skip_blind = function()
-		Handy.fake_events.execute({
-			func = G.FUNCS.skip_blind,
-			UIBox = G.blind_select_opts[string.lower(G.GAME.blind_on_deck)],
-		})
+		Handy.fake_events.execute_button(function()
+			return G.blind_select_opts[string.lower(G.GAME.blind_on_deck)]:get_UIE_by_ID("tag_" .. G.GAME.blind_on_deck).children[2]
+		end)
+		return true
 	end,
 
 	can_open_run_info = function(key)
-		return not not (Handy.controller.is_module_key(Handy.config.current.regular_keybinds.run_info, key))
+		if Handy.controller.is_module_key(Handy.cc.regular_keybinds.run_info, key) then
+			return true, 1
+		elseif Handy.controller.is_module_key(Handy.cc.regular_keybinds.run_info_blinds, key) then
+			return true, 2
+		end
+		return false, nil
 	end,
-	open_run_info = function()
+	open_run_info = function(tab_index)
+		if tab_index == 2 then
+			Handy.override_create_tabs_chosen_by_label = localize("b_blinds")
+		end
 		Handy.fake_events.execute({
 			func = G.FUNCS.run_info,
 		})
+		Handy.override_create_tabs_chosen_by_label = nil
+		return true
 	end,
 
 	can_view_deck = function(key)
-		return not not (Handy.controller.is_module_key(Handy.config.current.regular_keybinds.view_deck, key))
+		return not not (Handy.controller.is_module_key(Handy.cc.regular_keybinds.view_deck, key))
 	end,
 	view_deck = function()
 		Handy.fake_events.execute({
 			func = G.FUNCS.deck_info,
 		})
+		return true
 	end,
 
 	use = function(key)
-		if not Handy.config.current.regular_keybinds.enabled then
+		if not Handy.controller.is_module_enabled(Handy.cc.regular_keybinds) then
 			return false
 		end
 		if not G.SETTINGS.paused and G.STAGE == G.STAGES.RUN then
-			if Handy.regular_keybinds.can_open_run_info(key) then
-				Handy.regular_keybinds.open_run_info()
+			local can_open_info, info_tab_index = Handy.regular_keybinds.can_open_run_info(key)
+			if can_open_info then
+				return Handy.regular_keybinds.open_run_info(info_tab_index)
 			elseif Handy.regular_keybinds.can_view_deck(key) then
-				Handy.regular_keybinds.view_deck()
+				return Handy.regular_keybinds.view_deck()
 			elseif G.STATE == G.STATES.SELECTING_HAND then
 				local need_sort, sorter = Handy.regular_keybinds.can_change_sort(key)
 				if need_sort then
-					Handy.regular_keybinds.change_sort(sorter)
+					return Handy.regular_keybinds.change_sort(sorter)
 				elseif Handy.regular_keybinds.can_discard(key) then
-					Handy.regular_keybinds.discard()
+					return Handy.regular_keybinds.discard()
 				elseif Handy.regular_keybinds.can_play(key) then
-					Handy.regular_keybinds.play()
+					return Handy.regular_keybinds.play()
 				end
 				return false
 			elseif G.STATE == G.STATES.SHOP then
 				if Handy.regular_keybinds.can_reroll_shop(key) then
-					Handy.regular_keybinds.reroll_shop()
+					return Handy.regular_keybinds.reroll_shop()
 				elseif Handy.regular_keybinds.can_leave_shop(key) then
-					Handy.regular_keybinds.leave_shop()
+					return Handy.regular_keybinds.leave_shop()
 				end
 				return false
 			elseif G.STATE == G.STATES.BLIND_SELECT then
 				if Handy.regular_keybinds.can_skip_blind(key) then
-					Handy.regular_keybinds.skip_blind()
+					return Handy.regular_keybinds.skip_blind()
 				elseif Handy.regular_keybinds.can_select_blind(key) then
-					Handy.regular_keybinds.select_blind()
+					return Handy.regular_keybinds.select_blind()
 				end
 				return false
 			end
@@ -2614,16 +3037,16 @@ Handy.regular_keybinds = {
 
 Handy.insta_highlight = {
 	can_execute = function(card)
-		return Handy.config.current.insta_highlight.enabled
+		return G.STATE ~= G.STATES.HAND_PLAYED
 			and card
 			and card.area == G.hand
 			-- TODO: fix it
 			and not next(love.touch.getTouches())
-			and love.mouse.isDown(1)
+			and Handy.controller.is_module_key_down(Handy.cc.insta_highlight)
 			and not card.highlighted
 	end,
 	execute = function(card)
-		card.area:add_to_highlighted(card)
+		card:click()
 		return false
 	end,
 
@@ -2631,12 +3054,26 @@ Handy.insta_highlight = {
 		return Handy.insta_highlight.can_execute(card) and Handy.insta_highlight.execute(card) or false
 	end,
 
+	use_on_hovered = function(key)
+		if key == "mouse1" then
+			return false
+		end
+		G.E_MANAGER:add_event(Event({
+			type = "immediate",
+			func = function()
+				Handy.insta_highlight.use(G.CONTROLLER.hovering.target)
+				return true
+			end,
+		}))
+		return false
+	end,
+
 	update_state_panel = function(state, key, released) end,
 }
 
 Handy.insta_highlight_entire_f_hand = {
 	can_execute = function(key)
-		return G.hand and Handy.controller.is_module_key(Handy.config.current.insta_highlight_entire_f_hand, key)
+		return G.hand and Handy.controller.is_module_key(Handy.cc.insta_highlight_entire_f_hand, key)
 	end,
 	execute = function(key)
 		G.hand:unhighlight_all()
@@ -2659,16 +3096,40 @@ Handy.insta_highlight_entire_f_hand = {
 }
 
 Handy.insta_actions = {
+	action_blocker = false,
+
 	get_actions = function()
 		return {
-			buy_or_sell = Handy.controller.is_module_key_down(Handy.config.current.insta_buy_or_sell),
-			use = Handy.controller.is_module_key_down(Handy.config.current.insta_use),
+			buy_n_sell = Handy.controller.is_module_key_down(Handy.cc.insta_buy_n_sell),
+			buy_or_sell = not Handy.controller.is_gamepad()
+				and Handy.controller.is_module_key_down(Handy.cc.insta_buy_or_sell),
+			use = not Handy.controller.is_gamepad() and Handy.controller.is_module_key_down(Handy.cc.insta_use),
+			cryptid_code_use_last_interaction = Handy.controller.is_module_key_down(
+				Handy.cc.cryptid_code_use_last_interaction
+			),
 		}
 	end,
+	get_alt_actions = function(key)
+		return {
+			buy_n_sell = Handy.controller.is_module_key(Handy.cc.insta_buy_n_sell, key),
+			buy_or_sell = not Handy.controller.is_gamepad()
+				and Handy.controller.is_module_key(Handy.cc.insta_buy_or_sell, key),
+			use = not Handy.controller.is_gamepad() and Handy.controller.is_module_key(Handy.cc.insta_use, key),
+			cryptid_code_use_last_interaction = Handy.controller.is_module_key(
+				Handy.cc.cryptid_code_use_last_interaction,
+				key
+			),
+		}
+	end,
+
 	can_execute = function(card, buy_or_sell, use)
-		return not not ((buy_or_sell or use) and card and card.area)
+		return not not (not Handy.insta_actions.action_blocker and (buy_or_sell or use) and card and card.area)
 	end,
 	execute = function(card, buy_or_sell, use, only_sell)
+		if card.REMOVED then
+			return false
+		end
+
 		local target_button = nil
 		local is_shop_button = false
 		local is_custom_button = false
@@ -2774,6 +3235,15 @@ Handy.insta_actions = {
 				UIBox = target_button_UIBox,
 			})
 			if check then
+				Handy.insta_actions.action_blocker = true
+				if Handy.last_clicked_card == card then
+					Handy.last_clicked_card = nil
+					Handy.last_clicked_area = nil
+				end
+				if Handy.last_hovered_card == card then
+					Handy.last_hovered_card = nil
+					Handy.last_hovered_area = nil
+				end
 				Handy.fake_events.execute({
 					func = G.FUNCS[button or target_button_definition.config.button],
 					button = nil,
@@ -2781,6 +3251,13 @@ Handy.insta_actions = {
 					card = card,
 					UIBox = target_button_UIBox,
 				})
+				G.E_MANAGER:add_event(Event({
+					no_delete = true,
+					func = function()
+						Handy.insta_actions.action_blocker = false
+						return true
+					end,
+				}))
 				cleanup()
 				return true
 			end
@@ -2790,31 +3267,102 @@ Handy.insta_actions = {
 		return false
 	end,
 
-	use = function(card)
+	process_card = function(card, actions)
+		if not card or card.REMOVED then
+			return false
+		end
 		if card.ability and card.ability.handy_dangerous_actions_used then
 			return true
 		end
 
-		local actions = Handy.insta_actions.get_actions()
+		if actions.cryptid_code_use_last_interaction then
+			local cards_events_list = {
+				c_cry_variable = "variable_apply_previous",
+				c_cry_pointer = "pointer_apply_previous",
+				c_cry_class = "class_apply_previous",
+				c_cry_exploit = "exploit_apply_previous",
+			}
+			local success, card_center = pcall(function()
+				return card.config.center.key
+			end)
+			if success and card_center and cards_events_list[card_center] then
+				local is_code_card_used = Handy.insta_actions.can_execute(card, false, true)
+						and Handy.insta_actions.execute(card, false, true)
+					or false
+				if is_code_card_used then
+					Handy.fake_events.execute({
+						func = G.FUNCS[cards_events_list[card_center]],
+					})
+					return true
+				end
+			end
+			return false
+		elseif actions.buy_n_sell then
+			if
+				Handy.utils.table_contains({
+					G.pack_cards,
+					G.shop_jokers,
+					G.shop_booster,
+					G.shop_vouchers,
+				}, card.area)
+				and card.ability
+				and (card.ability.set == "Joker" or card.ability.consumeable)
+			then
+				local is_buyed = Handy.insta_actions.can_execute(card, true, false)
+						and Handy.insta_actions.execute(card, true, false)
+					or false
+				if is_buyed then
+					G.E_MANAGER:add_event(Event({
+						func = function()
+							G.E_MANAGER:add_event(Event({
+								func = function()
+									return (
+										Handy.insta_actions.can_execute(card, true, false)
+										and Handy.insta_actions.execute(card, true, false)
+									) or true
+								end,
+							}))
+							return true
+						end,
+					}))
+				end
+				return is_buyed
+			end
+			return false
+		else
+			return Handy.insta_actions.can_execute(card, actions.buy_or_sell, actions.use)
+					and Handy.insta_actions.execute(card, actions.buy_or_sell, actions.use)
+				or false
+		end
+	end,
 
-		return Handy.insta_actions.can_execute(card, actions.buy_or_sell, actions.use)
-				and Handy.insta_actions.execute(card, actions.buy_or_sell, actions.use)
-			or false
+	use = function(card)
+		return Handy.cc.insta_actions_trigger_mode == 1
+			and not Handy.controller.is_gamepad()
+			and Handy.insta_actions.process_card(card, Handy.insta_actions.get_actions())
+	end,
+	use_alt = function(key)
+		return Handy.cc.insta_actions_trigger_mode == 2
+			and Handy.insta_actions.process_card(Handy.last_hovered_card, Handy.insta_actions.get_alt_actions(key))
 	end,
 
 	update_state_panel = function(state, key, released)
 		if G.STAGE ~= G.STAGES.RUN or G.SETTINGS.paused then
 			return false
 		end
-		if Handy.config.current.notifications_level < 4 then
+		if Handy.cc.notifications_level < 4 then
 			return false
 		end
 		local result = false
-		local actions = Handy.insta_actions.get_actions()
+		local is_alt_action = Handy.cc.insta_actions_trigger_mode == 2
+		if is_alt_action and not Handy.controller.is_triggered(released) then
+			return false
+		end
+		local actions = is_alt_action and Handy.insta_actions.get_alt_actions(key) or Handy.insta_actions.get_actions()
 		if actions.use then
 			state.items.insta_use = {
 				text = "Quick use",
-				hold = true,
+				hold = not is_alt_action,
 				order = 10,
 			}
 			result = true
@@ -2822,8 +3370,16 @@ Handy.insta_actions = {
 		if actions.buy_or_sell then
 			state.items.quick_buy_and_sell = {
 				text = "Quick buy and sell",
-				hold = true,
+				hold = not is_alt_action,
 				order = 11,
+			}
+			result = true
+		end
+		if actions.buy_n_sell then
+			state.items.quick_buy_n_sell = {
+				text = "Quick buy and immediately sell",
+				hold = not is_alt_action,
+				order = 12,
 			}
 			result = true
 		end
@@ -2838,7 +3394,7 @@ Handy.move_highlight = {
 	},
 
 	get_dx = function(key, area)
-		for module_key, module in pairs(Handy.config.current.move_highlight.dx) do
+		for module_key, module in pairs(Handy.cc.move_highlight.dx) do
 			if Handy.controller.is_module_key(module, key) then
 				return Handy.move_highlight.dx[module_key]
 			end
@@ -2847,8 +3403,8 @@ Handy.move_highlight = {
 	end,
 	get_actions = function(key, area)
 		return {
-			swap = Handy.controller.is_module_key_down(Handy.config.current.move_highlight.swap),
-			to_end = Handy.controller.is_module_key_down(Handy.config.current.move_highlight.to_end),
+			swap = Handy.controller.is_module_key_down(Handy.cc.move_highlight.swap),
+			to_end = Handy.controller.is_module_key_down(Handy.cc.move_highlight.to_end),
 		}
 	end,
 
@@ -2865,7 +3421,7 @@ Handy.move_highlight = {
 	end,
 	cen_execute = function(key, area)
 		return not not (
-			Handy.config.current.move_highlight.enabled
+			Handy.controller.is_module_enabled(Handy.cc.move_highlight)
 			and area
 			and area.highlighted
 			and area.highlighted[1]
@@ -2928,76 +3484,179 @@ Handy.dangerous_actions = {
 	sell_queue = {},
 
 	sell_next_card = function()
-		local card = table.remove(Handy.dangerous_actions.sell_queue, 1)
-		if not card then
+		local target = table.remove(Handy.dangerous_actions.sell_queue, 1)
+		if not target then
 			stop_use()
 			return
 		end
 
-		G.GAME.STOP_USE = 0
-		Handy.insta_actions.execute(card, true, false, true)
+		local card = target.card
+		if target.remove then
+			card:stop_hover()
+			card:remove()
+		else
+			G.GAME.STOP_USE = 0
+			Handy.insta_actions.execute(card, true, false, true)
 
-		G.E_MANAGER:add_event(Event({
-			blocking = false,
-			func = function()
-				if card.ability then
-					card.ability.handy_dangerous_actions_used = nil
-				end
-				return true
-			end,
-		}))
+			G.E_MANAGER:add_event(Event({
+				blocking = false,
+				func = function()
+					if card.ability then
+						card.ability.handy_dangerous_actions_used = nil
+					end
+					return true
+				end,
+			}))
+		end
+		if Handy.last_clicked_card == card then
+			Handy.last_clicked_card = nil
+			Handy.last_clicked_area = nil
+		end
+		if Handy.last_hovered_card == card then
+			Handy.last_hovered_card = nil
+			Handy.last_hovered_area = nil
+		end
 		Handy.dangerous_actions.sell_next_card()
 	end,
 
-	can_execute = function(card)
-		return Handy.config.current.dangerous_actions.enabled
-			and card
-			and not (card.ability and card.ability.handy_dangerous_actions_used)
+	get_options = function(card)
+		return {
+			use_queue = Handy.controller.is_module_enabled(Handy.cc.dangerous_actions.immediate_buy_and_sell.queue),
+			remove = Handy.controller.is_module_key_down(Handy.cc.dangerous_actions.card_remove)
+				and (card.area == G.jokers or card.area == G.consumeables),
+		}
 	end,
-	execute = function(card)
-		if Handy.controller.is_module_key_down(Handy.config.current.dangerous_actions.immediate_buy_and_sell) then
-			if Handy.config.current.dangerous_actions.immediate_buy_and_sell.queue.enabled then
+
+	process_card = function(card, use_queue, remove)
+		if use_queue then
+			if not card.ability then
+				card.ability = {}
+			end
+			card.ability.handy_dangerous_actions_used = true
+
+			table.insert(Handy.dangerous_actions.sell_queue, { card = card, remove = remove })
+			Handy.UI.state_panel.update(nil, nil)
+			return false
+		elseif remove then
+			card:stop_hover()
+			card:remove()
+			return true
+		else
+			local result = Handy.insta_actions.execute(card, true, false)
+			if result then
 				if not card.ability then
 					card.ability = {}
 				end
 				card.ability.handy_dangerous_actions_used = true
 
-				table.insert(Handy.dangerous_actions.sell_queue, card)
-				Handy.UI.state_panel.update(nil, nil)
-				return false
-			else
-				local result = Handy.insta_actions.execute(card, true, false)
-				if result then
-					if not card.ability then
-						card.ability = {}
-					end
-					card.ability.handy_dangerous_actions_used = true
+				G.CONTROLLER.locks.selling_card = nil
+				G.CONTROLLER.locks.use = nil
+				G.GAME.STOP_USE = 0
 
-					G.CONTROLLER.locks.selling_card = nil
-					G.CONTROLLER.locks.use = nil
-					G.GAME.STOP_USE = 0
+				G.E_MANAGER:add_event(Event({
+					no_delete = true,
+					func = function()
+						if card.ability then
+							card.ability.handy_dangerous_actions_used = nil
+						end
+						return true
+					end,
+				}))
+			end
+			return result
+		end
+	end,
 
-					G.E_MANAGER:add_event(Event({
-						func = function()
-							if card.ability then
-								card.ability.handy_dangerous_actions_used = nil
-							end
-							return true
-						end,
-					}))
+	can_execute = function(card)
+		return Handy.is_dangerous_actions_active()
+			and card
+			and not (card.ability and card.ability.handy_dangerous_actions_used)
+	end,
+	execute_click = function(card)
+		if Handy.controller.is_module_key_down(Handy.cc.dangerous_actions.immediate_buy_and_sell, true) then
+			if Handy.controller.is_module_key_down(Handy.cc.dangerous_actions.sell_all) then
+				local options = Handy.dangerous_actions.get_options(card)
+				for _, target_card in ipairs(card.area.cards) do
+					Handy.dangerous_actions.process_card(target_card, true, options.remove)
 				end
-				return result
+				Handy.dangerous_actions.sell_next_card()
+				return true
+			elseif Handy.controller.is_module_key_down(Handy.cc.dangerous_actions.sell_all_same) then
+				local target_cards = {}
+				local success, card_center_key = pcall(function()
+					return card.config.center.key
+				end)
+				if success and card_center_key then
+					for _, area_card in ipairs(card.area.cards) do
+						local _success, area_card_center_key = pcall(function()
+							return area_card.config.center.key
+						end)
+						if _success and area_card_center_key == card_center_key then
+							table.insert(target_cards, area_card)
+						end
+					end
+				end
+
+				local options = Handy.dangerous_actions.get_options(card)
+				for _, target_card in ipairs(target_cards) do
+					Handy.dangerous_actions.process_card(target_card, true, options.remove)
+				end
+				Handy.dangerous_actions.sell_next_card()
+				return true
 			end
 		end
 		return false
 	end,
+	execute_hover = function(card)
+		if not Handy.controller.is_module_key_down(Handy.cc.dangerous_actions.immediate_buy_and_sell) then
+			return false
+		end
+		if not Handy.insta_actions.get_actions().buy_or_sell then
+			return false
+		end
+		local options = Handy.dangerous_actions.get_options(card)
+		return Handy.dangerous_actions.process_card(card, options.use_queue, options.remove)
+	end,
 
-	use = function(card)
-		return Handy.dangerous_actions.can_execute(card) and Handy.dangerous_actions.execute(card) or false
+	use_click = function(card)
+		return Handy.dangerous_actions.can_execute(card) and Handy.dangerous_actions.execute_click(card) or false
+	end,
+	use_hover = function(card)
+		return Handy.dangerous_actions.can_execute(card) and Handy.dangerous_actions.execute_hover(card) or false
+	end,
+
+	can_execute_tag = function(tag)
+		return Handy.is_dangerous_actions_active() and tag
+	end,
+	execute_tag_click = function(tag)
+		if Handy.controller.is_module_key_down(Handy.cc.dangerous_actions.card_remove) then
+			local target_tags = {}
+			for _, target_tag in ipairs(G.GAME.tags) do
+				table.insert(target_tags, target_tag)
+			end
+			if Handy.controller.is_module_key_down(Handy.cc.dangerous_actions.sell_all) then
+				for _, target_tag in ipairs(target_tags) do
+					target_tag:remove()
+				end
+				return true
+			elseif Handy.controller.is_module_key_down(Handy.cc.dangerous_actions.sell_all_same) then
+				local tag_key = tag.key
+				for _, target_tag in ipairs(target_tags) do
+					if target_tag.key == tag_key then
+						target_tag:remove()
+					end
+				end
+				return true
+			end
+		end
+		return false
+	end,
+	use_tag_click = function(tag)
+		return Handy.dangerous_actions.can_execute_tag(tag) and Handy.dangerous_actions.execute_tag_click(tag) or false
 	end,
 
 	toggle_queue = function(key, released)
-		if Handy.controller.is_module_key(Handy.config.current.dangerous_actions.immediate_buy_and_sell, key) then
+		if Handy.controller.is_module_key(Handy.cc.dangerous_actions.immediate_buy_and_sell, key) then
 			if released then
 				Handy.dangerous_actions.sell_next_card()
 			else
@@ -3010,62 +3669,98 @@ Handy.dangerous_actions = {
 		if G.STAGE ~= G.STAGES.RUN or G.SETTINGS.paused then
 			return false
 		end
-		if Handy.config.current.notifications_level < 2 then
+		if Handy.cc.notifications_level < 2 then
 			return false
 		end
 
-		if Handy.controller.is_module_key_down(Handy.config.current.dangerous_actions.immediate_buy_and_sell, true) then
-			if
-				not Handy.config.current.dangerous_actions.enabled
-				or not Handy.config.current.dangerous_actions.immediate_buy_and_sell.enabled
-			then
-				state.items.prevented_dangerous_actions = {
-					text = "Unsafe insta-sell disabled in mod settings",
-					hold = true,
-					order = 99999999,
-				}
-				return true
-			end
+		local is_sell = Handy.controller.is_module_key_down(Handy.cc.dangerous_actions.immediate_buy_and_sell, true)
+		if not is_sell then
+			return false
+		end
 
-			state.dangerous = true
-			state.items.dangerous_hint = {
-				text = "[Unsafe] Bugs can appear!",
-				dangerous = true,
+		if not Handy.controller.is_module_enabled(Handy.cc.dangerous_actions) then
+			state.items.prevented_dangerous_actions = {
+				text = "Unsafe actions disabled in mod settings",
 				hold = true,
 				order = 99999999,
 			}
-			if state.items.quick_buy_and_sell then
-				state.items.quick_buy_and_sell.dangerous = true
-			elseif Handy.insta_actions.get_actions().buy_or_sell then
-				local text = "Quick sell"
-				if Handy.config.current.dangerous_actions.immediate_buy_and_sell.queue.enabled then
-					text = text .. " [" .. #Handy.dangerous_actions.sell_queue .. " in queue]"
-				end
-				state.items.quick_buy_and_sell = {
-					text = text,
-					hold = true,
-					order = 11,
-					dangerous = true,
-				}
-			end
+			return true
+		elseif not Handy.is_dangerous_actions_active() then
+			state.items.prevented_dangerous_actions = {
+				text = "Unsafe actions disabled by other mod",
+				hold = true,
+				order = 99999999,
+			}
 			return true
 		end
-		return false
+
+		local is_insta_sell = Handy.insta_actions.get_actions().buy_or_sell
+			and Handy.controller.is_module_key_down(Handy.cc.dangerous_actions.immediate_buy_and_sell)
+		local is_all = Handy.controller.is_module_key_down(Handy.cc.dangerous_actions.sell_all)
+		local is_all_same = Handy.controller.is_module_key_down(Handy.cc.dangerous_actions.sell_all_same)
+		local is_remove = Handy.controller.is_module_key_down(Handy.cc.dangerous_actions.card_remove)
+
+		state.dangerous = true
+		state.items.dangerous_hint = {
+			text = "[Unsafe] Bugs can appear!",
+			dangerous = true,
+			hold = true,
+			order = 99999999,
+		}
+
+		if is_insta_sell then
+			local text = is_remove and "Instant REMOVE" or "Instant sell"
+			if Handy.controller.is_module_enabled(Handy.cc.dangerous_actions.immediate_buy_and_sell.queue) then
+				text = text .. " [" .. #Handy.dangerous_actions.sell_queue .. " in queue]"
+			end
+			state.items.quick_buy_and_sell = {
+				text = text,
+				hold = true,
+				order = 11,
+				dangerous = true,
+			}
+		elseif is_all then
+			local text = is_remove and "REMOVE ALL cards/tags in clicked area" or "Sell ALL cards in clicked area"
+			state.items.sell_all_same = {
+				text = text,
+				hold = true,
+				order = 12,
+				dangerous = true,
+			}
+		elseif is_all_same then
+			local text = is_remove and "REMOVE all copies of clicked card/tag" or "Sell all copies of clicked card"
+			state.items.sell_all_same = {
+				text = text,
+				hold = true,
+				order = 12,
+				dangerous = true,
+			}
+		end
+		return true
 	end,
 }
 
 Handy.speed_multiplier = {
 	value = 1,
 
+	throttle = false,
+
+	get_value = function()
+		if not Handy.is_mod_active() or not Handy.controller.is_module_enabled(Handy.cc.speed_multiplier) then
+			return 1
+		end
+		return math.min(Handy.speed_multiplier.value, Handy.speed_multiplier.throttle and 4 or math.huge)
+	end,
+
 	get_actions = function(key)
 		return {
-			multiply = key == Handy.controller.wheel_to_key_table[1],
-			divide = key == Handy.controller.wheel_to_key_table[2],
+			multiply = Handy.controller.is_module_key(Handy.cc.speed_multiplier.multiply, key),
+			divide = Handy.controller.is_module_key(Handy.cc.speed_multiplier.divide, key),
 		}
 	end,
 	can_execute = function(key)
-		return Handy.config.current.speed_multiplier.enabled
-			and Handy.controller.is_module_key_down(Handy.config.current.speed_multiplier)
+		return Handy.controller.is_module_enabled(Handy.cc.speed_multiplier.no_hold)
+			or Handy.controller.is_module_key_down(Handy.cc.speed_multiplier)
 	end,
 
 	execute = function(key)
@@ -3094,7 +3789,7 @@ Handy.speed_multiplier = {
 		if not key or not Handy.speed_multiplier.can_execute(key) then
 			return false
 		end
-		if Handy.config.current.notifications_level < 3 then
+		if Handy.cc.notifications_level < 3 then
 			return false
 		end
 
@@ -3125,22 +3820,25 @@ Handy.nopeus_interaction = {
 
 	get_actions = function(key)
 		return {
-			increase = key == Handy.controller.wheel_to_key_table[1],
-			decrease = key == Handy.controller.wheel_to_key_table[2],
+			increase = Handy.controller.is_module_key(Handy.cc.nopeus_interaction.increase, key),
+			decrease = Handy.controller.is_module_key(Handy.cc.nopeus_interaction.decrease, key),
 		}
 	end,
 
 	can_dangerous = function()
 		return not not (
-			Handy.config.current.dangerous_actions.enabled
-			and Handy.config.current.dangerous_actions.nopeus_unsafe.enabled
+			Handy.is_mod_active()
+			and Handy.is_dangerous_actions_active()
+			and Handy.controller.is_module_enabled(Handy.cc.dangerous_actions.nopeus_unsafe)
 		)
 	end,
 	can_execute = function(key)
 		return not not (
-			Handy.config.current.nopeus_interaction.enabled
-			and Handy.nopeus_interaction.is_present()
-			and Handy.controller.is_module_key_down(Handy.config.current.nopeus_interaction)
+			Handy.nopeus_interaction.is_present()
+			and (
+				Handy.controller.is_module_enabled(Handy.cc.nopeus_interaction.no_hold)
+				or Handy.controller.is_module_key_down(Handy.cc.nopeus_interaction)
+			)
 		)
 	end,
 	execute = function(key)
@@ -3210,11 +3908,11 @@ Handy.nopeus_interaction = {
 
 			if is_dangerous then
 				state.dangerous = true
-				if Handy.config.current.notifications_level < 2 then
+				if Handy.cc.notifications_level < 2 then
 					return false
 				end
 			else
-				if Handy.config.current.notifications_level < 3 then
+				if Handy.cc.notifications_level < 3 then
 					return false
 				end
 			end
@@ -3271,7 +3969,8 @@ Handy.not_just_yet_interaction = {
 	update = function()
 		GLOBAL_njy_vanilla_override = (
 			G.STAGE == G.STAGES.RUN
-			and Handy.controller.is_module_key_down(Handy.config.current.not_just_yet_interaction)
+			and Handy.is_mod_active()
+			and Handy.controller.is_module_key_down(Handy.cc.not_just_yet_interaction)
 		)
 		return Handy.not_just_yet_interaction.can_execute() and Handy.not_just_yet_interaction.execute() or false
 	end,
@@ -3521,12 +4220,60 @@ function love.wheelmoved(x, y)
 	Handy.controller.process_wheel(y > 0 and 1 or 2)
 end
 
+local controller_button_press_ref = Controller.button_press
+function Controller:button_press(button, ...)
+	if Handy.controller.process_gamepad_button(self.GAMEPAD.object, button, false) then
+		return
+	end
+	return controller_button_press_ref(self, button, ...)
+end
+
+local controller_button_release_ref = Controller.button_release
+function Controller:button_release(button, ...)
+	if Handy.controller.process_gamepad_button(self.GAMEPAD.object, button, true) then
+		return
+	end
+	return controller_button_release_ref(self, button, ...)
+end
+
+local controller_update_axis_ref = Controller.update_axis
+function Controller:update_axis(...)
+	local axis_interpretation = controller_update_axis_ref(self, ...)
+	if not Handy.__disable_gamepad and axis_interpretation == "axis_cursor" then
+		Handy.controller.cancel_bind()
+	end
+	return axis_interpretation
+end
+
+local card_open_ref = Card.open
+function Card:open(...)
+	local result = card_open_ref(self, ...)
+	if self.ability.set == "Booster" then
+		Handy.speed_multiplier.throttle = true
+		G.E_MANAGER:add_event(Event({
+			func = function()
+				G.E_MANAGER:add_event(Event({
+					trigger = "after",
+					delay = 1.5 * math.sqrt(G.SETTINGS.GAMESPEED),
+					no_delete = true,
+					func = function()
+						Handy.speed_multiplier.throttle = false
+						return true
+					end,
+				}))
+				return true
+			end,
+		}))
+	end
+	return result
+end
+
 --
 
 function Handy.emplace_steamodded()
 	Handy.current_mod = (Handy_Preload and Handy_Preload.current_mod) or SMODS.current_mod
 	Handy.current_mod.config_tab = true
-	Handy.UI.show_options_button = not Handy.config.current.hide_in_menu
+	Handy.UI.show_options_button = not Handy.cc.hide_in_menu
 
 	Handy.current_mod.extra_tabs = function()
 		return Handy.UI.get_options_tabs()
@@ -3549,33 +4296,32 @@ function G.FUNCS.handy_toggle_module_enabled(arg, module)
 		return
 	end
 	module.enabled = arg
-	if module == Handy.config.current.speed_multiplier then
-		Handy.speed_multiplier.value = 1
-	elseif
-		module == Handy.config.current.dangerous_actions
-		or module == Handy.config.current.nopeus_interaction
-		or module == Handy.config.current.dangerous_actions.nopeus_unsafe
-	then
+	if module == Handy.cc.nopeus_interaction then
 		Handy.nopeus_interaction.change(0)
 	end
 	Handy.config.save()
 end
 
 function G.FUNCS.handy_toggle_menu_button(arg)
-	Handy.config.current.hide_in_menu = arg
+	Handy.cc.hide_in_menu = arg
 	Handy.config.save()
 	if Handy.current_mod then
-		Handy.UI.show_options_button = not Handy.config.current.hide_in_menu
+		Handy.UI.show_options_button = not Handy.cc.hide_in_menu
 	end
 end
 
 function G.FUNCS.handy_change_notifications_level(arg)
-	Handy.config.current.notifications_level = arg.to_key
+	Handy.cc.notifications_level = arg.to_key
 	Handy.config.save()
 end
 
 function G.FUNCS.handy_change_keybinds_trigger_mode(arg)
-	Handy.config.current.keybinds_trigger_mode = arg.to_key
+	Handy.cc.keybinds_trigger_mode = arg.to_key
+	Handy.config.save()
+end
+
+function G.FUNCS.handy_change_insta_actions_trigger_mode(arg)
+	Handy.cc.insta_actions_trigger_mode = arg.to_key
 	Handy.config.save()
 end
 
@@ -3588,9 +4334,363 @@ if Handy_Preload then
 end
 
 Handy.UI.PARTS = {
-	create_module_checkbox = function(module, label, text_prefix, text_lines, skip_keybinds)
+	popups = {
+		["regular_keybinds"] = function()
+			return {
+				"Play hand, Discard, hand sorting,",
+				"Reroll shop, Leave shop, Select blind,",
+				"Skip blind, Select blind, View deck, Run info",
+			}
+		end,
+		["insta_highlight"] = function()
+			return {
+				"If key set to {C:chips}[Left Mouse]{},",
+				"start holding key {C:attention}outside{} of cards",
+				"and then hover them to highlight",
+			}
+		end,
+		["deselect_hand"] = function()
+			return {
+				"Replaces vanilla {C:chips}[Right Mouse]{}",
+				"but works the same and",
+				"can be reassigned to other key",
+				" ",
+				"Uncheck to use vanilla control",
+			}
+		end,
+		["insta_cash_out"] = function()
+			return {
+				"Holding a keybind will trigger it",
+				"as soon as it will be available",
+			}
+		end,
+		["insta_booster_skip"] = function()
+			return {
+				"Holding a keybind will trigger it",
+				"as soon as it will be available",
+			}
+		end,
+		["move_hightlight"] = function()
+			return {
+				"Select card in area and",
+				"then use listed controls",
+			}
+		end,
+		["affected_by_buy_sell_use"] = function()
+			return {
+				"Usage determined by {C:attention}Buy/Sell/Use mode{}",
+			}
+		end,
+		["affected_by_buy_sell_use_1"] = function()
+			return Handy.UI.PARTS.popups["affected_by_buy_sell_use"]()
+		end,
+		["affected_by_buy_sell_use_2"] = function()
+			return Handy.UI.PARTS.popups["affected_by_buy_sell_use"]()
+		end,
+		["affected_by_buy_sell_use_3"] = function()
+			return Handy.UI.PARTS.popups["affected_by_buy_sell_use"]()
+		end,
+		["affected_by_buy_sell_use_4"] = function()
+			return Handy.UI.PARTS.popups["affected_by_buy_sell_use"]()
+		end,
+		["affected_by_buy_sell_use_5"] = function()
+			return Handy.UI.PARTS.popups["affected_by_buy_sell_use"]()
+		end,
+
+		["speed_multiplier"] = function()
+			return {
+				"Game speed can be changed in",
+				"range from {C:attention}x1/512{} to {C:attention}x512{}",
+			}
+		end,
+		["nopeus_interaction"] = function()
+			return {
+				"Required mod {C:attention}Nopeus{} to work",
+				" ",
+				"{C:mult}Unsafe{} option must be",
+				"enabled in {C:attention}Danger Zone{} tab",
+			}
+		end,
+		["not_jut_yet_interaction"] = function()
+			return {
+				"Required mod {C:attention}NotJustYet{} to work",
+			}
+		end,
+		["cryptid_code_use_last_interaction"] = function()
+			local result = {
+				"Required mod {C:attention}Cryptid{} to work",
+				" ",
+				"Shortcut for using a code card and selecting",
+				"{C:green}[Input previous value]{} option for:",
+				"{C:spectral}://POINTER{}, {C:green}://VARIABLE{}, {C:green}://CLASS{}, {C:green}://EXPLOIT{}",
+			}
+			if not Handy.controller.is_gamepad() then
+				table.insert(result, " ")
+				table.insert(result, "Usage determined by {C:attention}Buy/Sell/Use mode{}")
+			end
+			return result
+		end,
+		["insta_highlight_entire_f_hand"] = function()
+			return {
+				"Select max possible amount of cards",
+				"in hand, from left to right",
+			}
+		end,
+		["instant_sell"] = function()
+			return {
+				'Hold {C:mult}["Dangerous" modifier]{}, {C:chips}[Quick Buy/Sell]{},',
+				"and hover cards to sell them immediately",
+			}
+		end,
+		["sell_queue"] = function()
+			return {
+				"Instead of selling immediately, {C:mult}[Instant Sell]{}",
+				"will put all hovered cards in a list and",
+				"all of them will be sold after keybind release",
+				" ",
+				"Allow more precise cards selection, but slower",
+			}
+		end,
+		["nopeus_interaction_unsafe"] = function()
+			return {
+				"Required mod {C:attention}Nopeus{} to work",
+				" ",
+				"Even if this unchecked, {C:mult}Unsafe{} option",
+				"can be set normally via game settings",
+			}
+		end,
+		["sell_all_same"] = function()
+			return {
+				'Hold {C:mult}["Dangerous" modifier]{}, {C:mult}["All copies" modifier]{},',
+				"and click on card to sell all of their copies",
+			}
+		end,
+		["sell_all"] = function()
+			return {
+				'Hold {C:mult}["Dangerous" modifier]{}, {C:mult}["ALL" modifier]{},',
+				"and click on card to sell {C:attention}ALL{} cards in area",
+			}
+		end,
+		["card_remove"] = function()
+			return {
+				"When hold, instead of selling cards {C:attention}or skip tags{} will be {C:attention,E:1}REMOVED{}",
+				" ",
+				'Hold {C:mult}["Dangerous" modifier]{}, {C:chips}[Quick Buy/Sell]{}, {C:mult}["REMOVE" modifier]{}',
+				"and hover cards to {C:attention,E:1}REMOVE{} them (queue also applied)",
+				" ",
+				'Hold {C:mult}["Dangerous" modifier]{}, {C:mult}["All copies" modifier]{}, {C:mult}["REMOVE" modifier]{}',
+				"and click on card {C:attention}or skip tag{} to {C:attention,E:1}REMOVE{} all of their copies",
+				" ",
+				'Hold {C:mult}["Dangerous" modifier]{}, {C:mult}["ALL" modifier]{}, {C:mult}["REMOVE" modifier]{}',
+				"and click on card {C:attention}or skip tag{} to {C:attention,E:1}REMOVE{} {C:attention}ALL{} cards or skip tags",
+			}
+		end,
+	},
+	parse_popup_description = function(content)
+		local parsed_lines = {}
+		for _, line in ipairs(content) do
+			table.insert(parsed_lines, {
+				n = G.UIT.R,
+				config = {
+					align = "cm",
+					padding = 0.01,
+				},
+				nodes = Handy.UI.PARTS.parse_popup_description_line(line),
+			})
+		end
+
+		return { desc_from_rows({ parsed_lines }) }
+	end,
+	parse_popup_description_line = function(content_line)
+		local loc_target = { loc_parse_string(content_line) }
+		local args = {
+			type = "text",
+			vars = {},
+			nodes = {},
+		}
+		for _, lines in ipairs(loc_target) do
+			local final_line = {}
+			for _, part in ipairs(lines) do
+				local assembled_string = ""
+				for _, subpart in ipairs(part.strings) do
+					assembled_string = assembled_string
+						.. (type(subpart) == "string" and subpart or args.vars[tonumber(subpart[1])] or "ERROR")
+				end
+				local desc_scale = G.LANG.font.DESCSCALE
+				if G.F_MOBILE_UI then
+					desc_scale = desc_scale * 1.5
+				end
+				if args.type == "name" then
+					final_line[#final_line + 1] = {
+						n = G.UIT.O,
+						config = {
+							object = DynaText({
+								string = { assembled_string },
+								colours = {
+									(part.control.V and args.vars.colours[tonumber(part.control.V)])
+										or (part.control.C and loc_colour(part.control.C))
+										or G.C.UI.TEXT_LIGHT,
+								},
+								bump = true,
+								silent = true,
+								pop_in = 0,
+								pop_in_rate = 4,
+								maxw = 5,
+								shadow = true,
+								y_offset = -0.6,
+								spacing = math.max(0, 0.32 * (17 - #assembled_string)),
+								scale = (0.55 - 0.004 * #assembled_string)
+									* (part.control.s and tonumber(part.control.s) or 1),
+							}),
+						},
+					}
+				elseif part.control.E then
+					local _float, _silent, _pop_in, _bump, _spacing = nil, true, nil, nil, nil
+					if part.control.E == "1" then
+						_float = true
+						_silent = true
+						_pop_in = 0
+					elseif part.control.E == "2" then
+						_bump = true
+						_spacing = 1
+					end
+					final_line[#final_line + 1] = {
+						n = G.UIT.O,
+						config = {
+							object = DynaText({
+								string = { assembled_string },
+								colours = {
+									part.control.V and args.vars.colours[tonumber(part.control.V)]
+										or loc_colour(part.control.C or nil),
+								},
+								float = _float,
+								silent = _silent,
+								pop_in = _pop_in,
+								bump = _bump,
+								spacing = _spacing,
+								scale = 0.32 * (part.control.s and tonumber(part.control.s) or 1) * desc_scale,
+							}),
+						},
+					}
+				elseif part.control.X then
+					final_line[#final_line + 1] = {
+						n = G.UIT.C,
+						config = {
+							align = "m",
+							colour = loc_colour(part.control.X),
+							r = 0.05,
+							padding = 0.03,
+							res = 0.15,
+						},
+						nodes = {
+							{
+								n = G.UIT.T,
+								config = {
+									text = assembled_string,
+									colour = loc_colour(part.control.C or nil),
+									scale = 0.32 * (part.control.s and tonumber(part.control.s) or 1) * desc_scale,
+								},
+							},
+						},
+					}
+				else
+					final_line[#final_line + 1] = {
+						n = G.UIT.T,
+						config = {
+							detailed_tooltip = part.control.T
+									and (G.P_CENTERS[part.control.T] or G.P_TAGS[part.control.T])
+								or nil,
+							text = assembled_string,
+							shadow = args.shadow,
+							colour = part.control.V and args.vars.colours[tonumber(part.control.V)]
+								or loc_colour(part.control.C or nil, args.default_col),
+							scale = 0.32 * (part.control.s and tonumber(part.control.s) or 1) * desc_scale,
+						},
+					}
+				end
+			end
+			if args.type == "name" or args.type == "text" then
+				return final_line
+			end
+			args.nodes[#args.nodes + 1] = final_line
+		end
+	end,
+	init_popups = function()
+		if not G.OVERLAY_MENU then
+			return
+		end
+		local gamepad = Handy.controller.is_gamepad()
+		for k, content in pairs(Handy.UI.PARTS.popups) do
+			local element = G.OVERLAY_MENU:get_UIE_by_ID("handy_popup_" .. k)
+			if element then
+				element.float = true
+				element.states.hover.can = true
+				element.states.collide.can = true
+				element.hover = function()
+					local popup_content = content()
+					if popup_content then
+						element.config.h_popup_config =
+							{ align = "mt", offset = { x = 0, y = gamepad and -0.2 or -0.1 }, parent = element }
+						element.config.h_popup = {
+							n = G.UIT.ROOT,
+							config = { align = "cm", colour = G.C.CLEAR },
+							nodes = {
+								{
+									n = G.UIT.C,
+									config = {
+										align = "cm",
+									},
+									nodes = {
+										{
+											n = G.UIT.R,
+											config = {
+												padding = 0.05,
+												r = 0.12,
+												colour = lighten(G.C.JOKER_GREY, 0.5),
+												emboss = 0.07,
+											},
+											nodes = {
+												{
+													n = G.UIT.R,
+													config = {
+														align = "cm",
+														padding = 0.07,
+														r = 0.1,
+														colour = adjust_alpha(darken(G.C.BLACK, 0.1), 0.8),
+													},
+													nodes = Handy.UI.PARTS.parse_popup_description(popup_content),
+												},
+											},
+										},
+									},
+								},
+							},
+						}
+					else
+						element.config.h_popup_config = nil
+						element.config.h_popup = nil
+					end
+					Node.hover(element)
+				end
+			end
+		end
+	end,
+
+	format_module_keys = function(module, only_first)
+		local key_1, key_2 = "key_1", "key_2"
+		if Handy.controller.is_gamepad() then
+			key_1, key_2 = "key_1_gamepad", "key_2_gamepad"
+		end
+
+		local result = "[" .. module[key_1] .. "]"
+		if only_first or not module[key_2] or module[key_2] == "None" then
+			return result
+		end
+		return result .. " or [" .. module[key_2] .. "]"
+	end,
+	create_module_checkbox = function(module, label, text_prefix, text_lines, skip_keybinds, popup_id)
 		local desc_lines = {
-			{ n = G.UIT.R, config = { minw = 5.25 } },
+			{ n = G.UIT.R, config = { minw = 5 } },
 		}
 
 		if skip_keybinds then
@@ -3609,83 +4709,23 @@ Handy.UI.PARTS = {
 				},
 			})
 		else
-			local key_desc = module.key_2
-					and module.key_2 ~= "None"
-					and {
-						{
-							n = G.UIT.T,
-							config = {
-								text = text_prefix .. " [",
-								scale = 0.3,
-								colour = G.C.TEXT_LIGHT,
-							},
-						},
-						{
-							n = G.UIT.T,
-							config = {
-								ref_table = module,
-								ref_value = "key_1",
-								scale = 0.3,
-								colour = G.C.TEXT_LIGHT,
-							},
-						},
-						{
-							n = G.UIT.T,
-							config = {
-								text = "] or [",
-								scale = 0.3,
-								colour = G.C.TEXT_LIGHT,
-							},
-						},
-						{
-							n = G.UIT.T,
-							config = {
-								ref_table = module,
-								ref_value = "key_2",
-								scale = 0.3,
-								colour = G.C.TEXT_LIGHT,
-							},
-						},
-						{
-							n = G.UIT.T,
-							config = {
-								text = "] " .. text_lines[1],
-								scale = 0.3,
-								colour = G.C.TEXT_LIGHT,
-							},
-						},
-					}
-				or {
-					{
-						n = G.UIT.T,
-						config = {
-							text = text_prefix .. " [",
-							scale = 0.3,
-							colour = G.C.TEXT_LIGHT,
-						},
-					},
-					{
-						n = G.UIT.T,
-						config = {
-							ref_table = module,
-							ref_value = "key_1",
-							scale = 0.3,
-							colour = G.C.TEXT_LIGHT,
-						},
-					},
-					{
-						n = G.UIT.T,
-						config = {
-							text = "] " .. text_lines[1],
-							scale = 0.3,
-							colour = G.C.TEXT_LIGHT,
-						},
-					},
-				}
 			table.insert(desc_lines, {
 				n = G.UIT.R,
 				config = { padding = 0.025 },
-				nodes = key_desc,
+				nodes = {
+					{
+						n = G.UIT.T,
+						config = {
+							text = text_prefix
+								.. " "
+								.. Handy.UI.PARTS.format_module_keys(module)
+								.. " "
+								.. text_lines[1],
+							scale = 0.3,
+							colour = G.C.TEXT_LIGHT,
+						},
+					},
+				},
 			})
 		end
 
@@ -3727,9 +4767,26 @@ Handy.UI.PARTS = {
 			})
 		end
 
+		local gamepad = Handy.controller.is_gamepad()
+		local result_popup_id = (popup_id and "handy_popup_" .. popup_id) or nil
+		local result_toggle = create_toggle({
+			callback = function(b)
+				return G.FUNCS.handy_toggle_module_enabled(b, module)
+			end,
+			label_scale = 0.4,
+			label = "",
+			ref_table = module,
+			ref_value = "enabled",
+			w = 0,
+		})
+
+		if gamepad then
+			result_toggle.nodes[2].nodes[1].nodes[1].config.id = result_popup_id
+		end
+
 		return {
 			n = G.UIT.R,
-			config = { align = "cm" },
+			config = { align = "cm", id = not gamepad and result_popup_id or nil },
 			nodes = {
 				{
 					n = G.UIT.C,
@@ -3740,16 +4797,7 @@ Handy.UI.PARTS = {
 					n = G.UIT.C,
 					config = { align = "cm" },
 					nodes = {
-						create_toggle({
-							callback = function(b)
-								return G.FUNCS.handy_toggle_module_enabled(b, module)
-							end,
-							label_scale = 0.4,
-							label = "",
-							ref_table = module,
-							ref_value = "enabled",
-							w = 0,
-						}),
+						result_toggle,
 					},
 				},
 				{
@@ -3768,16 +4816,21 @@ Handy.UI.PARTS = {
 	create_module_section = function(label)
 		return {
 			n = G.UIT.R,
-			config = { align = "cm", padding = 0.1 },
+			config = { align = "cm", padding = 0.075 },
 			nodes = {
 				{
 					n = G.UIT.T,
-					config = { text = label, colour = G.C.WHITE, scale = 0.4, align = "cm" },
+					config = { text = label, colour = G.C.WHITE, scale = 0.35, align = "cm" },
 				},
 			},
 		}
 	end,
-	create_module_keybind = function(module, label, dangerous)
+	create_module_keybind = function(module, label, dangerous, rerender)
+		local key_1, key_2 = "key_1", "key_2"
+		if Handy.controller.is_gamepad() then
+			key_1, key_2 = "key_1_gamepad", "key_2_gamepad"
+		end
+
 		return {
 			n = G.UIT.R,
 			config = { align = "cm", padding = 0.01 },
@@ -3788,7 +4841,7 @@ Handy.UI.PARTS = {
 					nodes = {
 						{
 							n = G.UIT.T,
-							config = { text = label, colour = G.C.WHITE, scale = 0.35 },
+							config = { text = label, colour = G.C.WHITE, scale = 0.3 },
 						},
 					},
 				},
@@ -3797,15 +4850,16 @@ Handy.UI.PARTS = {
 					config = { align = "cm", minw = 0.75 },
 				},
 				UIBox_button({
-					label = { module.key_1 or "None" },
+					label = { module[key_1] or "None" },
 					col = true,
 					colour = dangerous and G.C.MULT or G.C.CHIPS,
-					scale = 0.35,
+					scale = 0.3,
 					minw = 2.75,
-					minh = 0.45,
+					minh = 0.4,
 					ref_table = {
 						module = module,
-						key = "key_1",
+						key = key_1,
+						rerender = rerender,
 					},
 					button = "handy_init_keybind_change",
 				}),
@@ -3820,15 +4874,16 @@ Handy.UI.PARTS = {
 					},
 				},
 				UIBox_button({
-					label = { module.key_2 or "None" },
+					label = { module[key_2] or "None" },
 					col = true,
 					colour = dangerous and G.C.MULT or G.C.CHIPS,
-					scale = 0.35,
+					scale = 0.3,
 					minw = 2.75,
-					minh = 0.45,
+					minh = 0.4,
 					ref_table = {
 						module = module,
-						key = "key_2",
+						key = key_2,
+						rerender = rerender,
 					},
 					button = "handy_init_keybind_change",
 				}),
@@ -3840,6 +4895,7 @@ Handy.UI.PARTS = {
 --
 
 Handy.UI.get_config_tab_overall = function()
+	local gamepad = Handy.controller.is_gamepad()
 	return {
 		{
 			n = G.UIT.R,
@@ -3907,7 +4963,7 @@ Handy.UI.get_config_tab_overall = function()
 											end,
 											label_scale = 0.4,
 											label = "",
-											ref_table = Handy.config.current,
+											ref_table = Handy.cc,
 											ref_value = "hide_in_menu",
 											w = 0,
 										}),
@@ -3931,7 +4987,7 @@ Handy.UI.get_config_tab_overall = function()
 								"All",
 							},
 							opt_callback = "handy_change_notifications_level",
-							current_option = Handy.config.current.notifications_level,
+							current_option = Handy.cc.notifications_level,
 						}),
 					},
 				},
@@ -3947,154 +5003,252 @@ Handy.UI.get_config_tab_overall = function()
 								"On key release",
 							},
 							opt_callback = "handy_change_keybinds_trigger_mode",
-							current_option = Handy.config.current.keybinds_trigger_mode,
+							current_option = Handy.cc.keybinds_trigger_mode,
 						}),
 					},
 				},
 			},
 		},
 		{ n = G.UIT.R, config = { padding = 0.05 }, nodes = {} },
-		-- Handy.UI.PARTS.create_module_checkbox(Handy.config.current.regular_keybinds, "Regular keybinds", "Use", {
-		-- 	"keybinds for",
-		-- 	"common game actions",
-		-- 	"(Play, Discard, Reroll, Skip blind, etc.)",
-		-- }, true),
-		-- { n = G.UIT.R, config = { minh = 0.25 } },
+		Handy.UI.PARTS.create_module_checkbox(
+			Handy.cc.handy,
+			{ "HandyBalatro v" .. Handy.version, "by SleepyG11" },
+			"Uncheck",
+			{
+				"to disable ALL mod features",
+				"(no restart required)",
+			},
+			true
+		),
+		{ n = G.UIT.R, config = { minh = 0.25 } },
 		{
 			n = G.UIT.R,
 			nodes = {
 				{
 					n = G.UIT.C,
 					nodes = {
-						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.regular_keybinds,
-							"Regular keybinds",
-							"Use",
-							{
-								"keybinds for",
-								"common game actions",
-								"(Play, Discard, Reroll, Skip blind, etc.)",
-							},
-							true
-						),
+						Handy.UI.PARTS.create_module_checkbox(Handy.cc.regular_keybinds, "Regular keybinds", "Use", {
+							"keybinds for",
+							"common game actions",
+							"(Play, Discard, Reroll, Skip blind, etc.)",
+						}, true, "regular_keybinds"),
 						{ n = G.UIT.R, config = { minh = 0.25 } },
-						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.show_deck_preview,
-							"Deck preview",
-							"Hold",
-							{
-								"to",
-								"show deck preview",
-							}
-						),
-						{ n = G.UIT.R, config = { minh = 0.25 } },
-						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.move_highlight,
-							"Move highlight",
-							"Press",
-							{
-								"["
-									.. tostring(Handy.config.current.move_highlight.dx.one_left.key_1)
-									.. "] or ["
-									.. tostring(Handy.config.current.move_highlight.dx.one_right.key_1)
-									.. "]",
-								"to move highlight in card area.",
-								"Hold ["
-									.. tostring(Handy.config.current.move_highlight.swap.key_1)
-									.. "] to move card instead.",
-								"Hold ["
-									.. tostring(Handy.config.current.move_highlight.to_end.key_1)
-									.. "] to move to first/last card",
-							},
-							true
-						),
-						{ n = G.UIT.R, config = { minh = 0.25 } },
-						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.insta_buy_or_sell,
-							"Quick Buy/Sell",
-							"Hold",
-							{
-								"to",
-								"buy or sell card on Left-Click",
-								"instead of selection",
-							}
-						),
-						{ n = G.UIT.R, config = { minh = 0.25 } },
-						Handy.UI.PARTS.create_module_checkbox(Handy.config.current.insta_use, "Quick use", "Hold", {
+						Handy.UI.PARTS.create_module_checkbox(Handy.cc.insta_highlight, "Quick Highlight", "Hold", {
+							"and",
+							"hover cards in hand to highlight",
+						}, false, "insta_highlight"),
+						{ n = G.UIT.R, config = { minh = 0.25 } } or nil,
+						Handy.UI.PARTS.create_module_checkbox(Handy.cc.show_deck_preview, "Deck preview", "Hold", {
 							"to",
-							"use (if possible) card on Left-Click",
-							"instead of selection",
-							"(overrides Quick Buy/Sell)",
-						}),
+							"show deck preview",
+						}) or nil,
 					},
 				},
 				{
 					n = G.UIT.C,
 					config = { minw = 4 },
 					nodes = {
+						Handy.UI.PARTS.create_module_checkbox(Handy.cc.deselect_hand, "Deselect hand", "Press", {
+							"to",
+							"deselect hand",
+						}, false, not gamepad and "deselect_hand" or nil),
+						{ n = G.UIT.R, config = { minh = 0.25 } } or nil,
 						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.insta_highlight,
-							"Quick Highlight",
-							"Hold [Left Mouse]",
+							Handy.cc.insta_cash_out,
+							"Quick Cash Out",
+							"Press/hold",
 							{
-								"and",
-								"hover cards in hand to highlight",
+								"to",
+								"skip Cash Out stage",
 							},
-							true
-						),
+							false,
+							"insta_cash_out"
+						) or nil,
 						{ n = G.UIT.R, config = { minh = 0.25 } },
 						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.insta_highlight_entire_f_hand,
+							Handy.cc.insta_booster_skip,
+							{ "Quick skip", "Booster Packs" },
+							"Press/hold",
+							{
+								"to",
+								"skip booster pack",
+							},
+							false,
+							"insta_booster_skip"
+						),
+					},
+				},
+			},
+		},
+		{ n = G.UIT.R, config = { minh = 0.4 } },
+		{
+			n = G.UIT.R,
+			config = { padding = 0.1, align = "cm" },
+			nodes = {
+				{
+					n = G.UIT.T,
+					config = {
+						text = gamepad and 'Each control can be assigned to any gamepad buttons in "Keybinds" tabs'
+							or 'Each control can be assigned to mouse button, mouse wheel or keyboard key in "Keybinds" tabs',
+						scale = 0.3,
+						colour = { 1, 1, 1, 0.6 },
+						align = "cm",
+					},
+				},
+			},
+		},
+		-- { n = G.UIT.R, config = { minh = 0.25 } },
+	}
+end
+
+Handy.UI.get_config_tab_quick = function()
+	local gamepad = Handy.controller.is_gamepad()
+	return {
+		not gamepad and {
+			n = G.UIT.R,
+			config = { padding = 0.05, align = "cm" },
+			nodes = {
+				{
+					n = G.UIT.C,
+					nodes = {
+						create_option_cycle({
+							w = 6,
+							label = "Buy/Sell/Use mode",
+							scale = 0.8,
+							options = {
+								"Hold key + Click card",
+								"Hover card + Press key",
+							},
+							opt_callback = "handy_change_insta_actions_trigger_mode",
+							current_option = Handy.cc.insta_actions_trigger_mode,
+						}),
+					},
+				},
+			},
+		} or nil,
+		not gamepad and { n = G.UIT.R, config = { padding = 0.05 }, nodes = {} } or nil,
+		not gamepad and Handy.UI.PARTS.create_module_checkbox(Handy.cc.move_highlight, "Move highlight", "Press", {
+			Handy.UI.PARTS.format_module_keys(Handy.cc.move_highlight.dx.one_left, true)
+				.. " or "
+				.. Handy.UI.PARTS.format_module_keys(Handy.cc.move_highlight.dx.one_right, true),
+			"to move highlight in card area.",
+			"Hold "
+				.. Handy.UI.PARTS.format_module_keys(Handy.cc.move_highlight.swap, true)
+				.. " to move card instead.",
+			"Hold "
+				.. Handy.UI.PARTS.format_module_keys(Handy.cc.move_highlight.to_end, true)
+				.. " to move to first/last card",
+		}, true, "move_hightlight") or nil,
+		not gamepad and { n = G.UIT.R, config = { minh = 0.25 } } or nil,
+		{
+			n = G.UIT.R,
+			nodes = {
+				{
+					n = G.UIT.C,
+					nodes = {
+						not gamepad and Handy.UI.PARTS.create_module_checkbox(
+							Handy.cc.insta_buy_or_sell,
+							"Quick Buy/Sell",
+							"Use",
+							{
+								"to",
+								"buy or sell card",
+							},
+							false,
+							"affected_by_buy_sell_use_1"
+						) or nil,
+						not gamepad and { n = G.UIT.R, config = { minh = 0.25 } } or nil,
+						Handy.UI.PARTS.create_module_checkbox(Handy.cc.insta_buy_n_sell, "Quick Buy'n'Sell", "Use", {
+							"to",
+							"buy card and sell",
+							"immediately after",
+						}, false, not gamepad and "affected_by_buy_sell_use_2" or nil),
+						{ n = G.UIT.R, config = { minh = 0.25 } },
+						not gamepad
+								and Handy.UI.PARTS.create_module_checkbox(Handy.cc.insta_use, "Quick use", "Use", {
+									"to",
+									"use card if possible",
+									"(overrides Quick Buy/Sell)",
+								}, false, "affected_by_buy_sell_use_3")
+							or nil,
+						not gamepad and { n = G.UIT.R, config = { minh = 0.3 } } or nil,
+						Handy.UI.PARTS.create_module_checkbox(
+							Handy.cc.cryptid_code_use_last_interaction,
+							{ "Cryptid: use", "previous input" },
+							"Use",
+							{
+								"to",
+								"use code card if possible with",
+								"previously inputted value",
+							},
+							false,
+							"cryptid_code_use_last_interaction"
+						),
+						gamepad and { n = G.UIT.R, config = { minh = 0.25 } } or nil,
+						gamepad and Handy.UI.PARTS.create_module_checkbox(
+							Handy.cc.not_just_yet_interaction,
+							{ "NotJustYet:", "End round" },
+							"Press",
+							{
+								"to",
+								"end round",
+							},
+							false,
+							"not_jut_yet_interaction"
+						) or nil,
+					},
+				},
+				{
+					n = G.UIT.C,
+					config = { minw = 4 },
+					nodes = {
+						Handy.UI.PARTS.create_module_checkbox(Handy.cc.speed_multiplier, "Speed Multiplier", "Hold", {
+							"and",
+							Handy.UI.PARTS.format_module_keys(Handy.cc.speed_multiplier.multiply, true)
+								.. " to multiply or",
+							Handy.UI.PARTS.format_module_keys(Handy.cc.speed_multiplier.divide, true)
+								.. " to divide game speed",
+						}, false, "speed_multiplier"),
+						{ n = G.UIT.R, config = { minh = 0.25 } },
+						Handy.UI.PARTS.create_module_checkbox(
+							Handy.cc.insta_highlight_entire_f_hand,
 							{ "Highlight", "entire hand" },
 							"Press",
 							{
 								"to",
 								"highlight entire hand",
-							}
+							},
+							false,
+							"insta_highlight_entire_f_hand"
 						),
 						{ n = G.UIT.R, config = { minh = 0.25 } },
 						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.deselect_hand,
-							"Deselect hand",
-							"Press",
-							{
-								"to",
-								"deselect hand.",
-								"Overrides vanilla keybind",
-							}
-						),
-						{ n = G.UIT.R, config = { minh = 0.25 } },
-						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.insta_cash_out,
-							"Quick Cash Out",
-							"Press",
-							{
-								"to",
-								"speedup animation and",
-								"skip Cash Out stage",
-							}
-						),
-						{ n = G.UIT.R, config = { minh = 0.25 } },
-						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.insta_booster_skip,
-							{ "Quick skip", "Booster Packs" },
-							"Hold",
-							{
-								"to",
-								"skip booster pack",
-							}
-						),
-						{ n = G.UIT.R, config = { minh = 0.25 } },
-						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.speed_multiplier,
-							"Speed Multiplier",
+							Handy.cc.nopeus_interaction,
+							{ "Nopeus:", "fast-forward" },
 							"Hold",
 							{
 								"and",
-								"[Wheel Up] to multiply or",
-								"[Wheel Down] to divide game speed",
-							}
+								Handy.UI.PARTS.format_module_keys(Handy.cc.nopeus_interaction.increase, true)
+									.. " to increase or",
+								Handy.UI.PARTS.format_module_keys(Handy.cc.nopeus_interaction.decrease, true)
+									.. " to decrease",
+								"fast-forward setting",
+							},
+							false,
+							"nopeus_interaction"
 						),
+						not gamepad and { n = G.UIT.R, config = { minh = 0.25 } } or nil,
+						not gamepad and Handy.UI.PARTS.create_module_checkbox(
+							Handy.cc.not_just_yet_interaction,
+							{ "NotJustYet:", "End round" },
+							"Press",
+							{
+								"to",
+								"end round",
+							},
+							false,
+							"not_jut_yet_interaction"
+						) or nil,
 					},
 				},
 			},
@@ -4112,13 +5266,15 @@ Handy.UI.get_config_tab_interactions = function()
 					n = G.UIT.C,
 					nodes = {
 						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.nopeus_interaction,
+							Handy.cc.nopeus_interaction,
 							{ "Nopeus:", "fast-forward" },
 							"Hold",
 							{
 								"and",
-								"[Wheel Up] to increase or",
-								"[Wheel Down] to decrease",
+								Handy.UI.PARTS.format_module_keys(Handy.cc.nopeus_interaction.increase, true)
+									.. " to increase or",
+								Handy.UI.PARTS.format_module_keys(Handy.cc.nopeus_interaction.decrease, true)
+									.. " to decrease",
 								"fast-forward setting",
 							}
 						),
@@ -4127,7 +5283,7 @@ Handy.UI.get_config_tab_interactions = function()
 							config = { minh = 0.25 },
 						},
 						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.not_just_yet_interaction,
+							Handy.cc.not_just_yet_interaction,
 							{ "NotJustYet:", "End round" },
 							"Press",
 							{
@@ -4154,12 +5310,13 @@ Handy.UI.get_config_tab_dangerous = function()
 		-- { n = G.UIT.R, config = { padding = 0.05 }, nodes = {} },
 		{
 			n = G.UIT.R,
+			config = { padding = 0.05, align = "cm" },
 			nodes = {
 				{
 					n = G.UIT.C,
 					nodes = {
 						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.dangerous_actions,
+							Handy.cc.dangerous_actions,
 							{ "Dangerous", "actions" },
 							"Enable",
 							{
@@ -4169,39 +5326,174 @@ Handy.UI.get_config_tab_dangerous = function()
 							},
 							true
 						),
-						{ n = G.UIT.R, config = { minh = 0.5 } },
+					},
+				},
+			},
+		},
+		{ n = G.UIT.R, config = { minh = 0.5 } },
+		{
+			n = G.UIT.R,
+			nodes = {
+				{
+					n = G.UIT.C,
+					nodes = {
 						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.dangerous_actions.immediate_buy_and_sell,
+							Handy.cc.dangerous_actions.immediate_buy_and_sell,
 							"Instant Sell",
 							"Hold",
 							{
-								"to",
-								"sell card on hover",
-								"very fast",
-							}
+								Handy.UI.PARTS.format_module_keys(Handy.cc.dangerous_actions.immediate_buy_and_sell)
+									.. ",",
+								"hold " .. Handy.UI.PARTS.format_module_keys(Handy.cc.insta_buy_or_sell) .. "",
+								"and hover card to sell it",
+							},
+							true,
+							"instant_sell"
 						),
-						{ n = G.UIT.R, config = { minh = 0.1 } },
+						{ n = G.UIT.R, config = { minh = 0.275 } },
 						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.dangerous_actions.immediate_buy_and_sell.queue,
+							Handy.cc.dangerous_actions.immediate_buy_and_sell.queue,
 							"Sell Queue",
 							"Start",
 							{
 								"selling cards only when",
 								"keybind was released",
 							},
-							true
+							true,
+							"sell_queue"
 						),
-						{ n = G.UIT.R, config = { minh = 0.25 } },
+						{ n = G.UIT.R, config = { minh = 0.275 } },
 						Handy.UI.PARTS.create_module_checkbox(
-							Handy.config.current.dangerous_actions.nopeus_unsafe,
+							Handy.cc.dangerous_actions.nopeus_unsafe,
 							{ "Nopeus: Unsafe", "fast-forward" },
 							"Allow",
 							{
 								"increase fast-forward",
 								'setting to "Unsafe"',
 							},
-							true
+							true,
+							"nopeus_interaction_unsafe"
 						),
+					},
+				},
+				{
+					n = G.UIT.C,
+					config = { minw = 4 },
+					nodes = {
+						Handy.UI.PARTS.create_module_checkbox(
+							Handy.cc.dangerous_actions.sell_all_same,
+							{ "Sell all", "card copies" },
+							"Hold",
+							{
+								Handy.UI.PARTS.format_module_keys(Handy.cc.dangerous_actions.immediate_buy_and_sell)
+									.. ",",
+								"hold "
+									.. Handy.UI.PARTS.format_module_keys(Handy.cc.dangerous_actions.sell_all_same)
+									.. ",",
+								"and click on card to sell",
+								"all of their copies",
+							},
+							true,
+							"sell_all_same"
+						),
+						{ n = G.UIT.R, config = { minh = 0.1 } },
+						Handy.UI.PARTS.create_module_checkbox(
+							Handy.cc.dangerous_actions.sell_all,
+							"Sell ALL",
+							"Hold",
+							{
+								"to",
+								"sell ALL cards in area instead",
+							},
+							false,
+							"sell_all"
+						),
+						{ n = G.UIT.R, config = { minh = 0.1 } },
+						Handy.UI.PARTS.create_module_checkbox(
+							Handy.cc.dangerous_actions.card_remove,
+							{ "REMOVE* cards", "or skip tags" },
+							"Hold",
+							{
+								"to",
+								"REMOVE cards instead",
+								"of selling, works for skip tags",
+							},
+							false,
+							"card_remove"
+						),
+					},
+				},
+			},
+		},
+		{ n = G.UIT.R, config = { minh = 0.5 } },
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.insta_buy_or_sell, "Quick Buy/Sell", false, true),
+		Handy.UI.PARTS.create_module_keybind(
+			Handy.cc.dangerous_actions.immediate_buy_and_sell,
+			'"Dangerous" modifier',
+			true,
+			true
+		),
+		Handy.UI.PARTS.create_module_keybind(
+			Handy.cc.dangerous_actions.sell_all_same,
+			'"All copies" modifier',
+			true,
+			true
+		),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.dangerous_actions.sell_all, '"ALL" modifier', true, true),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.dangerous_actions.card_remove, '"REMOVE" modifier', true, true),
+		{ n = G.UIT.R, config = { minh = 0.4 } },
+		{
+			n = G.UIT.R,
+			config = { padding = 0.1, align = "cm" },
+			nodes = {
+				{
+					n = G.UIT.T,
+					config = {
+						text = "*REMOVE card/tag - delete without any checks, effects, triggers or money refunds",
+						scale = 0.3,
+						colour = { 1, 1, 1, 0.6 },
+						align = "cm",
+					},
+				},
+			},
+		},
+		-- { n = G.UIT.R, config = { minh = 0.25 } },
+	}
+end
+
+Handy.UI.get_config_tab_regular_keybinds = function()
+	return {
+		Handy.UI.PARTS.create_module_section("Round"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.regular_keybinds.play, "Play hand"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.regular_keybinds.discard, "Discard"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.regular_keybinds.sort_by_rank, "Sort by rank"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.regular_keybinds.sort_by_suit, "Sort by suit"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.deselect_hand, "Deselect hand"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.insta_cash_out, "Cash Out"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.not_just_yet_interaction, "NotJustYet: End round"),
+		Handy.UI.PARTS.create_module_section("Shop and Blinds"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.insta_booster_skip, "Skip Booster Pack"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.regular_keybinds.reroll_shop, "Shop reroll"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.regular_keybinds.leave_shop, "Leave shop"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.regular_keybinds.skip_blind, "Skip blind"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.regular_keybinds.select_blind, "Select blind"),
+		Handy.UI.PARTS.create_module_section("Menus"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.regular_keybinds.run_info, "Run info: Poker hands"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.regular_keybinds.run_info_blinds, "Run info: Blinds"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.regular_keybinds.view_deck, "View deck"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.show_deck_preview, "Deck preview"),
+		{ n = G.UIT.R, config = { minh = 0.15 } },
+		{
+			n = G.UIT.R,
+			config = { align = "cm" },
+			nodes = {
+				{
+					n = G.UIT.T,
+					config = {
+						text = "Click on a button and next inputted key will be assigned. [Escape] to unbind.",
+						scale = 0.3,
+						colour = { 1, 1, 1, 0.6 },
+						align = "cm",
 					},
 				},
 			},
@@ -4209,70 +5501,77 @@ Handy.UI.get_config_tab_dangerous = function()
 	}
 end
 
-Handy.UI.get_config_tab_keybinds = function()
-	return {
-		Handy.UI.PARTS.create_module_section("Regular actions"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.regular_keybinds.play, "Play hand"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.regular_keybinds.discard, "Discard"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.regular_keybinds.sort_by_rank, "Sort by rank"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.regular_keybinds.sort_by_suit, "Sort by suit"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.deselect_hand, "Deselect hand"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.regular_keybinds.reroll_shop, "Shop reroll"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.regular_keybinds.leave_shop, "Leave shop"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.regular_keybinds.skip_blind, "Skip blind"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.regular_keybinds.select_blind, "Select blind"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.regular_keybinds.run_info, "Run info"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.regular_keybinds.view_deck, "View deck"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.not_just_yet_interaction, "NotJustYet: End round"),
-		Handy.UI.PARTS.create_module_section("Hold actions"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.insta_cash_out, "Cash Out"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.insta_booster_skip, "Skip Booster Pack"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.show_deck_preview, "Deck preview"),
-	}
-end
-
 Handy.UI.get_config_tab_keybinds_2 = function()
 	return {
 		Handy.UI.PARTS.create_module_section("Quick actions"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.insta_buy_or_sell, "Quick Buy/Sell"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.insta_use, "Quick Use"),
-		Handy.UI.PARTS.create_module_keybind(
-			Handy.config.current.dangerous_actions.immediate_buy_and_sell,
-			"Instant Buy/Sell",
-			true
-		),
-		Handy.UI.PARTS.create_module_keybind(
-			Handy.config.current.insta_highlight_entire_f_hand,
-			"Highlight entire hand"
-		),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.insta_highlight, "Quick highlight"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.insta_buy_or_sell, "Quick Buy/Sell"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.insta_use, "Quick Use"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.insta_buy_n_sell, "Quick Buy'n'Sell"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.insta_highlight_entire_f_hand, "Highlight entire hand"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.cryptid_code_use_last_interaction, "Cryptid: use previous input"),
 		Handy.UI.PARTS.create_module_section("Game speed and animations"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.speed_multiplier, "Speed Multiplier"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.nopeus_interaction, "Nopeus: fast-forward"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.speed_multiplier, "Speed Multiplier"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.speed_multiplier.multiply, "Multiply"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.speed_multiplier.divide, "Divide"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.nopeus_interaction, "Nopeus: fast-forward"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.nopeus_interaction.increase, "Increase"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.nopeus_interaction.decrease, "Decrease"),
 		Handy.UI.PARTS.create_module_section("Highlight movement"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.move_highlight.dx.one_left, "Move one left"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.move_highlight.dx.one_right, "Move one right"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.move_highlight.swap, "Move card"),
-		Handy.UI.PARTS.create_module_keybind(Handy.config.current.move_highlight.to_end, "Move to end"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.move_highlight.dx.one_left, "Move one left"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.move_highlight.dx.one_right, "Move one right"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.move_highlight.swap, "Move card"),
+		Handy.UI.PARTS.create_module_keybind(Handy.cc.move_highlight.to_end, "Move to end"),
+		{ n = G.UIT.R, config = { minh = 0.15 } },
+		{
+			n = G.UIT.R,
+			config = { align = "cm" },
+			nodes = {
+				{
+					n = G.UIT.T,
+					config = {
+						text = "Click on a button and next inputted key will be assigned. [Escape] to unbind.",
+						scale = 0.3,
+						colour = { 1, 1, 1, 0.6 },
+						align = "cm",
+					},
+				},
+			},
+		},
 	}
 end
 
-Handy.UI.get_config_tab = function(_tab)
+Handy.UI.get_config_tab = function(_tab, _index)
 	local result = {
 		n = G.UIT.ROOT,
 		config = { align = "cm", padding = 0.05, colour = G.C.CLEAR, minh = 5, minw = 5 },
 		nodes = {},
 	}
+	Handy.UI.config_tab_index = _index
 	if _tab == "Overall" then
 		result.nodes = Handy.UI.get_config_tab_overall()
+	elseif _tab == "Quick" then
+		result.nodes = Handy.UI.get_config_tab_quick()
 	elseif _tab == "Interactions" then
 		result.nodes = Handy.UI.get_config_tab_interactions()
 	elseif _tab == "Dangerous" then
 		result.nodes = Handy.UI.get_config_tab_dangerous()
 	elseif _tab == "Keybinds" then
-		result.nodes = Handy.UI.get_config_tab_keybinds()
+		result.nodes = Handy.UI.get_config_tab_regular_keybinds()
 	elseif _tab == "Keybinds 2" then
 		result.nodes = Handy.UI.get_config_tab_keybinds_2()
 	end
+
+	G.E_MANAGER:add_event(Event({
+		blocking = false,
+		blockable = false,
+		no_delete = true,
+		func = function()
+			Handy.UI.PARTS.init_popups()
+			return true
+		end,
+	}))
+
 	return result
 end
 
@@ -4281,33 +5580,33 @@ end
 function Handy.UI.get_options_tabs()
 	return {
 		{
-			label = "Overall",
+			label = "General & Vanilla",
 			tab_definition_function = function()
-				return Handy.UI.get_config_tab("Overall")
+				return Handy.UI.get_config_tab("Overall", 1)
 			end,
 		},
 		{
-			label = "Interactions",
+			label = "Quick actions",
 			tab_definition_function = function()
-				return Handy.UI.get_config_tab("Interactions")
+				return Handy.UI.get_config_tab("Quick", 2)
 			end,
 		},
 		{
-			label = "Dangerous",
+			label = "Regular keybinds",
 			tab_definition_function = function()
-				return Handy.UI.get_config_tab("Dangerous")
+				return Handy.UI.get_config_tab("Keybinds", 3)
 			end,
 		},
 		{
-			label = "Keybinds",
+			label = "Other keybinds",
 			tab_definition_function = function()
-				return Handy.UI.get_config_tab("Keybinds")
+				return Handy.UI.get_config_tab("Keybinds 2", 4)
 			end,
 		},
 		{
-			label = "More keybinds",
+			label = "Danger zone",
 			tab_definition_function = function()
-				return Handy.UI.get_config_tab("Keybinds 2")
+				return Handy.UI.get_config_tab("Dangerous", 5)
 			end,
 		},
 	}
@@ -4317,9 +5616,9 @@ end
 
 function G.UIDEF.handy_options()
 	local tabs = Handy.UI.get_options_tabs()
-	tabs[1].chosen = true
+	tabs[Handy.UI.config_tab_index or 1].chosen = true
 	local t = create_UIBox_generic_options({
-		back_func = "options",
+		back_func = "handy_exit_options",
 		contents = {
 			{
 				n = G.UIT.R,
@@ -4328,6 +5627,7 @@ function G.UIDEF.handy_options()
 					create_tabs({
 						tabs = tabs,
 						snap_to_nav = true,
+						colour = G.C.BOOSTER,
 					}),
 				},
 			},
@@ -4336,11 +5636,21 @@ function G.UIDEF.handy_options()
 	return t
 end
 
-function G.FUNCS.handy_open_options()
+function G.FUNCS.handy_open_options(e)
 	G.SETTINGS.paused = true
+	Handy.UI.config_opened = true
+	Handy.UI.config_tab_index = 1
 	G.FUNCS.overlay_menu({
 		definition = G.UIDEF.handy_options(),
 	})
+end
+
+function G.FUNCS.handy_exit_options(e)
+	Handy.UI.config_opened = nil
+	Handy.UI.config_tab_index = nil
+	if e then
+		return G.FUNCS.options(e)
+	end
 end
 
 function Handy.UI.get_options_button()
@@ -4357,721 +5667,355 @@ function create_UIBox_options()
 	return contents
 end
 
-local lovely = require("lovely")
-local nativefs = require("nativefs")
-
-if not nativefs.getInfo(lovely.mod_dir .. "/Talisman") then
-    error(
-        'Could not find proper Talisman folder.\nPlease make sure the folder for Talisman is named exactly "Talisman" and not "Talisman-main" or anything else.')
+function Handy.UI.rerender(silent)
+	local result
+	if SMODS and G.ACTIVE_MOD_UI and G.ACTIVE_MOD_UI == Handy.current_mod then
+		result = {
+			definition = create_UIBox_mods(),
+		}
+	elseif Handy.UI.config_opened then
+		result = {
+			definition = G.UIDEF.handy_options(),
+		}
+	end
+	if result then
+		if silent then
+			G.ROOM.jiggle = G.ROOM.jiggle - 1
+			result.config = {
+				offset = {
+					x = 0,
+					y = 0,
+				},
+			}
+		end
+		G.FUNCS.overlay_menu(result)
+	end
 end
 
-Talisman = {config_file = {disable_anims = true, break_infinity = "omeganum", score_opt_id = 2}}
-if nativefs.read(lovely.mod_dir.."/Talisman/config.lua") then
-    Talisman.config_file = STR_UNPACK(nativefs.read(lovely.mod_dir.."/Talisman/config.lua"))
-
-    if Talisman.config_file.break_infinity and type(Talisman.config_file.break_infinity) ~= 'string' then
-      Talisman.config_file.break_infinity = "omeganum"
-    end
-end
-if not SMODS or not JSON then
-  local createOptionsRef = create_UIBox_options
-  function create_UIBox_options()
-  contents = createOptionsRef()
-  local m = UIBox_button({
-  minw = 5,
-  button = "talismanMenu",
-  label = {
-  "Talisman"
-  },
-  colour = G.C.GOLD
-  })
-  table.insert(contents.nodes[1].nodes[1].nodes[1].nodes, #contents.nodes[1].nodes[1].nodes[1].nodes + 1, m)
-  return contents
-  end
+local exit_overlay_ref = G.FUNCS.exit_overlay_menu
+function G.FUNCS.exit_overlay_menu(...)
+	Handy.UI.config_opened = nil
+	Handy.UI.config_tab_index = nil
+	return exit_overlay_ref(...)
 end
 
-Talisman.config_tab = function()
-                tal_nodes = {{n=G.UIT.R, config={align = "cm"}, nodes={
-                  {n=G.UIT.O, config={object = DynaText({string = "Select features to enable:", colours = {G.C.WHITE}, shadow = true, scale = 0.4})}},
-                }},create_toggle({label = "Disable Scoring Animations", ref_table = Talisman.config_file, ref_value = "disable_anims",
-                callback = function(_set_toggle)
-	                nativefs.write(lovely.mod_dir .. "/Talisman/config.lua", STR_PACK(Talisman.config_file))
-                end}),
-                create_option_cycle({
-                  label = "Score Limit (requires game restart)",
-                  scale = 0.8,
-                  w = 6,
-                  options = {"Vanilla (e308)", "BigNum (ee308)", "OmegaNum (e10##1000)"},
-                  opt_callback = 'talisman_upd_score_opt',
-                  current_option = Talisman.config_file.score_opt_id,
-                })}
-                return {
-                n = G.UIT.ROOT,
-                config = {
-                    emboss = 0.05,
-                    minh = 6,
-                    r = 0.1,
-                    minw = 10,
-                    align = "cm",
-                    padding = 0.2,
-                    colour = G.C.BLACK
-                },
-                nodes = tal_nodes
-            }
-              end
-G.FUNCS.talismanMenu = function(e)
-  local tabs = create_tabs({
-      snap_to_nav = true,
-      tabs = {
-          {
-              label = "Talisman",
-              chosen = true,
-              tab_definition_function = Talisman.config_tab
-          },
-      }})
-  G.FUNCS.overlay_menu{
-          definition = create_UIBox_generic_options({
-              back_func = "options",
-              contents = {tabs}
-          }),
-      config = {offset = {x=0,y=10}}
-  }
+--- Original: Divvy's Preview for Balatro - Core.lua
+
+if SMODS and SMODS.current_mod then
+	SMODS.Atlas({
+		key = "modicon",
+		path = "icon.png",
+		px = 32,
+		py = 32,
+	})
 end
-G.FUNCS.talisman_upd_score_opt = function(e)
-  Talisman.config_file.score_opt_id = e.to_key
-  local score_opts = {"", "bignumber", "omeganum"}
-  Talisman.config_file.break_infinity = score_opts[e.to_key]
-  nativefs.write(lovely.mod_dir .. "/Talisman/config.lua", STR_PACK(Talisman.config_file))
-end
-if Talisman.config_file.break_infinity then
-  Big, err = nativefs.load(lovely.mod_dir.."/Talisman/big-num/"..Talisman.config_file.break_infinity..".lua")
-  if not err then Big = Big() else Big = nil end
-  Notations = nativefs.load(lovely.mod_dir.."/Talisman/big-num/notations.lua")()
-  -- We call this after init_game_object to leave room for mods that add more poker hands
-  Talisman.igo = function(obj)
-      for _, v in pairs(obj.hands) do
-          v.chips = to_big(v.chips)
-          v.mult = to_big(v.mult)
-          v.s_chips = to_big(v.s_chips)
-          v.s_mult = to_big(v.s_mult)
-          v.l_chips = to_big(v.l_chips)
-          v.l_mult = to_big(v.l_mult)
+
+-- The functions responsible for running the simulation at appropriate times;
+-- ie. whenever the player modifies card selection or card order.
+
+function FN.PRE.simulate()
+   -- Guard against simulating in redundant places:
+   if FN.PRE.five_second_coroutine and coroutine.status(FN.PRE.five_second_coroutine) == "suspended" then
+      coroutine.resume(FN.PRE.five_second_coroutine)
+   end
+   if not (G.STATE == G.STATES.SELECTING_HAND or
+           G.STATE == G.STATES.DRAW_TO_HAND or
+           G.STATE == G.STATES.PLAY_TAROT)
+   then return {score = {min = 0, exact = 0, max = 0}, dollars = {min = 0, exact = 0, max = 0}}
+   end
+
+   if G.SETTINGS.FN.hide_face_down then
+      for _, card in ipairs(G.hand.highlighted) do
+         if card.facing == "back" then return nil end
       end
-      return obj
-  end
-
-  local nf = number_format
-  function number_format(num, e_switch_point)
-      if type(num) == 'table' then
-          num = to_big(num)
-          G.E_SWITCH_POINT = G.E_SWITCH_POINT or 100000000000
-          if num < to_big(e_switch_point or G.E_SWITCH_POINT) then
-              return nf(num:to_number(), e_switch_point)
-          else
-            return Notations.Balatro:format(num, 3)
-          end
-      else return nf(num, e_switch_point) end
-  end
-
-  local mf = math.floor
-  function math.floor(x)
-      if type(x) == 'table' then return x:floor() end
-      return mf(x)
-  end
-
-  local l10 = math.log10
-  function math.log10(x)
-      if type(x) == 'table' then return l10(math.min(x:to_number(),1e300)) end--x:log10() end
-      return l10(x)
-  end
-
-  local lg = math.log
-  function math.log(x, y)
-      if not y then y = 2.718281828459045 end
-      if type(x) == 'table' then return lg(math.min(x:to_number(),1e300),y) end --x:log(y) end
-      return lg(x,y)
-  end
-
-  if SMODS then
-    function SMODS.get_blind_amount(ante)
-      local k = to_big(0.75)
-      local scale = G.GAME.modifiers.scaling
-      local amounts = {
-          to_big(300),
-          to_big(700 + 100*scale),
-          to_big(1400 + 600*scale),
-          to_big(2100 + 2900*scale),
-          to_big(15000 + 5000*scale*math.log(scale)),
-          to_big(12000 + 8000*(scale+1)*(0.4*scale)),
-          to_big(10000 + 25000*(scale+1)*((scale/4)^2)),
-          to_big(50000 * (scale+1)^2 * (scale/7)^2)
-      }
-      
-      if ante < 1 then return to_big(100) end
-      if ante <= 8 then 
-        local amount = amounts[ante]
-        if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
-          local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
-          amount = math.floor(amount / exponent):to_number() * exponent
+      if #(G.hand.highlighted) ~= 0 then
+        for _, joker in ipairs(G.jokers.cards) do
+          if joker.facing == "back" then return nil end
         end
-        amount:normalize()
-        return amount
-       end
-      local a, b, c, d = amounts[8], amounts[8]/amounts[7], ante-8, 1 + 0.2*(ante-8)
-      local amount = math.floor(a*(b + (b*k*c)^d)^c)
-      if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
-        local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
-        amount = math.floor(amount / exponent):to_number() * exponent
       end
-      amount:normalize()
-      return amount
-    end
-  end
-  -- There's too much to override here so we just fully replace this function
-  -- Note that any ante scaling tweaks will need to manually changed...
-  local gba = get_blind_amount
-  function get_blind_amount(ante)
-    if G.GAME.modifiers.scaling and G.GAME.modifiers.scaling > 3 then return SMODS.get_blind_amount(ante) end
-    if type(to_big(1)) == 'number' then return gba(ante) end
-      local k = to_big(0.75)
-      if not G.GAME.modifiers.scaling or G.GAME.modifiers.scaling == 1 then 
-        local amounts = {
-          to_big(300),  to_big(800), to_big(2000),  to_big(5000),  to_big(11000),  to_big(20000),   to_big(35000),  to_big(50000)
-        }
-        if ante < 1 then return to_big(100) end
-        if ante <= 8 then return amounts[ante] end
-        local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
-        local amount = a*(b+(k*c)^d)^c
-        if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
-          local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
-          amount = math.floor(amount / exponent):to_number() * exponent
-        end
-        amount:normalize()
-        return amount
-      elseif G.GAME.modifiers.scaling == 2 then 
-        local amounts = {
-          to_big(300),  to_big(900), to_big(2600),  to_big(8000), to_big(20000),  to_big(36000),  to_big(60000),  to_big(100000)
-          --300,  900, 2400,  7000,  18000,  32000,  56000,  90000
-        }
-        if ante < 1 then return to_big(100) end
-        if ante <= 8 then return amounts[ante] end
-        local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
-        local amount = a*(b+(k*c)^d)^c
-        if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
-          local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
-          amount = math.floor(amount / exponent):to_number() * exponent
-        end
-        amount:normalize()
-        return amount
-      elseif G.GAME.modifiers.scaling == 3 then 
-        local amounts = {
-          to_big(300),  to_big(1000), to_big(3200),  to_big(9000),  to_big(25000),  to_big(60000),  to_big(110000),  to_big(200000)
-          --300,  1000, 3000,  8000,  22000,  50000,  90000,  180000
-        }
-        if ante < 1 then return to_big(100) end
-        if ante <= 8 then return amounts[ante] end
-        local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
-        local amount = a*(b+(k*c)^d)^c
-        if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
-          local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
-          amount = math.floor(amount / exponent):to_number() * exponent
-        end
-        amount:normalize()
-        return amount
+   end
+
+   return FN.SIM.run()
+end
+
+--
+-- SIMULATION UPDATE ADVICE:
+--
+
+function FN.PRE.add_update_event(trigger)
+   function sim_func()
+      FN.PRE.data = FN.PRE.simulate()
+      return true
+   end
+   if FN.PRE.enabled() then
+      G.E_MANAGER:add_event(Event({trigger = trigger, func = sim_func}))
+   end
+end
+
+-- Update simulation after a consumable (eg. Tarot, Planet) is used:
+local orig_use = Card.use_consumeable
+function Card:use_consumeable(area, copier)
+   orig_use(self, area, copier)
+   FN.PRE.add_update_event("immediate")
+end
+
+-- Update simulation after card selection changed:
+local orig_hl = CardArea.parse_highlighted
+function CardArea:parse_highlighted()
+   orig_hl(self)
+   if not FN.PRE.lock_updates and FN.PRE.show_preview then
+      FN.PRE.show_preview = false
+   end
+   FN.PRE.add_update_event("immediate")
+end
+
+-- Update simulation after joker sold:
+local orig_card_remove = Card.remove_from_area
+function Card:remove_from_area()
+   orig_card_remove(self)
+   if self.config.type == 'joker' then
+      FN.PRE.add_update_event("immediate")
+   end
+end
+
+-- Update simulation after joker reordering:
+local orig_update = CardArea.update
+function CardArea:update(dt)
+   orig_update(self, dt)
+   FN.PRE.update_on_card_order_change(self)
+end
+
+function FN.PRE.update_on_card_order_change(cardarea)
+   if #cardarea.cards == 0 or
+      not (G.STATE == G.STATES.SELECTING_HAND or
+           G.STATE == G.STATES.DRAW_TO_HAND or
+           G.STATE == G.STATES.PLAY_TAROT)
+   then return end
+   -- Important not to update on G.STATES.HAND_PLAYED, because it would reset the preview text!
+
+   if (G.STATE == G.STATES.HAND_PLAYED) then return end
+
+   local prev_order = nil
+   if cardarea.config.type == 'joker' and cardarea.cards[1].ability.set == 'Joker' then
+      if cardarea.cards[1].edition and cardarea.cards[1].edition.mp_phantom then
+         return
       end
-    end
+      -- Note that the consumables cardarea also has type 'joker' so must verify by checking first card.
+      prev_order = FN.PRE.joker_order
+   elseif cardarea.config.type == 'hand' then
+      prev_order = FN.PRE.hand_order
+   else
+      return
+   end
 
-  function check_and_set_high_score(score, amt)
-    if G.GAME.round_scores[score] and to_big(math.floor(amt)) > to_big(G.GAME.round_scores[score].amt) then
-      G.GAME.round_scores[score].amt = to_big(math.floor(amt))
-    end
-    if  G.GAME.seeded  then return end
-    --[[if G.PROFILES[G.SETTINGS.profile].high_scores[score] and math.floor(amt) > G.PROFILES[G.SETTINGS.profile].high_scores[score].amt then
-      if G.GAME.round_scores[score] then G.GAME.round_scores[score].high_score = true end
-      G.PROFILES[G.SETTINGS.profile].high_scores[score].amt = math.floor(amt)
-      G:save_settings()
-    end--]] --going to hold off on modifying this until proper save loading exists
-  end
-
-  local sn = scale_number
-  function scale_number(number, scale, max, e_switch_point)
-    if not Big then return sn(number, scale, max, e_switch_point) end
-    scale = to_big(scale)
-    G.E_SWITCH_POINT = G.E_SWITCH_POINT or 100000000000
-    if not number or not is_number(number) then return scale end
-    if not max then max = 10000 end
-    if to_big(number).e and to_big(number).e == 10^1000 then
-      scale = scale*math.floor(math.log(max*10, 10))/7
-    end
-    if to_big(number) >= to_big(e_switch_point or G.E_SWITCH_POINT) then
-      if (to_big(to_big(number):log10()) <= to_big(999)) then
-        scale = scale*math.floor(math.log(max*10, 10))/math.floor(math.log(1000000*10, 10))
-      else
-        scale = scale*math.floor(math.log(max*10, 10))/math.floor(math.max(7,string.len(number_format(number))-1))
+   -- Go through stored card IDs and check against current card IDs, in-order.
+   -- If any mismatch occurs, toggle flag and update name for next time.
+   local should_update = false
+   if #cardarea.cards ~= #prev_order then
+      prev_order = {}
+   end
+   for i, c in ipairs(cardarea.cards) do
+      if c.sort_id ~= prev_order[i] then
+         prev_order[i] = c.sort_id
+         should_update = true
       end
-    elseif to_big(number) >= to_big(max) then
-      scale = scale*math.floor(math.log(max*10, 10))/math.floor(math.log(number*10, 10))
-    end
-    return math.min(3, scale:to_number())
-  end
+   end
 
-  local tsj = G.FUNCS.text_super_juice
-  function G.FUNCS.text_super_juice(e, _amount)
-    if _amount > 2 then _amount = 2 end
-    return tsj(e, _amount)
-  end
-
-  local max = math.max
-  --don't return a Big unless we have to - it causes nativefs to break
-  function math.max(x, y)
-    if type(x) == 'table' or type(y) == 'table' then
-    x = to_big(x)
-    y = to_big(y)
-    if (x > y) then
-      return x
-    else
-      return y
-    end
-    else return max(x,y) end
-  end
-
-  local min = math.min
-  function math.min(x, y)
-    if type(x) == 'table' or type(y) == 'table' then
-    x = to_big(x)
-    y = to_big(y)
-    if (x < y) then
-      return x
-    else
-      return y
-    end
-    else return min(x,y) end
-  end
-
-  local sqrt = math.sqrt
-  function math.sqrt(x)
-    if type(x) == 'table' then
-      if getmetatable(x) == BigMeta then return x:sqrt() end
-      if getmetatable(x) == OmegaMeta then return x:pow(0.5) end
-    end
-    return sqrt(x)
-  end
-
- 
-
-  local old_abs = math.abs
-  function math.abs(x)
-    if type(x) == 'table' then
-    x = to_big(x)
-    if (x < to_big(0)) then
-      return -1 * x
-    else
-      return x
-    end
-    else return old_abs(x) end
-  end
+   if should_update then
+      if cardarea.config.type == 'joker' or cardarea.cards[1].ability.set == 'Joker' then
+         FN.PRE.joker_order = prev_order
+      elseif cardarea.config.type == 'hand' then
+         FN.PRE.hand_order = prev_order
+      end
+      if FN.PRE.show_preview and not FN.PRE.lock_updates then
+         FN.PRE.show_preview = false
+      end
+      FN.PRE.add_update_event("immediate")
+   end
 end
 
-function is_number(x)
-  if type(x) == 'number' then return true end
-  if type(x) == 'table' and ((x.e and x.m) or (x.array and x.sign)) then return true end
-  return false
+--
+-- SIMULATION RESET ADVICE:
+--
+
+function FN.PRE.add_reset_event(trigger)
+   function reset_func()
+      FN.PRE.data = {score = {min = 0, exact = 0, max = 0}, dollars = {min = 0, exact = 0, max = 0}}
+      return true
+   end
+   if FN.PRE.enabled() then
+      G.E_MANAGER:add_event(Event({trigger = trigger, func = reset_func}))
+   end
 end
 
-function to_big(x, y)
-  if Big and Big.m then
-    return Big:new(x,y)
-  elseif Big and Big.array then
-    local result = Big:create(x)
-    result.sign = y or result.sign or x.sign or 1
-    return result
-  elseif is_number(x) then
-    return x * 10^(y or 0)
-
-  elseif type(x) == "nil" then
-    return 0
-  else
-    if ((#x>=2) and ((x[2]>=2) or (x[2]==1) and (x[1]>308))) then
-      return 1e309
-    end
-    if (x[2]==1) then
-      return math.pow(10,x[1])
-    end
-    return x[1]*(y or 1);
-  end
-end
-function to_number(x)
-  if type(x) == 'table' and (getmetatable(x) == BigMeta or getmetatable(x) == OmegaMeta) then
-    return x:to_number()
-  else
-    return x
-  end
+local orig_eval = G.FUNCS.evaluate_play
+function G.FUNCS.evaluate_play(e)
+   orig_eval(e)
+   FN.PRE.add_reset_event("after")
 end
 
---patch to remove animations
-local cest = card_eval_status_text
-function card_eval_status_text(a,b,c,d,e,f)
-    if not Talisman.config_file.disable_anims then cest(a,b,c,d,e,f) end
+local orig_discard = G.FUNCS.discard_cards_from_highlighted
+function G.FUNCS.discard_cards_from_highlighted(e, is_hook_blind)
+   orig_discard(e, is_hook_blind)
+   if not is_hook_blind then
+      FN.PRE.add_reset_event("immediate")
+   end
 end
-local jc = juice_card
-function juice_card(x)
-    if not Talisman.config_file.disable_anims then jc(x) end
-end
-function tal_uht(config, vals)
-    local col = G.C.GREEN
-    if vals.chips and G.GAME.current_round.current_hand.chips ~= vals.chips then
-        local delta = (is_number(vals.chips) and is_number(G.GAME.current_round.current_hand.chips)) and (vals.chips - G.GAME.current_round.current_hand.chips) or 0
-        if to_big(delta) < to_big(0) then delta = number_format(delta); col = G.C.RED
-        elseif to_big(delta) > to_big(0) then delta = '+'..number_format(delta)
-        else delta = number_format(delta)
-        end
-        if type(vals.chips) == 'string' then delta = vals.chips end
-        G.GAME.current_round.current_hand.chips = vals.chips
-        if G.hand_text_area.chips.config.object then
-          G.hand_text_area.chips:update(0)
-        end
-    end
-    if vals.mult and G.GAME.current_round.current_hand.mult ~= vals.mult then
-        local delta = (is_number(vals.mult) and is_number(G.GAME.current_round.current_hand.mult))and (vals.mult - G.GAME.current_round.current_hand.mult) or 0
-        if to_big(delta) < to_big(0) then delta = number_format(delta); col = G.C.RED
-        elseif to_big(delta) > to_big(0) then delta = '+'..number_format(delta)
-        else delta = number_format(delta)
-        end
-        if type(vals.mult) == 'string' then delta = vals.mult end
-        G.GAME.current_round.current_hand.mult = vals.mult
-        if G.hand_text_area.mult.config.object then
-          G.hand_text_area.mult:update(0)
-        end
-    end
-    if vals.handname and G.GAME.current_round.current_hand.handname ~= vals.handname then
-        G.GAME.current_round.current_hand.handname = vals.handname
-    end
-    if vals.chip_total then G.GAME.current_round.current_hand.chip_total = vals.chip_total;G.hand_text_area.chip_total.config.object:pulse(0.5) end
-    if vals.level and G.GAME.current_round.current_hand.hand_level ~= ' '..localize('k_lvl')..tostring(vals.level) then
-        if vals.level == '' then
-            G.GAME.current_round.current_hand.hand_level = vals.level
-        else
-            G.GAME.current_round.current_hand.hand_level = ' '..localize('k_lvl')..tostring(vals.level)
-            if type(vals.level) == 'number' then 
-                G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[math.min(vals.level, 7)]
-            else
-                G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[1]
+
+--
+-- USER INTERFACE ADVICE:
+--
+
+-- Add animation to preview text:
+function G.FUNCS.fn_pre_score_UI_set(e)
+   local new_preview_text = ""
+   local should_juice = false
+   if FN.PRE.lock_updates then 
+      if e.config.id == "fn_pre_l" then
+         new_preview_text = " CALCULATING "
+         should_juice = true
+      end
+   else  
+      if FN.PRE.data then
+         if FN.PRE.show_preview and (FN.PRE.data.score.min ~= FN.PRE.data.score.max) then
+            -- Format as 'X - Y' :
+            if e.config.id == "fn_pre_l" then
+               new_preview_text = FN.PRE.format_number(FN.PRE.data.score.min) .. " - "
+               if FN.PRE.is_enough_to_win(FN.PRE.data.score.min) then should_juice = true end
+            elseif e.config.id == "fn_pre_r" then
+               new_preview_text = FN.PRE.format_number(FN.PRE.data.score.max)
+               if FN.PRE.is_enough_to_win(FN.PRE.data.score.max) then should_juice = true end
             end
-        end
-    end
-    return true
-end
-local uht = update_hand_text
-function update_hand_text(config, vals)
-    if Talisman.config_file.disable_anims then
-        if G.latest_uht then
-          local chips = G.latest_uht.vals.chips
-          local mult = G.latest_uht.vals.mult
-          if not vals.chips then vals.chips = chips end
-          if not vals.mult then vals.mult = mult end
-        end
-        G.latest_uht = {config = config, vals = vals}
-    else uht(config, vals)
-    end
-end
-local upd = Game.update
-function Game:update(dt)
-    upd(self, dt)
-    if G.latest_uht and G.latest_uht.config and G.latest_uht.vals then
-        tal_uht(G.latest_uht.config, G.latest_uht.vals)
-        G.latest_uht = nil
-    end
-    if Talisman.dollar_update then
-      G.HUD:get_UIE_by_ID('dollar_text_UI').config.object:update()
-      G.HUD:recalculate()
-      Talisman.dollar_update = false
-    end
-end
---scoring coroutine
-local oldplay = G.FUNCS.evaluate_play
-
-function G.FUNCS.evaluate_play()
-    G.SCORING_COROUTINE = coroutine.create(oldplay)
-    G.LAST_SCORING_YIELD = love.timer.getTime()
-    G.CARD_CALC_COUNTS = {} -- keys = cards, values = table containing numbers
-    local success, err = coroutine.resume(G.SCORING_COROUTINE)
-    if not success then
-      error(err)
-    end
-end
-
-
-local oldupd = love.update
-function love.update(dt, ...)
-    oldupd(dt, ...)
-    if G.SCORING_COROUTINE then
-      if collectgarbage("count") > 1024*1024 then
-        collectgarbage("collect")
-      end
-        if coroutine.status(G.SCORING_COROUTINE) == "dead" then
-            G.SCORING_COROUTINE = nil
-            G.FUNCS.exit_overlay_menu()
-            local totalCalcs = 0
-            for i, v in pairs(G.CARD_CALC_COUNTS) do
-              totalCalcs = totalCalcs + v[1]
-            end
-            G.GAME.LAST_CALCS = totalCalcs
-        else
-            G.SCORING_TEXT = nil
-            if not G.OVERLAY_MENU then
-                G.scoring_text = {"Calculating...", "", "", ""}
-                G.SCORING_TEXT = { 
-                  {n = G.UIT.C, nodes = {
-                    {n = G.UIT.R, config = {padding = 0.1, align = "cm"}, nodes = {
-                    {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 1}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 1, silent = true})}},
-                    }},{n = G.UIT.R,  nodes = {
-                    {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 2}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
-                    }},{n = G.UIT.R,  nodes = {
-                    {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 3}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
-                    }},{n = G.UIT.R,  nodes = {
-                    {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 4}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
-                }}}}}
-                G.FUNCS.overlay_menu({
-                    definition = 
-                    {n=G.UIT.ROOT, minw = G.ROOM.T.w*5, minh = G.ROOM.T.h*5, config={align = "cm", padding = 9999, offset = {x = 0, y = -3}, r = 0.1, colour = {G.C.GREY[1], G.C.GREY[2], G.C.GREY[3],0.7}}, nodes= G.SCORING_TEXT}, 
-                    config = {align="cm", offset = {x=0,y=0}, major = G.ROOM_ATTACH, bond = 'Weak'}
-                })
-            else
-
-                if G.OVERLAY_MENU and G.scoring_text then
-                  local totalCalcs = 0
-                  for i, v in pairs(G.CARD_CALC_COUNTS) do
-                    totalCalcs = totalCalcs + v[1]
+         else
+            -- Format as single number:
+            if e.config.id == "fn_pre_l" then
+               if true then
+                  -- Spaces around number necessary to distinguish Min/Max text from Exact text,
+                  -- which is itself necessary to force a HUD update when switching between Min/Max and Exact.
+                  if FN.PRE.show_preview then 
+                     new_preview_text = " " .. FN.PRE.format_number(FN.PRE.data.score.min) .. " "
+                     if FN.PRE.is_enough_to_win(FN.PRE.data.score.min) then should_juice = true end
+                  else
+                     if FN.PRE.is_enough_to_win(FN.PRE.data.score.min) then 
+                        should_juice = true
+                        new_preview_text = "  "
+                     else
+                        if FN.PRE.is_enough_to_win(FN.PRE.data.score.max) then
+                           new_preview_text = "  "
+                           should_juice = true
+                        else
+                           new_preview_text = "  "
+                        end
+                     end
                   end
-                  local jokersYetToScore = #G.jokers.cards + #G.play.cards - #G.CARD_CALC_COUNTS
-                  G.scoring_text[1] = "Calculating..."
-                  G.scoring_text[2] = "Elapsed calculations: "..tostring(totalCalcs)
-                  G.scoring_text[3] = "Cards yet to score: "..tostring(jokersYetToScore)
-                  G.scoring_text[4] = "Calculations last played hand: " .. tostring(G.GAME.LAST_CALCS or "Unknown")
-                end
-
+               end
+            else
+               new_preview_text = ""
             end
-			--this coroutine allows us to stagger GC cycles through
-			--the main source of waste in terms of memory (especially w joker retriggers) is through local variables that become garbage
-			--this practically eliminates the memory overhead of scoring
-			--event queue overhead seems to not exist if Talismans Disable Scoring Animations is off.
-			--event manager has to wait for scoring to finish until it can keep processing events anyways.
-
-            
-	          G.LAST_SCORING_YIELD = love.timer.getTime()
-            
-            local success, msg = coroutine.resume(G.SCORING_COROUTINE)
-            if not success then
-              error(msg)
-            end
-        end
-    end
-end
-
-
-
-TIME_BETWEEN_SCORING_FRAMES = 0.03 -- 30 fps during scoring
--- we dont want overhead from updates making scoring much slower
--- originally 10 fps, I think 30 fps is a good way to balance it while making it look smooth, too
---wrap everything in calculating contexts so we can do more things with it
-Talisman.calculating_joker = false
-Talisman.calculating_score = false
-Talisman.calculating_card = false
-Talisman.dollar_update = false
-local ccj = Card.calculate_joker
-function Card:calculate_joker(context)
-  --scoring coroutine
-  G.CURRENT_SCORING_CARD = self
-  G.CARD_CALC_COUNTS = G.CARD_CALC_COUNTS or {}
-  if G.CARD_CALC_COUNTS[self] then
-    G.CARD_CALC_COUNTS[self][1] = G.CARD_CALC_COUNTS[self][1] + 1
-  else
-    G.CARD_CALC_COUNTS[self] = {1, 1}
-  end
-
-
-  if G.LAST_SCORING_YIELD and ((love.timer.getTime() - G.LAST_SCORING_YIELD) > TIME_BETWEEN_SCORING_FRAMES) and coroutine.running() then
-        coroutine.yield()
-  end
-  Talisman.calculating_joker = true
-  local ret = ccj(self, context)
-
-  if ret and type(ret) == "table" and ret.repetitions then
-    G.CARD_CALC_COUNTS[ret.card] = G.CARD_CALC_COUNTS[ret.card] or {1,1}
-    G.CARD_CALC_COUNTS[ret.card][2] = G.CARD_CALC_COUNTS[ret.card][2] + ret.repetitions
-  end
-  Talisman.calculating_joker = false
-  return ret
-end
-local cuc = Card.use_consumable
-function Card:use_consumable(x,y)
-  Talisman.calculating_score = true
-  local ret = cuc(self, x,y)
-  Talisman.calculating_score = false
-  return ret
-end
-local gfep = G.FUNCS.evaluate_play
-G.FUNCS.evaluate_play = function(e)
-  Talisman.calculating_score = true
-  local ret = gfep(e)
-  Talisman.calculating_score = false
-  return ret
-end
---[[local ec = eval_card
-function eval_card()
-  Talisman.calculating_card = true
-  local ret = ec()
-  Talisman.calculating_card = false
-  return ret
-end--]]
-local sm = Card.start_materialize
-function Card:start_materialize(a,b,c)
-  if Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score or Talisman.calculating_card) then return end
-  return sm(self,a,b,c)
-end
-local sd = Card.start_dissolve
-function Card:start_dissolve(a,b,c,d)
-  if Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score or Talisman.calculating_card) then self:remove() return end
-  return sd(self,a,b,c,d)
-end
-local ss = Card.set_seal
-function Card:set_seal(a,b,immediate)
-  return ss(self,a,b,Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score or Talisman.calculating_card) or immediate)
-end
-
-function Card:get_chip_x_bonus()
-    if self.debuff then return 0 end
-    if self.ability.set == 'Joker' then return 0 end
-    if (self.ability.x_chips or 0) <= 1 then return 0 end
-    return self.ability.x_chips
-end
-
-function Card:get_chip_e_bonus()
-    if self.debuff then return 0 end
-    if self.ability.set == 'Joker' then return 0 end
-    if (self.ability.e_chips or 0) <= 1 then return 0 end
-    return self.ability.e_chips
-end
-
-function Card:get_chip_ee_bonus()
-    if self.debuff then return 0 end
-    if self.ability.set == 'Joker' then return 0 end
-    if (self.ability.ee_chips or 0) <= 1 then return 0 end
-    return self.ability.ee_chips
-end
-
-function Card:get_chip_eee_bonus()
-    if self.debuff then return 0 end
-    if self.ability.set == 'Joker' then return 0 end
-    if (self.ability.eee_chips or 0) <= 1 then return 0 end
-    return self.ability.eee_chips
-end
-
-function Card:get_chip_hyper_bonus()
-    if self.debuff then return {0,0} end
-    if self.ability.set == 'Joker' then return {0,0} end
-	if type(self.ability.hyper_chips) ~= 'table' then return {0,0} end
-    if (self.ability.hyper_chips[1] <= 0 or self.ability.hyper_chips[2] <= 0) then return {0,0} end
-    return self.ability.hyper_chips
-end
-
-function Card:get_chip_e_mult()
-    if self.debuff then return 0 end
-    if self.ability.set == 'Joker' then return 0 end
-    if (self.ability.e_mult or 0) <= 1 then return 0 end
-    return self.ability.e_mult
-end
-
-function Card:get_chip_ee_mult()
-    if self.debuff then return 0 end
-    if self.ability.set == 'Joker' then return 0 end
-    if (self.ability.ee_mult or 0) <= 1 then return 0 end
-    return self.ability.ee_mult
-end
-
-function Card:get_chip_eee_mult()
-    if self.debuff then return 0 end
-    if self.ability.set == 'Joker' then return 0 end
-    if (self.ability.eee_mult or 0) <= 1 then return 0 end
-    return self.ability.eee_mult
-end
-
-function Card:get_chip_hyper_mult()
-    if self.debuff then return {0,0} end
-    if self.ability.set == 'Joker' then return {0,0} end
-	if type(self.ability.hyper_mult) ~= 'table' then return {0,0} end
-    if (self.ability.hyper_mult[1] <= 0 or self.ability.hyper_mult[2] <= 0) then return {0,0} end
-    return self.ability.hyper_mult
-end
-
---Easing fixes
---Changed this to always work; it's less pretty but fine for held in hand things
-local edo = ease_dollars
-function ease_dollars(mod, instant)
-  if Talisman.config_file.disable_anims then--and (Talisman.calculating_joker or Talisman.calculating_score or Talisman.calculating_card) then
-    mod = mod or 0
-    if mod < 0 then inc_career_stat('c_dollars_earned', mod) end
-    G.GAME.dollars = G.GAME.dollars + mod
-    Talisman.dollar_update = true
-  else return edo(mod, instant) end
-end
-
-local su = G.start_up
-function safe_str_unpack(str)
-  local chunk, err = loadstring(str)
-  if chunk then
-    setfenv(chunk, {Big = Big, BigMeta = BigMeta, OmegaMeta = OmegaMeta, to_big = to_big, inf = 1.79769e308})  -- Use an empty environment to prevent access to potentially harmful functions
-    local success, result = pcall(chunk)
-    if success then
-    return result
-    else
-    print("Error unpacking string: " .. result)
-    return nil
-    end
-  else
-    print("Error loading string: " .. err)
-    return nil
-  end
-  end
-function G:start_up()
-  STR_UNPACK = safe_str_unpack
-  su(self)
-  STR_UNPACK = safe_str_unpack
-end
-
---Skip round animation things
-local gfer = G.FUNCS.evaluate_round
-function G.FUNCS.evaluate_round()
-    if Talisman.config_file.disable_anims then
-      if to_big(G.GAME.chips) >= to_big(G.GAME.blind.chips) then
-          add_round_eval_row({dollars = G.GAME.blind.dollars, name='blind1', pitch = 0.95})
+         end
       else
-          add_round_eval_row({dollars = 0, name='blind1', pitch = 0.95, saved = true})
+         -- Spaces around number necessary to distinguish Min/Max text from Exact text, same as above ^
+         if e.config.id == "fn_pre_l" then
+            if true then new_preview_text = " ?????? "
+            else new_preview_text = "??????"
+            end
+         else
+            new_preview_text = ""
+         end
       end
-      local arer = add_round_eval_row
-      add_round_eval_row = function() return end
-      local dollars = gfer()
-      add_round_eval_row = arer
-      add_round_eval_row({name = 'bottom', dollars = Talisman.dollars})
-    else
-        return gfer()
-    end
+   end
+
+   if (not FN.PRE.text.score[e.config.id:sub(-1)]) or new_preview_text ~= FN.PRE.text.score[e.config.id:sub(-1)] then
+      FN.PRE.text.score[e.config.id:sub(-1)] = new_preview_text
+      e.config.object:update_text()
+      -- Wobble:
+      if not G.TAROT_INTERRUPT_PULSE then
+         if should_juice
+         then
+            G.FUNCS.text_super_juice(e, 5)
+            e.config.object.colours = {G.C.MONEY}
+         else
+            G.FUNCS.text_super_juice(e, 0)
+            e.config.object.colours = {G.C.UI.TEXT_LIGHT}
+         end
+      end
+   end
 end
 
---some debugging functions
---[[local callstep=0
-function printCallerInfo()
-  -- Get debug info for the caller of the function that called printCallerInfo
-  local info = debug.getinfo(3, "Sl")
-  callstep = callstep+1
-  if info then
-      print("["..callstep.."] "..(info.short_src or "???")..":"..(info.currentline or "unknown"))
-  else
-      print("Caller information not available")
-  end
+function G.FUNCS.fn_pre_dollars_UI_set(e)
+   local new_preview_text = ""
+   local new_colour = nil
+   if FN.PRE.data then
+      if true and (FN.PRE.data.dollars.min ~= FN.PRE.data.dollars.max) then
+         if e.config.id == "fn_pre_dollars_top" then
+            new_preview_text = " " .. FN.PRE.get_sign_str(FN.PRE.data.dollars.max) .. FN.PRE.data.dollars.max
+            new_colour = FN.PRE.get_dollar_colour(FN.PRE.data.dollars.max)
+         elseif e.config.id == "fn_pre_dollars_bot" then
+            new_preview_text = " " .. FN.PRE.get_sign_str(FN.PRE.data.dollars.min) .. FN.PRE.data.dollars.min
+            new_colour = FN.PRE.get_dollar_colour(FN.PRE.data.dollars.min)
+         end
+      else
+         if e.config.id == "fn_pre_dollars_top" then
+            local _data = (G.SETTINGS.FN.show_min_max) and FN.PRE.data.dollars.min or FN.PRE.data.dollars.exact
+
+            new_preview_text = " " .. FN.PRE.get_sign_str(_data) .. _data
+            new_colour = FN.PRE.get_dollar_colour(_data)
+         else
+            new_preview_text = ""
+            new_colour = FN.PRE.get_dollar_colour(0)
+         end
+      end
+   else
+      new_preview_text = " +??"
+      new_colour = FN.PRE.get_dollar_colour(0)
+   end
+
+   if (not FN.PRE.text.dollars[e.config.id:sub(-3)]) or new_preview_text ~= FN.PRE.text.dollars[e.config.id:sub(-3)] then
+      FN.PRE.text.dollars[e.config.id:sub(-3)] = new_preview_text
+      e.config.object.colours = {new_colour}
+      e.config.object:update_text()
+      if not G.TAROT_INTERRUPT_PULSE then e.config.object:pulse(0.25) end
+   end
 end
-local emae = EventManager.add_event
-function EventManager:add_event(x,y,z)
-  printCallerInfo()
-  return emae(self,x,y,z)
-end--]]
+
+--- Original: Divvy's Preview for Balatro - Utils.lua
+--
+-- Utilities for checking states and formatting display.
+
+function FN.PRE.is_enough_to_win(chips)
+   if G.GAME.blind and
+      (G.STATE == G.STATES.SELECTING_HAND or
+       G.STATE == G.STATES.DRAW_TO_HAND or
+       G.STATE == G.STATES.PLAY_TAROT)
+   then return (G.GAME.chips + chips >= G.GAME.blind.chips)
+   else return false
+   end
+end
+
+function FN.PRE.format_number(num)
+   if not num or type(num) ~= 'number' then return num or '' end
+   -- Start using e-notation earlier to reduce number length, if showing min and max for preview:
+   if true and num >= 1e7 then
+      local x = string.format("%.4g",num)
+      local fac = math.floor(math.log(tonumber(x), 10))
+      return string.format("%.2f",x/(10^fac))..'e'..fac
+   end
+   return number_format(num) -- Default Balatro function.
+end
+
+function FN.PRE.get_dollar_colour(n)
+   if n == 0 then return HEX("7e7667")
+   elseif n > 0 then return G.C.MONEY
+   elseif n < 0 then return G.C.RED
+   end
+end
+
+function FN.PRE.get_sign_str(n)
+   if n >= 0 then return "+"
+   else return "" -- Negative numbers already have a sign
+   end
+end
+
+function FN.PRE.enabled()
+   return G.SETTINGS.FN.preview_score or G.SETTINGS.FN.preview_dollars
+end

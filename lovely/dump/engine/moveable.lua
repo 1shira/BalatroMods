@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '2774a24114332371bc4208f854d32c6f93786326d6810fc4139b615d177277e3'
+LOVELY_INTEGRITY = 'c7deed078377bc925af677c3167d252320a6d60082b374756f91d39e37d221a2'
 
 ---@class Moveable: Node
 Moveable = Node:extend()
@@ -15,6 +15,7 @@ Moveable = Node:extend()
 function Moveable:init(X,Y,W,H)
     local args = (type(X) == 'table') and X or {T ={X or 0,Y or 0,W or 0,H or 0}}
     Node.init(self, args)
+    self.original_T = copy_table(self.T)
 
     --The Visible transform is initally set to the same values as the transform T.
     --Note that the VT has an extra 'scale' factor, this is used to manipulate the center-adjusted
@@ -114,6 +115,17 @@ function Moveable:set_alignment(args)
 end
 
 function Moveable:align_to_major()
+if not self or not self.alignment or not self.role then return end
+if not self.alignment.type or not self.alignment.prev_type then return end
+if not self.alignment.offset or not self.alignment.prev_offset then return end
+if not self.alignment.offset.x or not self.alignment.offset.y then return end
+if not self.alignment.prev_offset.x or not self.alignment.prev_offset.y then return end
+if not self.T then return end
+if not self.Mid or not self.Mid.T or not self.Mid.T.w or not self.Mid.T.h or not self.Mid.T.x or not self.Mid.T.y then return end
+if not self.role.major or not self.role.major.T then return end
+if not self.role.major.T.w or not self.role.major.T.h or not self.role.major.T.x or not self.role.major.T.y then return end
+if not self.T.w or not self.T.h or not self.T.x or not self.T.y then return end
+if not self.role.offset then self.role.offset = {} end
     if self.alignment.type ~= self.alignment.prev_type then 
         self.alignment.type_list = {
             a = self.alignment.type == 'a',
@@ -431,10 +443,6 @@ function Moveable:move_scale(dt)
 end
 
 function Moveable:move_wh(dt)
-if Big and G.STATE == G.STATES.MENU then self.T.w = to_big(self.T.w):to_number()
-self.T.h = to_big(self.T.h):to_number()
-self.VT.w = to_big(self.VT.w):to_number()
-self.VT.h = to_big(self.VT.h):to_number() end
     if (self.T.w ~= self.VT.w and not self.pinch.x) or 
         (self.T.h ~= self.VT.h and not self.pinch.y) or 
         (self.VT.w > 0 and self.pinch.x) or 

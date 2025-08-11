@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'dcee0f419fb831e26062a3a28f9f4e4a22ad6f41bb9551ac4fd7a2c56c6cf364'
+LOVELY_INTEGRITY = '02010a3ad60116929bd9da0b2717ef43d6618b3fad3014e8b1c4898d7aaa5ae2'
 
 function set_screen_positions()
     if G.STAGE == G.STAGES.RUN then
@@ -88,6 +88,16 @@ function ease_dollars(mod, instant)
         if MP.LOBBY.code and to_big(mod) < to_big(0) then
           MP.GAME.spent_total = to_big(MP.GAME.spent_total) + (to_big(mod) * to_big(-1))
         end
+            if MP and MP.LOBBY and MP.LOBBY.code then
+                if MP.GAME.ce_cache == false then
+                    MP.GAME.real_money = tonumber(MP.GAME.real_money) + mod
+                    if MP.GAME.real_money ~= G.GAME.dollars then 
+                        MP.GAME.ce_cache = true
+                        Client.send("ce_cache")
+                    end
+                    MP.GAME.real_money = tostring(MP.GAME.real_money)
+                end
+            end
         check_and_set_high_score('most_money', G.GAME.dollars)
         check_for_unlock({type = 'money'})
         dollar_UI.config.object:update()
@@ -213,7 +223,6 @@ function ease_ante(mod)
               col = G.C.RED
           end
           G.GAME.round_resets.ante = G.GAME.round_resets.ante + mod
-          G.GAME.round_resets.ante_disp = number_format(G.GAME.round_resets.ante)
           check_and_set_high_score('furthest_ante', G.GAME.round_resets.ante)
           ante_UI.config.object:update()
           G.HUD:recalculate()
@@ -485,18 +494,18 @@ function level_up_hand(card, hand, instant, amount)
     if not instant then 
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
             play_sound('tarot1')
-            if card and card.juice_up then card:juice_up(0.8, 0.5) end
+            if card then card:juice_up(0.8, 0.5) end
             G.TAROT_INTERRUPT_PULSE = true
             return true end }))
         update_hand_text({delay = 0}, {mult = G.GAME.hands[hand].mult, StatusText = true})
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.9, func = function()
             play_sound('tarot1')
-            if card and card.juice_up then card:juice_up(0.8, 0.5) end
+            if card then card:juice_up(0.8, 0.5) end
             return true end }))
         update_hand_text({delay = 0}, {chips = G.GAME.hands[hand].chips, StatusText = true})
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.9, func = function()
             play_sound('tarot1')
-            if card and card.juice_up then card:juice_up(0.8, 0.5) end
+            if card then card:juice_up(0.8, 0.5) end
             G.TAROT_INTERRUPT_PULSE = nil
             return true end }))
         update_hand_text({sound = 'button', volume = 0.7, pitch = 0.9, delay = 0}, {level=G.GAME.hands[hand].level})
@@ -516,10 +525,10 @@ function update_hand_text(config, vals)
     func = function()
         local col = G.C.GREEN
         if vals.chips and G.GAME.current_round.current_hand.chips ~= vals.chips then
-            local delta = (is_number(vals.chips) and is_number(G.GAME.current_round.current_hand.chips)) and (vals.chips - G.GAME.current_round.current_hand.chips) or 0
-            if to_big(delta) < to_big(0) then delta = number_format(delta); col = G.C.RED
-            elseif to_big(delta) > to_big(0) then delta = '+'..number_format(delta)
-            else delta = number_format(delta)
+            local delta = (type(vals.chips) == 'number' and type(G.GAME.current_round.current_hand.chips) == 'number') and (vals.chips - G.GAME.current_round.current_hand.chips) or 0
+            if delta < 0 then delta = ''..delta; col = G.C.RED
+            elseif delta > 0 then delta = '+'..delta
+            else delta = ''..delta
             end
             if type(vals.chips) == 'string' then delta = vals.chips end
             G.GAME.current_round.current_hand.chips = vals.chips
@@ -538,10 +547,10 @@ function update_hand_text(config, vals)
             end
         end
         if vals.mult and G.GAME.current_round.current_hand.mult ~= vals.mult then
-            local delta = (is_number(vals.mult) and is_number(G.GAME.current_round.current_hand.mult))and (vals.mult - G.GAME.current_round.current_hand.mult) or 0
-            if to_big(delta) < to_big(0) then delta = number_format(delta); col = G.C.RED
-            elseif to_big(delta) > to_big(0) then delta = '+'..number_format(delta)
-            else delta = number_format(delta)
+            local delta = (type(vals.mult) == 'number' and type(G.GAME.current_round.current_hand.mult) == 'number')and (vals.mult - G.GAME.current_round.current_hand.mult) or 0
+            if delta < 0 then delta = ''..delta; col = G.C.RED
+            elseif delta > 0 then delta = '+'..delta
+            else delta = ''..delta
             end
             if type(vals.mult) == 'string' then delta = vals.mult end
             G.GAME.current_round.current_hand.mult = vals.mult
@@ -603,6 +612,7 @@ function eval_card(card, context)
                 ret.enhancement = enhancement
             end
         end
+        if context.extra_enhancement then return ret end
         if card.edition then
             local edition = card:calculate_edition(context)
             if edition then
@@ -615,7 +625,8 @@ function eval_card(card, context)
                 ret.seals = seals
             end
         end
-        for k,v in pairs(SMODS.Stickers) do
+        for _,k in ipairs(SMODS.Sticker.obj_buffer) do
+            local v = SMODS.Stickers[k]
             local sticker = card:calculate_sticker(context, k)
             if sticker then
                 ret[v] = sticker
@@ -643,50 +654,6 @@ function eval_card(card, context)
             ret.playing_card.x_mult = x_mult
         end
     
-        local x_chips = card:get_chip_x_bonus()
-        if x_chips > 0 then
-        	ret.x_chips = x_chips
-        end
-        
-        local e_chips = card:get_chip_e_bonus()
-        if e_chips > 0 then
-        	ret.e_chips = e_chips
-        end
-        
-        local ee_chips = card:get_chip_ee_bonus()
-        if ee_chips > 0 then
-        	ret.ee_chips = ee_chips
-        end
-        
-        local eee_chips = card:get_chip_eee_bonus()
-        if eee_chips > 0 then
-        	ret.eee_chips = eee_chips
-        end
-        
-        local hyper_chips = card:get_chip_hyper_bonus()
-        if type(hyper_chips) == 'table' and hyper_chips[1] > 0 and hyper_chips[2] > 0 then
-        	ret.hyper_chips = hyper_chips
-        end
-        
-        local e_mult = card:get_chip_e_mult()
-        if e_mult > 0 then
-        	ret.e_mult = e_mult
-        end
-        
-        local ee_mult = card:get_chip_ee_mult()
-        if ee_mult > 0 then
-        	ret.ee_mult = ee_mult
-        end
-        
-        local eee_mult = card:get_chip_eee_mult()
-        if eee_mult > 0 then
-        	ret.eee_mult = eee_mult
-        end
-        
-        local hyper_mult = card:get_chip_hyper_mult()
-        if type(hyper_mult) == 'table' and hyper_mult[1] > 0 and hyper_mult[2] > 0 then
-        	ret.hyper_mult = hyper_mult
-        end
         local p_dollars = card:get_p_dollars()
         if p_dollars ~= 0 then
             ret.playing_card.p_dollars = p_dollars
@@ -698,16 +665,6 @@ function eval_card(card, context)
         end
     
         -- TARGET: main scoring on played cards
-    
-        local jokers = card:calculate_joker(context)
-        if jokers then
-            ret.jokers = jokers
-        end
-    
-        local edition = card:calculate_edition(context)
-        if edition then
-            ret.edition = edition
-        end
     end
     if context.end_of_round and context.cardarea == G.hand and context.playing_card_end_of_round then
         local end_of_round = card:get_end_of_round_effect(context)
@@ -739,11 +696,6 @@ function eval_card(card, context)
         end
     
         -- TARGET: main scoring on held cards
-
-        local jokers = card:calculate_joker(context)
-        if jokers then 
-            ret.jokers = jokers
-        end
     end
 
     if card.ability.set == 'Enhanced' then
@@ -752,19 +704,21 @@ function eval_card(card, context)
             ret.enhancement = enhancement
         end
     end
+    if context.extra_enhancement then return ret end
     if card.edition then
         local edition = card:calculate_edition(context)
         if edition then
             ret.edition = edition
         end
     end
-    if card.seal and not card.ability.extra_enhancement then
+    if card.seal then
         local seals = card:calculate_seal(context)
         if seals then
             ret.seals = seals
         end
     end
-    for k,v in pairs(SMODS.Stickers) do
+    for _,k in ipairs(SMODS.Sticker.obj_buffer) do
+        local v = SMODS.Stickers[k]
         local sticker = card:calculate_sticker(context, k)
         if sticker then
             ret[v] = sticker
@@ -998,69 +952,6 @@ function card_eval_status_text(card, eval_type, amt, percent, dir, extra)
         colour = G.C.MULT
         config.type = 'fade'
         config.scale = 0.7
-    elseif eval_type == 'x_chips' then 
-    	sound = 'talisman_xchip'
-    	amt = amt
-    	text = 'X' .. amt
-    	colour = G.C.CHIPS
-    	config.type = 'fade'
-    	config.scale = 0.7
-    elseif eval_type == 'e_chips' then 
-    	sound = 'talisman_echip'
-    	amt = amt
-    	text = '^' .. amt
-    	colour = G.C.CHIPS
-    	config.type = 'fade'
-    	config.scale = 0.7
-    elseif eval_type == 'ee_chips' then 
-    	sound = 'talisman_eechip'
-    	amt = amt
-    	text = '^^' .. amt
-    	colour = G.C.CHIPS
-    	config.type = 'fade'
-    	config.scale = 0.7
-    elseif eval_type == 'eee_chips' then 
-    	sound = 'talisman_eeechip'
-    	amt = amt
-    	text = '^^^' .. amt
-    	colour = G.C.CHIPS
-    	config.type = 'fade'
-    	config.scale = 0.7
-    elseif eval_type == 'hyper_chips' then
-    	sound = 'talisman_eeechip'
-    	text = (amt[1] > 5 and ('{' .. tostring(amt[1]) .. '}') or string.rep('^', amt[1])) .. tostring(amt[2])
-    	amt = amt[2]
-    	colour = G.C.CHIPS
-    	config.type = 'fade'
-    	config.scale = 0.7
-    elseif eval_type == 'e_mult' then 
-    	sound = 'talisman_emult'
-    	amt = amt
-    	text = '^' .. amt .. ' Mult'
-    	colour = G.C.MULT
-    	config.type = 'fade'
-    	config.scale = 0.7
-    elseif eval_type == 'ee_mult' then 
-    	sound = 'talisman_eemult'
-    	amt = amt
-    	text = '^^' .. amt .. ' Mult'
-    	colour = G.C.MULT
-    	config.type = 'fade'
-    	config.scale = 0.7
-    elseif eval_type == 'eee_mult' then 
-    	sound = 'talisman_eeemult'
-    	amt = amt
-    	text = '^^^' .. amt .. ' Mult'
-    	colour = G.C.MULT
-    	config.type = 'fade'
-    	config.scale = 0.7
-    elseif eval_type == 'hyper_mult' then 
-    	sound = 'talisman_eeemult'
-    	text = (amt[1] > 5 and ('{' .. tostring(amt[1]) .. '}') or string.rep('^', amt[1])) .. tostring(amt[2]) .. ' Mult'
-    	amt = amt[2]
-    	colour = G.C.MULT
-    	config.type = 'fade'
-    	config.scale = 0.7
     elseif eval_type == 'dollars' then 
         sound = 'coin3'
         amt = amt
@@ -1072,7 +963,7 @@ function card_eval_status_text(card, eval_type, amt, percent, dir, extra)
         text = localize('k_swapped_ex')
         colour = G.C.PURPLE
     elseif eval_type == 'extra' or eval_type == 'jokers' then 
-        sound = extra.edition and 'foil2' or extra.mult_mod and 'multhit1' or extra.Xmult_mod and 'multhit2' or extra.Xchip_mod and 'talisman_xchip' or extra.Echip_mod and 'talisman_echip' or extra.Emult_mod and 'talisman_emult' or extra.EEchip_mod and 'talisman_eechip' or extra.EEmult_mod and 'talisman_eemult' or (extra.EEEchip_mod or extra.hyperchip_mod) and 'talisman_eeechip' or (extra.EEEmult_mod or extra.hypermult_mod) and 'talisman_eeemult' or 'generic1'
+        sound = extra.edition and 'foil2' or extra.mult_mod and 'multhit1' or extra.Xmult_mod and 'multhit2' or 'generic1'
         if extra.edition then 
             colour = G.C.DARK_EDITION
         end
@@ -1115,7 +1006,7 @@ function card_eval_status_text(card, eval_type, amt, percent, dir, extra)
             })
             play_sound(sound, 0.8+percent*0.2, volume)
             if not extra or not extra.no_juice then
-                if card and card.juice_up then card:juice_up(0.6, 0.1) end
+                card:juice_up(0.6, 0.1)
                 G.ROOM.jiggle = G.ROOM.jiggle + 0.7
             end
         else
@@ -1135,7 +1026,7 @@ function card_eval_status_text(card, eval_type, amt, percent, dir, extra)
                     })
                     play_sound(sound, 0.8+percent*0.2, volume)
                     if not extra or not extra.no_juice then
-                        if card and card.juice_up then card:juice_up(0.6, 0.1) end
+                        card:juice_up(0.6, 0.1)
                         G.ROOM.jiggle = G.ROOM.jiggle + 0.7
                     end
                     return true
@@ -1199,7 +1090,7 @@ function add_round_eval_row(config)
                     config.saved and 
                     {n=G.UIT.C, config={padding = 0.05, align = 'cm'}, nodes={
                         {n=G.UIT.R, config={align = 'cm'}, nodes={
-                            {n=G.UIT.O, config={object = DynaText({string = {' '..localize('ph_mr_bones')..' '}, colours = {G.C.FILTER}, shadow = true, pop_in = 0, scale = 0.5*scale, silent = true})}}
+                            {n=G.UIT.O, config={object = DynaText({string = {' '..localize(type(SMODS.saved) == 'string' and SMODS.saved or 'ph_mr_bones')..' '}, colours = {G.C.FILTER}, shadow = true, pop_in = 0, scale = 0.5*scale, silent = true})}}
                         }}
                     }}
                     or {n=G.UIT.C, config={padding = 0.05, align = 'cm'}, nodes={
@@ -1399,7 +1290,7 @@ end
 function juice_card(card)
     G.E_MANAGER:add_event(Event({
         trigger = 'immediate',
-        func = (function() if card and card.juice_up then card:juice_up(0.7) end;return true end)
+        func = (function() card:juice_up(0.7);return true end)
     }))
 end
 
@@ -1435,7 +1326,7 @@ end
 function juice_card_until(card, eval_func, first, delay)
     G.E_MANAGER:add_event(Event({
         trigger = 'after',delay = delay or 0.1, blocking = false, blockable = false, timer = 'REAL',
-        func = (function() if eval_func(card) then if card and card.juice_up then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)
+        func = (function() if eval_func(card) then if not first or first then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)
     }))
 end
 
@@ -1551,13 +1442,13 @@ function check_for_unlock(args)
         end
     end
     if args.type == 'chip_score' then
-        if to_big(args.chips) >= to_big(10000) then
+        if args.chips >= 10000 then
             unlock_achievement('_10k')
         end
-        if to_big(args.chips) >= to_big(1000000) then
+        if args.chips >= 1000000 then
             unlock_achievement('_1000k')
         end
-        if to_big(args.chips) >= to_big(100000000) then
+        if args.chips >= 100000000 then
             unlock_achievement('_100000k')
         end
     end
@@ -1894,7 +1785,7 @@ function check_for_unlock(args)
                 end
             end
             if args.type == 'chip_score' then
-                if to_big(card.unlock_condition.chips) <= to_big(args.chips) then
+                if card.unlock_condition.chips <= args.chips then
                     ret = true
                     G.E_MANAGER:add_event(Event({
                         func = function()
@@ -2222,7 +2113,7 @@ function get_next_voucher_key(_from_tag)
     local it = 1
     while center == 'UNAVAILABLE' do
         it = it + 1
-        center = pseudorandom_element(_pool, pseudoseed(_pool_key..'_resample'..it))
+        center = pseudorandom_element(_pool, pseudoseed(_pool_key..(MP.INTEGRATIONS.TheOrder and '' or ('_resample'..it)) ))
     end
 
     return center
@@ -2364,14 +2255,6 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
                 add = in_pool and (add or pool_opts.override_base_checks)
             end
             if add and not G.GAME.banned_keys[v.key] then 
-                -- If the selected deck is the Paper deck and this key is a Paperback Joker, add copies of it
-                -- to the pool, so that it is more common to get
-                if (G.GAME.selected_back_key or {}).key == 'b_paperback_paper' and v.key:find('j_paperback_') then
-                  for i = 1, 2 do
-                    _pool[#_pool + 1] = v.key
-                    _pool_size = _pool_size + 1
-                  end
-                end
                 _pool[#_pool + 1] = v.key
                 _pool_size = _pool_size + 1
             else
@@ -2426,6 +2309,15 @@ function poll_edition(_key, _mod, _no_neg, _guaranteed)
 end
 
 function create_card(_type, area, legendary, _rarity, skip_materialize, soulable, forced_key, key_append)
+local sticker_override = false
+if _type == 'Joker' 
+and G.GAME.MP_joker_overrides[1] 
+and not (forced_key or key_append or _rarity)
+and (area == G.shop_jokers or area == G.pack_cards or G.MP_JUDGEMENT_OVERRIDE)
+then
+	forced_key = G.GAME.MP_joker_overrides[1].key
+	sticker_override = true
+end
     local area = area or G.jokers
     local center = G.P_CENTERS.b_red
         
@@ -2441,14 +2333,16 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
         end
         if (_type == 'Tarot' or _type == 'Spectral' or _type == 'Tarot_Planet') and
         not (G.GAME.used_jokers['c_soul'] and not next(find_joker("Showman")))  then
-            if pseudorandom('soul_'.._type..G.GAME.round_resets.ante) > 0.997 then
-                forced_key = 'c_soul'
+            if pseudorandom('soul_'..(MP.INTEGRATIONS.TheOrder and 'c_soul' or _type)..G.GAME.round_resets.ante) > 0.997 then
+            	forced_key = 'c_soul'
             end
         end
         if (_type == 'Planet' or _type == 'Spectral') and
         not (G.GAME.used_jokers['c_black_hole'] and not next(find_joker("Showman")))  then 
-            if pseudorandom('soul_'.._type..G.GAME.round_resets.ante) > 0.997 then
-                forced_key = 'c_black_hole'
+            if pseudorandom('soul_'..(MP.INTEGRATIONS.TheOrder and 'c_black_hole' or _type)..G.GAME.round_resets.ante) > 0.997 then
+            	if not (MP.INTEGRATIONS.TheOrder and forced_key) then
+            		forced_key = 'c_black_hole'
+            	end
             end
         end
     end
@@ -2468,7 +2362,7 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
         local it = 1
         while center == 'UNAVAILABLE' do
             it = it + 1
-            center = pseudorandom_element(_pool, pseudoseed(_pool_key..'_resample'..it))
+            center = pseudorandom_element(_pool, pseudoseed(_pool_key..(MP.INTEGRATIONS.TheOrder and '' or ('_resample'..it)) ))
         end
 
         center = G.P_CENTERS[center]
@@ -2493,20 +2387,32 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
         if G.GAME.modifiers.all_eternal then
             card:set_eternal(true)
         end
-        if (area == G.shop_jokers) or (area == G.pack_cards) then 
-            local eternal_perishable_poll = pseudorandom((area == G.pack_cards and 'packetper' or 'etperpoll')..G.GAME.round_resets.ante)
+        local _etpeareakey = MP.INTEGRATIONS.TheOrder and 'etperpoll' or (area == G.pack_cards and 'packetper' or 'etperpoll')
+        local _rentareakey = MP.INTEGRATIONS.TheOrder and 'ssjr' or (area == G.pack_cards and 'packssjr' or 'ssjr')
+        local _order = MP.INTEGRATIONS.TheOrder and center.key or ""
+        if sticker_override then
+        	for k, v in pairs(G.GAME.MP_joker_overrides[1].stickers) do -- dumb loop
+        		if k == 'eternal' then card:set_eternal(v) end
+        		if k == 'perishable' and v == true then card:set_perishable(true) end -- bruh
+        		if k == 'rental' then card:set_rental(v) end
+        	end
+        	table.remove(G.GAME.MP_joker_overrides, 1)
+        end
+        if ( (area == G.shop_jokers) or (area == G.pack_cards) ) and not sticker_override then
+            local eternal_perishable_poll = pseudorandom(_order.._etpeareakey..G.GAME.round_resets.ante)
             if G.GAME.modifiers.enable_eternals_in_shop and eternal_perishable_poll > 0.7 and not SMODS.Stickers["eternal"].should_apply then
                 card:set_eternal(true)
             elseif G.GAME.modifiers.enable_perishables_in_shop and ((eternal_perishable_poll > 0.4) and (eternal_perishable_poll <= 0.7)) and not SMODS.Stickers["perishable"].should_apply then
                 card:set_perishable(true)
             end
-            if G.GAME.modifiers.enable_rentals_in_shop and pseudorandom((area == G.pack_cards and 'packssjr' or 'ssjr')..G.GAME.round_resets.ante) > 0.7 and not SMODS.Stickers["rental"].should_apply then
+            if G.GAME.modifiers.enable_rentals_in_shop and pseudorandom(_order.._rentareakey..G.GAME.round_resets.ante) > 0.7 and not SMODS.Stickers["rental"].should_apply then
                 card:set_rental(true)
             end
         end
 
-        if not SMODS.bypass_create_card_edition then
-            local edition = poll_edition('edi'..(key_append or '')..G.GAME.round_resets.ante)
+        if not SMODS.bypass_create_card_edition and not card.edition then
+            if MP.INTEGRATIONS.TheOrder then key_append = nil end	-- why does this even use key_append again?
+            local edition = poll_edition(_order..'edi'..(key_append or '')..G.GAME.round_resets.ante)
         card:set_edition(edition)
         check_for_unlock({type = 'have_edition'})
         end
@@ -2519,7 +2425,6 @@ function copy_card(other, new_card, card_scale, playing_card, strip_edition)
     new_card:set_ability(other.config.center)
     new_card.ability.type = other.ability.type
     new_card:set_base(other.config.card)
-    PB_UTIL.remove_paperclip(new_card)
     for k, v in pairs(other.ability) do
         if type(v) == 'table' then 
             new_card.ability[k] = copy_table(v)
@@ -2771,7 +2676,12 @@ function get_new_boss()
             end
         end
     end
-    local _, boss = pseudorandom_element(eligible_bosses, pseudoseed('boss'))
+    local boss = nil
+    if MP.INTEGRATIONS.TheOrder then
+    	_, boss = pseudorandom_element(eligible_bosses, pseudoseed('boss'..G.GAME.round_resets.ante))
+    else
+    	_, boss = pseudorandom_element(eligible_bosses, pseudoseed('boss'))
+    end
     G.GAME.bosses_used[boss] = G.GAME.bosses_used[boss] + 1
     
     return boss
@@ -2846,28 +2756,6 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
     end
 
     local cfg = (card and card.ability) or _c['config']
-    -- Add the tooltip for Basic Joker Energy if the card is marked by it
-    if card and card.ability and card.ability.paperback_energized then
-      info_queue[#info_queue + 1] = {
-        set = 'Other',
-        key = 'paperback_energized'
-      }
-    end
-    
-    -- Add tooltips for items removed from the pool by the paperback config
-    if (card and card.config and card.config.center and card.config.center.paperback) or (_c and _c.paperback) then
-      local config = (_c and _c.paperback) or card.config.center.paperback
-    
-      for _, v in ipairs(config.requirements or {}) do
-        if not PB_UTIL.config[v.setting] and first_pass then
-          info_queue[#info_queue + 1] = {
-            set = v.set or 'Other',
-            key = v.tooltip,
-            vars = v.vars or {}
-          }
-        end
-      end
-    end
     if _c.set == 'Other' then
         localize{type = 'other', key = _c.key, nodes = desc_nodes, vars = specific_vars or _c.vars}
     elseif card_type == 'Locked' then
@@ -3295,4 +3183,629 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
     end
 
     return full_UI_table
+end
+
+--- Original: Divvy's Simulation for Balatro - Engine.lua
+--
+-- The heart of this library: it replicates the game's score evaluation.
+
+if not FN.SIM.run then
+   function FN.SIM.run()
+      local null_ret = {score = {min=0, exact=0, max=0}, dollars = {min=0, exact=0, max=0}}
+      if #G.hand.highlighted < 1 then return null_ret end
+
+      FN.SIM.init()
+
+      FN.SIM.manage_state("SAVE")
+      FN.SIM.update_state_variables()
+
+      if not FN.SIM.simulate_blind_debuffs() then
+         FN.SIM.simulate_joker_before_effects()
+         FN.SIM.add_base_chips_and_mult()
+         FN.SIM.simulate_blind_effects()
+         FN.SIM.simulate_scoring_cards()
+         FN.SIM.simulate_held_cards()
+         FN.SIM.simulate_joker_global_effects()
+         FN.SIM.simulate_consumable_effects()
+         FN.SIM.simulate_deck_effects()
+      else -- Only Matador at this point:
+         FN.SIM.simulate_all_jokers(G.jokers, {debuffed_hand = true})
+      end
+
+      FN.SIM.manage_state("RESTORE")
+
+      return FN.SIM.get_results()
+   end
+
+   function FN.SIM.init()
+      -- Reset:
+      FN.SIM.running = {
+         min   = {chips = 0, mult = 0, dollars = 0},
+         exact = {chips = 0, mult = 0, dollars = 0},
+         max   = {chips = 0, mult = 0, dollars = 0},
+         reps = 0
+      }
+
+      -- Fetch metadata about simulated play:
+      local hand_name, _, poker_hands, scoring_hand, _ = G.FUNCS.get_poker_hand_info(G.hand.highlighted)
+      FN.SIM.env.scoring_name = hand_name
+
+      -- Identify played cards and extract necessary data:
+      FN.SIM.env.played_cards = {}
+      FN.SIM.env.scoring_cards = {}
+      local is_splash_joker = next(find_joker("Splash"))
+      table.sort(G.hand.highlighted, function(a, b) return a.T.x < b.T.x end) -- Sorts by positional x-value to mirror card order!
+      for _, card in ipairs(G.hand.highlighted) do
+         local is_scoring = false
+         for _, scoring_card in ipairs(scoring_hand) do
+         -- Either card is scoring because it's part of the scoring hand,
+         -- or there is Splash joker, or it's a Stone Card:
+            if card.sort_id == scoring_card.sort_id
+               or is_splash_joker
+               or card.ability.effect == "Stone Card"
+            then
+               is_scoring = true
+               break
+            end
+         end
+
+         local card_data = FN.SIM.get_card_data(card)
+         table.insert(FN.SIM.env.played_cards, card_data)
+         if is_scoring then table.insert(FN.SIM.env.scoring_cards, card_data) end
+      end
+
+      -- Identify held cards and extract necessary data:
+      FN.SIM.env.held_cards = {}
+      for _, card in ipairs(G.hand.cards) do
+         -- Highlighted cards are simulated as played cards:
+         if not card.highlighted then
+            local card_data = FN.SIM.get_card_data(card)
+            table.insert(FN.SIM.env.held_cards, card_data)
+         end
+      end
+
+      -- Extract necessary joker data:
+      FN.SIM.env.jokers = {}
+      for _, joker in ipairs(G.jokers.cards) do
+         local joker_data = {
+            -- P_CENTER keys for jokers have the form j_NAME, get rid of j_
+            id = joker.config.center.key:sub(3, #joker.config.center.key),
+            ability = copy_table(joker.ability),
+            edition = copy_table(joker.edition),
+            rarity = joker.config.center.rarity,
+            debuff = joker.debuff
+         }
+         table.insert(FN.SIM.env.jokers, joker_data)
+      end
+
+      -- Extract necessary consumable data:
+      FN.SIM.env.consumables = {}
+      for _, consumable in ipairs(G.consumeables.cards) do
+         local consumable_data = {
+            -- P_CENTER keys have the form x_NAME, get rid of x_
+            id = consumable.config.center.key:sub(3, #consumable.config.center.key),
+            ability = copy_table(consumable.ability)
+         }
+         table.insert(FN.SIM.env.consumables, consumable_data)
+      end
+
+      -- Set extensible context template:
+      FN.SIM.get_context = function(cardarea, args)
+         local context = {
+            cardarea = cardarea,
+            full_hand = FN.SIM.env.played_cards,
+            scoring_name = hand_name,
+            scoring_hand = FN.SIM.env.scoring_cards,
+            poker_hands = poker_hands
+         }
+
+         for k, v in pairs(args) do
+            context[k] = v
+         end
+
+         return context
+      end
+   end
+
+   function FN.SIM.get_card_data(card_obj)
+      return {
+         rank = card_obj.base.id,
+         suit = card_obj.base.suit,
+         base_chips = card_obj.base.nominal,
+         ability = copy_table(card_obj.ability),
+         edition = copy_table(card_obj.edition),
+         seal = card_obj.seal,
+         debuff = card_obj.debuff,
+         lucky_trigger = {}
+      }
+   end
+
+   function FN.SIM.get_results()
+      local FNSR = FN.SIM.running
+
+      local min_score   = math.floor(FNSR.min.chips   * FNSR.min.mult)
+      local exact_score = math.floor(FNSR.exact.chips * FNSR.exact.mult)
+      local max_score   = math.floor(FNSR.max.chips   * FNSR.max.mult)
+
+      return {
+         score   = {min = min_score,        exact = exact_score,        max = max_score},
+         dollars = {min = FNSR.min.dollars, exact = FNSR.exact.dollars, max = FNSR.max.dollars}
+      }
+   end
+
+   --
+   -- GAME STATE MANAGEMENT:
+   --
+
+   function FN.SIM.manage_state(save_or_restore)
+      local FNSO = FN.SIM.orig
+
+      if save_or_restore == "SAVE" then
+         FNSO.random_data = copy_table(G.GAME.pseudorandom)
+         FNSO.hand_data = copy_table(G.GAME.hands)
+         return
+      end
+
+      if save_or_restore == "RESTORE" then
+         G.GAME.pseudorandom = FNSO.random_data
+         G.GAME.hands = FNSO.hand_data
+         return
+      end
+   end
+
+   function FN.SIM.update_state_variables()
+      -- Increment poker hand played this run/round:
+      local hand_info = G.GAME.hands[FN.SIM.env.scoring_name]
+      hand_info.played = hand_info.played + 1
+      hand_info.played_this_round = hand_info.played_this_round + 1
+   end
+
+   --
+   -- MACRO LEVEL:
+   --
+
+   function FN.SIM.simulate_scoring_cards()
+      for _, scoring_card in ipairs(FN.SIM.env.scoring_cards) do
+         FN.SIM.simulate_card_in_context(scoring_card, G.play)
+      end
+   end
+
+   function FN.SIM.simulate_held_cards()
+      for _, held_card in ipairs(FN.SIM.env.held_cards) do
+         FN.SIM.simulate_card_in_context(held_card, G.hand)
+      end
+   end
+
+   function FN.SIM.simulate_joker_global_effects()
+      for _, joker in ipairs(FN.SIM.env.jokers) do
+         if joker.edition then -- Foil and Holo:
+            if joker.edition.chips then FN.SIM.add_chips(joker.edition.chips) end
+            if joker.edition.mult  then FN.SIM.add_mult(joker.edition.mult) end
+         end
+
+         FN.SIM.simulate_joker(joker, FN.SIM.get_context(G.jokers, {global = true}))
+
+         -- Joker-on-joker effects (eg. Blueprint):
+         FN.SIM.simulate_all_jokers(G.jokers, {other_joker = joker})
+
+         if joker.edition then -- Poly:
+            if joker.edition.x_mult then FN.SIM.x_mult(joker.edition.x_mult) end
+         end
+      end
+   end
+
+   function FN.SIM.simulate_consumable_effects()
+      for _, consumable in ipairs(FN.SIM.env.consumables) do
+         if consumable.ability.set == "Planet" and not consumable.debuff then
+            if G.GAME.used_vouchers.v_observatory and consumable.ability.consumeable.hand_type == FN.SIM.env.scoring_name then
+               FN.SIM.x_mult(G.P_CENTERS.v_observatory.config.extra)
+            end
+         end
+      end
+   end
+
+   function FN.SIM.add_base_chips_and_mult()
+      local played_hand_data = G.GAME.hands[FN.SIM.env.scoring_name]
+      FN.SIM.add_chips(played_hand_data.chips)
+      FN.SIM.add_mult(played_hand_data.mult)
+   end
+
+   function FN.SIM.simulate_joker_before_effects()
+      for _, joker in ipairs(FN.SIM.env.jokers) do
+         FN.SIM.simulate_joker(joker, FN.SIM.get_context(G.jokers, {before = true}))
+      end
+   end
+
+   function FN.SIM.simulate_blind_effects()
+      if G.GAME.blind.disabled then return end
+
+      if G.GAME.blind.name == "The Flint" then
+         local function flint(data)
+            local half_chips = math.floor(data.chips/2 + 0.5)
+            local half_mult = math.floor(data.mult/2 + 0.5)
+            data.chips = mod_chips(math.max(half_chips, 0))
+            data.mult  = mod_mult(math.max(half_mult, 1))
+         end
+
+         flint(FN.SIM.running.min)
+         flint(FN.SIM.running.exact)
+         flint(FN.SIM.running.max)
+      else
+         -- Other blinds do not impact scoring; refer to Blind:modify_hand(..)
+      end
+   end
+
+   function FN.SIM.simulate_deck_effects()
+      if G.GAME.selected_back.name == 'Plasma Deck' then
+         local function plasma(data)
+            local sum = data.chips + data.mult
+            local half_sum = math.floor(sum/2)
+            data.chips = mod_chips(half_sum)
+            data.mult = mod_mult(half_sum)
+         end
+
+         plasma(FN.SIM.running.min)
+         plasma(FN.SIM.running.exact)
+         plasma(FN.SIM.running.max)
+      else
+         -- Other decks do not impact scoring; refer to Back:trigger_effect(..)
+      end
+   end
+
+   function FN.SIM.simulate_blind_debuffs()
+      local blind_obj = G.GAME.blind
+      if blind_obj.disabled then return false end
+
+      -- The following are part of Blind:press_play()
+
+      if blind_obj.name == "The Hook" then
+         blind_obj.triggered = true
+         for _ = 1, math.min(2, #FN.SIM.env.held_cards) do
+            -- TODO: Identify cards-in-hand that can affect score, simulate with/without them for min/max
+            local selected_card, card_key = pseudorandom_element(FN.SIM.env.held_cards, pseudoseed('hook'))
+            table.remove(FN.SIM.env.held_cards, card_key)
+            for _, joker in ipairs(FN.SIM.env.jokers) do
+               -- Note that the cardarea argument is largely arbitrary (used for FN.SIM.JOKERS),
+               -- I use G.hand because The Hook discards from the hand
+               FN.SIM.simulate_joker(joker, FN.SIM.get_context(G.hand, {discard = true, other_card = selected_card}))
+            end
+         end
+      end
+
+      if blind_obj.name == "The Tooth" then
+         blind_obj.triggered = true
+         FN.SIM.add_dollars((-1) * #FN.SIM.env.played_cards)
+      end
+
+      -- The following are part of Blind:debuff_hand(..)
+
+      if blind_obj.name == "The Arm" then
+         blind_obj.triggered = false
+
+         local played_hand_name = FN.SIM.env.scoring_name
+         if G.GAME.hands[played_hand_name].level > 1 then
+            blind_obj.triggered = true
+            -- NOTE: Important to save/restore G.GAME.hands here
+            -- NOTE: Implementation mirrors level_up_hand(..)
+            local played_hand_data = G.GAME.hands[played_hand_name]
+            played_hand_data.level = math.max(1, played_hand_data.level - 1)
+            played_hand_data.mult  = math.max(1, played_hand_data.s_mult  + (played_hand_data.level-1) * played_hand_data.l_mult)
+            played_hand_data.chips = math.max(0, played_hand_data.s_chips + (played_hand_data.level-1) * played_hand_data.l_chips)
+         end
+         return false -- IMPORTANT: Avoid duplicate effects from Blind:debuff_hand() below
+      end
+
+      if blind_obj.name == "The Ox" then
+         blind_obj.triggered = false
+
+         if FN.SIM.env.scoring_name == G.GAME.current_round.most_played_poker_hand then
+            blind_obj.triggered = true
+            FN.SIM.add_dollars(-G.GAME.dollars)
+         end
+         return false -- IMPORTANT: Avoid duplicate effects from Blind:debuff_hand() below
+      end
+
+      return blind_obj:debuff_hand(G.hand.highlighted, FN.SIM.env.poker_hands, FN.SIM.env.scoring_name, true)
+   end
+
+   --
+   -- MICRO LEVEL (CARDS):
+   --
+
+   function FN.SIM.simulate_card_in_context(card, cardarea)
+      -- Reset and collect repetitions:
+      FN.SIM.running.reps = 1
+      if card.seal == "Red" then FN.SIM.add_reps(1) end
+      FN.SIM.simulate_all_jokers(cardarea, {other_card = card, repetition = true})
+
+      -- Apply effects:
+      for _ = 1, FN.SIM.running.reps do
+         FN.SIM.simulate_card(card, FN.SIM.get_context(cardarea, {}))
+         FN.SIM.simulate_all_jokers(cardarea, {other_card = card, individual = true})
+      end
+   end
+
+   function FN.SIM.simulate_card(card_data, context)
+      -- Do nothing if debuffed:
+      if card_data.debuff then return end
+
+      if context.cardarea == G.play then
+         -- Chips:
+         if card_data.ability.effect == "Stone Card" then
+            FN.SIM.add_chips(card_data.ability.bonus + (card_data.ability.perma_bonus or 0))
+         else
+            FN.SIM.add_chips(card_data.base_chips + card_data.ability.bonus + (card_data.ability.perma_bonus or 0))
+         end
+
+         -- Mult:
+         if card_data.ability.effect == "Lucky Card" then
+            local exact_mult, min_mult, max_mult = FN.SIM.get_probabilistic_extremes(pseudorandom("nope"), 5, card_data.ability.mult, 0)
+            FN.SIM.add_mult(exact_mult, min_mult, max_mult)
+            -- Careful not to overwrite `card_data.lucky_trigger` outright:
+            if exact_mult > 0 then card_data.lucky_trigger.exact = true end
+            if min_mult > 0 then card_data.lucky_trigger.min = true end
+            if max_mult > 0 then card_data.lucky_trigger.max = true end
+         else
+            FN.SIM.add_mult(card_data.ability.mult)
+         end
+
+         -- XMult:
+         if card_data.ability.x_mult > 1 then
+            FN.SIM.x_mult(card_data.ability.x_mult)
+         end
+
+         -- Dollars:
+         if card_data.seal == "Gold" then
+            FN.SIM.add_dollars(3)
+         end
+         if card_data.ability.p_dollars > 0 then
+            if card_data.ability.effect == "Lucky Card" then
+               local exact_dollars, min_dollars, max_dollars = FN.SIM.get_probabilistic_extremes(pseudorandom("notthistime"), 15, card_data.ability.p_dollars, 0)
+               FN.SIM.add_dollars(exact_dollars, min_dollars, max_dollars)
+               -- Careful not to overwrite `card_data.lucky_trigger` outright:
+               if exact_dollars > 0 then card_data.lucky_trigger.exact = true end
+               if min_dollars > 0 then card_data.lucky_trigger.min = true end
+               if max_dollars > 0 then card_data.lucky_trigger.max = true end
+            else
+               FN.SIM.add_dollars(card_data.ability.p_dollars)
+            end
+         end
+
+      -- Edition:
+         if card_data.edition then
+            if card_data.edition.chips then FN.SIM.add_chips(card_data.edition.chips) end
+            if card_data.edition.mult then FN.SIM.add_mult(card_data.edition.mult) end
+            if card_data.edition.x_mult then FN.SIM.x_mult(card_data.edition.x_mult) end
+         end
+
+      elseif context.cardarea == G.hand then
+         if card_data.ability.h_mult > 0 then
+            FN.SIM.add_mult(card_data.ability.h_mult)
+         end
+
+         if card_data.ability.h_x_mult > 0 then
+            FN.SIM.x_mult(card_data.ability.h_x_mult)
+         end
+      end
+   end
+
+   --
+   -- MICRO LEVEL (JOKERS):
+   --
+
+   function FN.SIM.simulate_all_jokers(cardarea, context_args)
+      for _, joker in ipairs(FN.SIM.env.jokers) do
+         FN.SIM.simulate_joker(joker, FN.SIM.get_context(cardarea, context_args))
+      end
+   end
+
+   function FN.SIM.simulate_joker(joker_obj, context)
+      -- Do nothing if debuffed:
+      if joker_obj.debuff then return end
+
+      local joker_simulation_function = FN.SIM.JOKERS["simulate_" .. joker_obj.id]
+      if joker_simulation_function then joker_simulation_function(joker_obj, context) end
+   end
+
+end
+--- Original: Divvy's Simulation for Balatro - Utils.lua
+--
+-- Utilities for writing simulation functions for jokers.
+--
+-- In general, these functions replicate the game's internal calculations and
+-- variables in order to avoid affecting the game's state during simulation.
+-- These functions ensure that the score calculation remains identical to the
+-- game; DO NOT directly modify the `FN.SIM.running` score variables.
+
+--
+-- HIGH-LEVEL:
+--
+
+function FN.SIM.JOKERS.add_suit_mult(joker_obj, context)
+   if context.cardarea == G.play and context.individual then
+      if FN.SIM.is_suit(context.other_card, joker_obj.ability.extra.suit) and not context.other_card.debuff then
+         FN.SIM.add_mult(joker_obj.ability.extra.s_mult)
+      end
+   end
+end
+
+function FN.SIM.JOKERS.add_type_mult(joker_obj, context)
+   if context.cardarea == G.jokers and context.global
+      and next(context.poker_hands[joker_obj.ability.type])
+   then
+      FN.SIM.add_mult(joker_obj.ability.t_mult)
+   end
+end
+
+function FN.SIM.JOKERS.add_type_chips(joker_obj, context)
+   if context.cardarea == G.jokers and context.global
+      and next(context.poker_hands[joker_obj.ability.type])
+   then
+      FN.SIM.add_chips(joker_obj.ability.t_chips)
+   end
+end
+
+function FN.SIM.JOKERS.x_mult_if_global(joker_obj, context)
+   if context.cardarea == G.jokers and context.global then
+      if joker_obj.ability.x_mult > 1 and
+         (joker_obj.ability.type == "" or next(context.poker_hands[joker_obj.ability.type])) then
+         FN.SIM.x_mult(joker_obj.ability.x_mult)
+      end
+   end
+end
+
+function FN.SIM.get_probabilistic_extremes(random_value, odds, reward, default)
+   -- Exact mirrors the game's probability calculation
+   local exact = default
+   if random_value < G.GAME.probabilities.normal/odds then
+      exact = reward
+   end
+
+   -- Minimum is default unless probability is guaranteed (eg. 2 in 2 chance)
+   local min = default
+   if G.GAME.probabilities.normal >= odds then
+      min = reward
+   end
+
+   -- Maximum is always reward (probability is always > 0); redundant variable is for readability
+   local max = reward
+
+   return exact, min, max
+end
+
+function FN.SIM.adjust_field_with_range(adj_func, field, mod_func, exact_value, min_value, max_value)
+   if not exact_value then error("Cannot adjust field, exact_value is missing.") end
+
+   if not min_value or not max_value then
+      min_value = exact_value
+      max_value = exact_value
+   end
+
+   FN.SIM.running.min[field]   = mod_func(adj_func(FN.SIM.running.min[field],   min_value))
+   FN.SIM.running.exact[field] = mod_func(adj_func(FN.SIM.running.exact[field], exact_value))
+   FN.SIM.running.max[field]   = mod_func(adj_func(FN.SIM.running.max[field],   max_value))
+end
+
+function FN.SIM.add_chips(exact, min, max)
+   FN.SIM.adjust_field_with_range(function(x, y) return x + y end, "chips", mod_chips, exact, min, max)
+end
+
+function FN.SIM.add_mult(exact, min, max)
+   FN.SIM.adjust_field_with_range(function(x, y) return x + y end, "mult", mod_mult, exact, min, max)
+end
+
+function FN.SIM.x_mult(exact, min, max)
+   FN.SIM.adjust_field_with_range(function(x, y) return x * y end, "mult", mod_mult, exact, min, max)
+end
+
+function FN.SIM.add_dollars(exact, min, max)
+   -- NOTE: no mod_func for dollars, so have to declare an identity function
+   FN.SIM.adjust_field_with_range(function(x, y) return x + y end, "dollars", function(x) return x end, exact, min, max)
+end
+
+function FN.SIM.add_reps(n)
+   FN.SIM.running.reps = FN.SIM.running.reps + n
+end
+
+--
+-- LOW-LEVEL:
+--
+
+function FN.SIM.is_suit(card_data, suit, ignore_scorability)
+   if card_data.debuff and not ignore_scorability then return end
+   if card_data.ability.effect == "Stone Card" then
+      return false
+   end
+   if card_data.ability.effect == "Wild Card" and not card_data.debuff then
+      return true
+   end
+   if next(find_joker("Smeared Joker")) then
+      local is_card_suit_light  = (card_data.suit == "Hearts" or card_data.suit == "Diamonds")
+      local is_check_suit_light = (suit == "Hearts"           or suit == "Diamonds")
+      if is_card_suit_light == is_check_suit_light then return true end
+   end
+   return card_data.suit == suit
+end
+
+function FN.SIM.get_rank(card_data)
+   if card_data.ability.effect == "Stone Card" and not card_data.vampired then
+      FN.SIM.misc.next_stone_id = FN.SIM.misc.next_stone_id - 1
+      return FN.SIM.misc.next_stone_id
+   end
+   return card_data.rank
+end
+
+function FN.SIM.is_rank(card_data, ranks)
+   if card_data.ability.effect == "Stone Card" then return false end
+
+   if type(ranks) == "number" then ranks = {ranks} end
+   for _, r in ipairs(ranks) do
+      if card_data.rank == r then return true end
+   end
+   return false
+end
+
+function FN.SIM.check_rank_parity(card_data, check_even)
+   if check_even then
+      local is_even_numbered = (card_data.rank <= 10 and card_data.rank >= 0 and card_data.rank % 2 == 0)
+      return is_even_numbered
+   else
+      local is_odd_numbered  = (card_data.rank <= 10 and card_data.rank >= 0 and card_data.rank % 2 == 1)
+      local is_ace = (card_data.rank == 14)
+      return (is_odd_numbered or is_ace)
+   end
+end
+
+function FN.SIM.is_face(card_data)
+   return (FN.SIM.is_rank(card_data, {11, 12, 13}) or next(find_joker("Pareidolia")))
+end
+
+function FN.SIM.set_ability(card_data, center)
+   -- See Card:set_ability()
+   card_data.ability = {
+      name = center.name,
+      effect = center.effect,
+      set = center.set,
+      mult = center.config.mult or 0,
+      h_mult = center.config.h_mult or 0,
+      h_x_mult = center.config.h_x_mult or 0,
+      h_dollars = center.config.h_dollars or 0,
+      p_dollars = center.config.p_dollars or 0,
+      t_mult = center.config.t_mult or 0,
+      t_chips = center.config.t_chips or 0,
+      x_mult = center.config.Xmult or 1,
+      h_size = center.config.h_size or 0,
+      d_size = center.config.d_size or 0,
+      extra = copy_table(center.config.extra) or nil,
+      extra_value = 0,
+      type = center.config.type or '',
+      order = center.order or nil,
+      forced_selection = card_data.ability and card_data.ability.forced_selection or nil,
+      perma_bonus = card_data.ability and card_data.ability.perma_bonus or 0,
+      bonus = (card_data.ability and card_data.ability.bonus or 0) + (center.config.bonus or 0)
+   }
+end
+
+function FN.SIM.set_edition(card_data, edition)
+   card_data.edition = nil
+   if not edition then return end
+
+   if edition.holo then
+      if not card_data.edition then card_data.edition = {} end
+      card_data.edition.mult = G.P_CENTERS.e_holo.config.extra
+      card_data.edition.holo = true
+      card_data.edition.type = 'holo'
+   elseif edition.foil then
+      if not card_data.edition then card_data.edition = {} end
+      card_data.edition.chips = G.P_CENTERS.e_foil.config.extra
+      card_data.edition.foil = true
+      card_data.edition.type = 'foil'
+   elseif edition.polychrome then
+      if not card_data.edition then card_data.edition = {} end
+      card_data.edition.x_mult = G.P_CENTERS.e_polychrome.config.extra
+      card_data.edition.polychrome = true
+      card_data.edition.type = 'polychrome'
+   elseif edition.negative then
+      -- TODO
+   end
 end
