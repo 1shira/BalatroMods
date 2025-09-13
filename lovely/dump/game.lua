@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '49e9e8060727a0ba194313bbe5f32a79916e4e0b37417589500a576f8792b480'
+LOVELY_INTEGRITY = 'b1a769fd40f27e4757f71495b76b79e33f8dfdf48df3f02f29c0310cf7d9d8d2'
 
 --Class
 Game = Object:extend()
@@ -1160,6 +1160,7 @@ function Game:init_window(reset)
 end
 
 function Game:delete_run()
+    G.in_delete_run = true
     if self.ROOM then
         remove_all(G.STAGE_OBJECTS[G.STAGE])
         self.load_shop_booster = nil
@@ -1206,6 +1207,7 @@ function Game:delete_run()
     if G.GAME then G.GAME.won = false end
 
     G.STATE = -1
+    G.in_delete_run = false
 end
 
 
@@ -2051,11 +2053,13 @@ function Game:start_run(args)
     selected_back = get_deck_from_name(selected_back)
     self.GAME = saveTable and saveTable.GAME or self:init_game_object()
     Handy.UI.init()
+    SMODS.update_hand_limit_text(true, true)
     self.GAME.modifiers = self.GAME.modifiers or {}
     self.GAME.stake = args.stake or self.GAME.stake or 1
     self.GAME.STOP_USE = 0
     self.GAME.selected_back = Back(selected_back)
     self.GAME.selected_back_key = selected_back
+    G._MP_SET_SEED = args.seed
 
     G.C.UI_CHIPS[1], G.C.UI_CHIPS[2], G.C.UI_CHIPS[3], G.C.UI_CHIPS[4] = G.C.BLUE[1], G.C.BLUE[2], G.C.BLUE[3], G.C.BLUE[4]
     G.C.UI_MULT[1], G.C.UI_MULT[2], G.C.UI_MULT[3], G.C.UI_MULT[4] = G.C.RED[1], G.C.RED[2], G.C.RED[3], G.C.RED[4]
@@ -2131,6 +2135,8 @@ function Game:start_run(args)
                         elseif v.id == 'no_reward_specific' then
                             self.GAME.modifiers.no_blind_reward = self.GAME.modifiers.no_blind_reward or {}
                             self.GAME.modifiers.no_blind_reward[v.value] = true
+                        elseif v.id == 'mp_ante_scaling' then
+                        	self.GAME.starting_params.ante_scaling = v.value
                         elseif v.value then
                             self.GAME.modifiers[v.id] = v.value
                         elseif v.id == 'no_shop_jokers' then 
@@ -2184,10 +2190,13 @@ function Game:start_run(args)
         self.GAME.pseudorandom.seed = args.seed or (not (G.SETTINGS.tutorial_complete or G.SETTINGS.tutorial_progress.completed_parts['big_blind']) and "TUTORIAL") or generate_starting_seed()
     end
 
-    if self.GAME.pseudorandom.seed:sub(1, 1) ~= "*" and MP.INTEGRATIONS.TheOrder then self.GAME.pseudorandom.seed = "*" .. self.GAME.pseudorandom.seed end
+    if self.GAME.pseudorandom.seed:sub(1, 1) ~= "*" and MP.should_use_the_order() then self.GAME.pseudorandom.seed = "*" .. self.GAME.pseudorandom.seed end
     for k, v in pairs(self.GAME.pseudorandom) do if v == 0 then self.GAME.pseudorandom[k] = pseudohash(k..self.GAME.pseudorandom.seed) end end
     self.GAME.pseudorandom.hashed_seed = pseudohash(self.GAME.pseudorandom.seed)
 
+    if not saveTable then -- i am 99% sure this is unnecessary but i'm checking it anyway
+    	MP.ApplyBans()
+    end
     G:save_settings()
 
     if not self.GAME.round_resets.blind_tags then
@@ -2261,12 +2270,15 @@ function Game:start_run(args)
         {card_limit = self.GAME.starting_params.consumable_slots, type = 'joker', highlight_limit = 1})
 
     if MP.LOBBY.code then 
-      MP.shared = CardArea(
-        0, CAI.consumeable_H + 0.3,
-        CAI.consumeable_W / 2,
-        CAI.consumeable_H, 
-        {card_limit = 0, type = 'joker', highlight_limit = 1})
-    end
+	MP.shared = CardArea(
+		0, CAI.consumeable_H + 0.3,
+		CAI.consumeable_W / 2,
+		CAI.consumeable_H, 
+		{card_limit = 0, type = 'joker', highlight_limit = 1})
+		elseif MP.shared then
+			MP.shared:remove()
+			MP.shared = nil
+		end
 self.jokers = CardArea(
         0, 0,
         CAI.joker_W,
@@ -2557,7 +2569,7 @@ function Game:update(dt)
             if v.gradient and type(v.gradient) == "function" then v:gradient(dt) end
         end
         for _,v in pairs(SMODS.Gradients) do
-           v:update(dt) 
+           v:update(dt)
         end
 
         
@@ -2573,7 +2585,7 @@ function Game:update(dt)
                             {n=G.UIT.O, config={object = DynaText({scale = 0.7, string = localize('ph_unscored_hand'), maxw = 9, colours = {G.C.WHITE},float = true, shadow = true, silent = true, pop_in = 0, pop_in_rate = 6})}},
                         }},
                         {n=G.UIT.R, config = {align = 'cm', maxw = 1}, nodes={
-                            {n=G.UIT.O, config={object = DynaText({scale = 0.6, string = SMODS.debuff_text or G.GAME.blind:get_loc_debuff_text(), maxw = 9, colours = {G.C.WHITE},float = true, shadow = true, silent = true, pop_in = 0, pop_in_rate = 6})}},
+                            {n=G.UIT.O, config={func = "update_blind_debuff_text", object = DynaText({scale = 0.6, string = SMODS.debuff_text or G.GAME.blind:get_loc_debuff_text(), maxw = 9, colours = {G.C.WHITE},float = true, shadow = true, silent = true, pop_in = 0, pop_in_rate = 6})}},
                         }}
                     }}, 
                     config = {

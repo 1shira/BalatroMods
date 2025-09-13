@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'cdd9e89d1533b1bf1a37702011981b84779de0c008ea531fc48249b0906557b3'
+LOVELY_INTEGRITY = '6dfd58175d22ba692ad28e7052863bdf1fc9d9ccd8551976ab0a3c6b823e6cd0'
 
 --Class
 CardArea = Moveable:extend()
@@ -32,6 +32,9 @@ function CardArea:init(X, Y, W, H, config)
 end
 
 function CardArea:emplace(card, location, stay_flipped)
+for k, v in pairs(self.cards) do
+	if v == card then return end
+end
     if not card.debuff and card.edition and card.edition.card_limit and (self == G.hand) then
         self.config.real_card_limit = (self.config.real_card_limit or self.config.card_limit) + card.edition.card_limit
         self.config.card_limit = math.max(0, self.config.real_card_limit)
@@ -97,7 +100,7 @@ function CardArea:remove_card(card, discarded_only)
         end
     end
     self:set_ranks()
-    if self == G.deck then check_for_unlock({type = 'modify_deck', deck = self}) end
+    if not G.in_delete_run and self == G.deck then check_for_unlock({type = 'modify_deck', deck = self}) end
     return card
 end
 
@@ -602,6 +605,27 @@ end
 
 function CardArea:draw_card_from(area, stay_flipped, discarded_only)
     if area:is(CardArea) then
+    local prevent = false
+    do
+    	local _cards = discarded_only and {} or area.cards
+    	local card = nil
+    	if discarded_only then 
+    		for k, v in ipairs(area.cards) do
+    			if v.ability and v.ability.discarded then 
+    				_cards[#_cards+1] = v
+    			end
+    		end
+    	end
+    	if area.config.type == 'discard' or area.config.type == 'deck' then
+    		card = _cards[#_cards]
+    	else
+    		card = _cards[1]
+    	end
+    	for k, v in pairs(self.cards) do
+    		if v == card then prevent = true; break end
+    	end
+    end
+    if prevent then return end
         if #self.cards < self.config.card_limit or self == G.deck or self == G.hand then
             local card = area:remove_card(nil, discarded_only)
             if card then

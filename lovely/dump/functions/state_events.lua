@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'ca8fc30c8b9c620cd318657f2a7513853cf99914d5b950d8afc427bfe117eaeb'
+LOVELY_INTEGRITY = '6cb6a671963a61601a2db082f57f77a9a90b06da8503f87d050e893821cc4e91'
 
 function win_game()
     if (not G.GAME.seeded and not G.GAME.challenge) or SMODS.config.seeded_unlocks then
@@ -101,7 +101,7 @@ function end_round()
             end
             -- context.end_of_round calculations
             SMODS.saved = false
-            SMODS.calculate_context({end_of_round = true, game_over = game_over })
+            SMODS.calculate_context({end_of_round = true, game_over = game_over, beat_boss = G.GAME.blind.boss })
             if SMODS.saved then game_over = false end
             -- TARGET: main end_of_round evaluation
             if G.GAME.round_resets.ante == G.GAME.win_ante and G.GAME.blind:get_type() == 'Boss' then
@@ -165,7 +165,7 @@ function end_round()
                     }))
                 end
                 for _,v in ipairs(SMODS.get_card_areas('playing_cards', 'end_of_round')) do
-                    SMODS.calculate_end_of_round_effects({ cardarea = v, end_of_round = true })
+                    SMODS.calculate_end_of_round_effects({ cardarea = v, end_of_round = true, beat_boss = G.GAME.blind.boss })
                 end
 
 
@@ -318,6 +318,8 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
         G.GAME.current_round.discards_used > 0) then
             hand_space = math.min(#G.deck.cards, 3)
     end
+    local flags = SMODS.calculate_context({drawing_cards = true, amount = hand_space})
+    hand_space = math.min(#G.deck.cards, flags.cards_to_draw or hand_space)
     delay(0.3)
     SMODS.drawn_cards = {}
     for i=1, hand_space do --draw cards from deckL
@@ -367,7 +369,7 @@ G.FUNCS.discard_cards_from_highlighted = function(e, hook)
             G.hand.highlighted[i]:calculate_seal({discard = true})
             local removed = false
             local effects = {}
-            SMODS.calculate_context({discard = true, other_card =  G.hand.highlighted[i], full_hand = G.hand.highlighted}, effects)
+            SMODS.calculate_context({discard = true, other_card =  G.hand.highlighted[i], full_hand = G.hand.highlighted, ignore_other_debuff = true}, effects)
             SMODS.trigger_effects(effects)
             for _, eval in pairs(effects) do
                 if type(eval) == 'table' then
@@ -555,7 +557,7 @@ G.FUNCS.evaluate_play = function(e)
             end
         end
         local effects = {}
-        SMODS.calculate_context({modify_scoring_hand = true, other_card =  G.play.cards[i], full_hand = G.play.cards, scoring_hand = scoring_hand}, effects)
+        SMODS.calculate_context({modify_scoring_hand = true, other_card =  G.play.cards[i], full_hand = G.play.cards, scoring_hand = scoring_hand, in_scoring = true}, effects)
         local flags = SMODS.trigger_effects(effects, G.play.cards[i])
         if flags.add_to_hand then splashed = true end
     	if flags.remove_from_hand then unsplashed = true end
@@ -575,7 +577,7 @@ G.FUNCS.evaluate_play = function(e)
     if G.GAME.current_round.current_hand.handname ~= disp_text then delay(0.3) end
     update_hand_text({sound = G.GAME.current_round.current_hand.handname ~= disp_text and 'button' or nil, volume = 0.4, immediate = true, nopulse = nil,
                 delay = G.GAME.current_round.current_hand.handname ~= disp_text and 0.4 or 0}, {handname=disp_text, level=G.GAME.hands[text].level, mult = G.GAME.hands[text].mult, chips = G.GAME.hands[text].chips})
-    SMODS.displayed_hand = text
+    SMODS.displayed_hand = text; SMODS.displaying_scoring = true
 
     if not G.GAME.blind:debuff_hand(G.play.cards, poker_hands, text) then
         mult = mod_mult(G.GAME.hands[text].mult)
@@ -607,6 +609,7 @@ G.FUNCS.evaluate_play = function(e)
         mult, hand_chips = mod_mult(mult), mod_chips(hand_chips)
         if modded then update_hand_text({sound = 'chips2', modded = modded}, {chips = hand_chips, mult = mult}) end
         delay(0.3)
+        SMODS.calculate_context({initial_scoring_step = true, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands})
         for _, v in ipairs(SMODS.get_card_areas('playing_cards')) do
             SMODS.calculate_main_scoring({cardarea = v, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands}, v == G.play and scoring_hand or nil)
             delay(0.3)
@@ -795,6 +798,7 @@ G.FUNCS.evaluate_play = function(e)
       func = (function() G.GAME.current_round.current_hand.handname = '';return true end)
     }))
     delay(0.3)
+    SMODS.displaying_scoring = nil
 
     -- context.after calculations
     SMODS.calculate_context({full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, after = true})
@@ -888,6 +892,7 @@ G.FUNCS.evaluate_round = function()
             return true
         end
     }))
+    SMODS.calculate_context{round_eval = true}
     G.GAME.selected_back:trigger_effect({context = 'eval'})
 
     if G.GAME.current_round.hands_left > 0 and (not G.GAME.modifiers.no_extra_hand_money) and (not MP.is_pvp_boss()) then
