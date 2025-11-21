@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '36006f51b716d3ff1f8c4d2b5103b71af98753817755baca2b2c9f10d1313658'
+LOVELY_INTEGRITY = '60da46619652e6e1c645c6e7113d3740cf8c1c1080cc5e9ade809a3159a22691'
 
 --Class
 Tag = Object:extend()
@@ -121,6 +121,8 @@ end
 
 function Tag:apply_to_run(_context)
     if self.triggered then return end
+    local flags = SMODS.calculate_context({prevent_tag_trigger = self, other_context = _context})
+    if flags.prevent_trigger then return end
     local obj = SMODS.Tags[self.key]
     local res
     if obj and obj.apply and type(obj.apply) == 'function' then
@@ -499,6 +501,7 @@ function Tag:load(tag_savetable)
     self.tally = tag_savetable.tally
     self.ability = tag_savetable.ability
     G.GAME.tag_tally = math.max(self.tally, G.GAME.tag_tally) + 1
+    self.from_load = true
 end
 
 function Tag:juice_up(_scale, _rot)

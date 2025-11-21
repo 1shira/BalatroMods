@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'fec0a5e7e91c1959c981f20c13e6e0c1f64c4623a45de4d3312fdf8d1837c258'
+LOVELY_INTEGRITY = '4bc28459f1217bc78eaf8f20ec26599d25765be3990bdf60901e7283a358afe9'
 
 --class
 Blind = Moveable:extend()
@@ -85,6 +85,7 @@ end
 function Blind:set_blind(blind, reset, silent)
     if not reset then
         self.config.blind = blind or {}
+        self.effect = type(self.config.blind.config) == "table" and copy_table(self.config.blind.config) or {}
         self.name = blind and blind.name or ''
         self.dollars = blind and blind.dollars or 0
         self.sound_pings = self.dollars + 2
@@ -752,6 +753,7 @@ end
 function Blind:save()
     local blindTable = {
         in_blind = self.in_blind,
+    effect = self.effect,
         name = self.name,
         dollars = self.dollars,
         debuff = self.debuff,
@@ -780,6 +782,7 @@ end
 
 function Blind:load(blindTable)
     self.in_blind = blindTable.in_blind
+self.effect = blindTable.effect
     self.config.blind = G.P_BLINDS[blindTable.config_blind] or {}
     
     self.name = blindTable.name

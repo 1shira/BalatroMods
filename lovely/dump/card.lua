@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '176da6cd82f851558de2935b37bd8419eaef2ffb0335bbfde73d94fb28940fa0'
+LOVELY_INTEGRITY = 'e722d067336690cffdc51f9add26547c9a1a2f685ec269dbec5c7fc82d523a67'
 
 --class
 Card = Moveable:extend()
@@ -42,6 +42,7 @@ function Card:init(X, Y, W, H, card, center, params)
     self.unique_val = 1-self.ID/1603301
     self.edition = nil
     self.zoom = true
+    self.original_T = copy_table(self.T)
     self:set_ability(center, true)
     self:set_base(card, true)
 
@@ -58,7 +59,7 @@ function Card:init(X, Y, W, H, card, center, params)
     self.highlighted = false
     self.click_timeout = 0.3
     self.T.scale = 0.95
-    self.original_T = copy_table(self.T)
+    self.original_T.scale = 0.95
     self.debuff = false
 
     self.rank = nil
@@ -234,13 +235,21 @@ function Card:set_sprites(_center, _front)
 end
 
 function Card:set_ability(center, initial, delay_sprites)
-  SMODS.enh_cache:write(self, nil)
+    SMODS.enh_cache:write(self, nil)
+
+    if self.ability and not initial then
+        self.ability.card_limit = self.ability.card_limit - (self.config.center.config.card_limit or 0)
+        self.ability.extra_slots_used = self.ability.extra_slots_used - (self.config.center.config.extra_slots_used or 0)
+        if self.area then self.area:handle_card_limit(-1 * (self.config.center.config.card_limit or 0), -1 * (self.config.center.config.extra_slots_used or 0)) end
+    end
   
-  if self.ability and not initial then
-    self.front_hidden = self:should_hide_front()
-  end
-    for key, _ in pairs(self.T) do
-        self.T[key] = self.original_T[key]
+    if self.ability and not initial then
+        self.front_hidden = self:should_hide_front()
+    end
+    if delay_sprites ~= 'quantum' then
+        for key, _ in pairs(self.T) do
+            self.T[key] = self.original_T[key]
+        end
     end
     local X, Y, W, H = self.T.x, self.T.y, self.T.w, self.T.h
 
@@ -346,6 +355,7 @@ function Card:set_ability(center, initial, delay_sprites)
         h_chips = center.config.h_chips or 0,
         x_chips = center.config.x_chips or 1,
         h_x_chips = center.config.h_x_chips or 1,
+        repetitions = center.config.repetitions or 0,
         h_size = center.config.h_size or 0,
         d_size = center.config.d_size or 0,
         extra = copy_table(center.config.extra) or nil,
@@ -363,6 +373,9 @@ function Card:set_ability(center, initial, delay_sprites)
         perma_h_x_mult = self.ability and self.ability.perma_h_x_mult or 0,
         perma_p_dollars = self.ability and self.ability.perma_p_dollars or 0,
         perma_h_dollars = self.ability and self.ability.perma_h_dollars or 0,
+        perma_repetitions = self.ability and self.ability.perma_repetitions or 0,
+        card_limit = self.ability and self.ability.card_limit or 0,
+        extra_slots_used = self.ability and self.ability.extra_slots_used or 0,
     }
     self.ability = self.ability or {}
     new_ability.extra_value = nil
@@ -370,6 +383,13 @@ function Card:set_ability(center, initial, delay_sprites)
     for k, v in pairs(new_ability) do
         self.ability[k] = v
     end
+    
+    -- handles card_limit/extra_slots_used changes
+    self.ability.card_limit = self.ability.card_limit + (center.config.card_limit or 0)
+    self.ability.extra_slots_used = self.ability.extra_slots_used + (center.config.extra_slots_used or 0)
+    if self.area then self.area:handle_card_limit(center.config.card_limit, center.config.extra_slots_used) end
+    
+    
     -- reset keys do not persist on ability change
     local reset_keys = {'name', 'effect', 'set', 'extra', 'played_this_ante', 'perma_debuff'}
     for _, mod in ipairs(SMODS.mod_list) do
@@ -456,6 +476,9 @@ function Card:set_ability(center, initial, delay_sprites)
         self.mouse_damping = 1.5
     end
 
+    if self.ability and not initial then
+      self.front_hidden = self:should_hide_front()
+    end
     local obj = self.config.center
     if obj.set_ability and type(obj.set_ability) == 'function' then
         obj:set_ability(self, initial, delay_sprites)
@@ -585,7 +608,12 @@ function Card:set_edition(edition, immediate, silent)
 end
 
 function Card:set_seal(_seal, silent, immediate)
-SMODS.enh_cache:write(self, nil)
+    SMODS.enh_cache:write(self, nil)
+    if self.seal then
+        self.ability.card_limit = self.ability.card_limit - (self.ability.seal.card_limit or 0)
+        self.ability.extra_slots_used = self.ability.extra_slots_used - (self.ability.seal.extra_slots_used or 0)
+        if self.area then self.area:handle_card_limit(-1 * (self.ability.seal.card_limit or 0), -1 * (self.ability.seal.extra_slots_used or 0)) end
+    end
     self.seal = nil
     if _seal then
         self.seal = _seal
@@ -597,11 +625,14 @@ SMODS.enh_cache:write(self, nil)
                 self.ability.seal[k] = v
             end
         end
+        
+        self.ability.delay_seal = not silent
         if not silent then 
         G.CONTROLLER.locks.seal = true
         local sound = G.P_SEALS[_seal].sound or {sound = 'gold_seal', per = 1.2, vol = 0.4}
             if immediate then 
                 self:juice_up(0.3, 0.3)
+                self.ability.delay_seal = false
                 play_sound(sound.sound, sound.per, sound.vol)
                 G.CONTROLLER.locks.seal = false
             else
@@ -610,6 +641,7 @@ SMODS.enh_cache:write(self, nil)
                     delay = 0.3,
                     func = function()
                         self:juice_up(0.3, 0.3)
+                        self.ability.delay_seal = false
                         play_sound(sound.sound, sound.per, sound.vol)
                     return true
                     end
@@ -624,6 +656,9 @@ SMODS.enh_cache:write(self, nil)
                 }))
             end
         end
+        self.ability.card_limit = self.ability.card_limit + (self.ability.seal.card_limit or 0)
+        self.ability.extra_slots_used = self.ability.extra_slots_used + (self.ability.seal.extra_slots_used or 0)
+        if self.area then self.area:handle_card_limit(self.ability.seal.card_limit, self.ability.seal.extra_slots_used) end
     end
     if self.ability.name == 'Gold Card' and self.seal == 'Gold' and self.playing_card then 
         check_for_unlock({type = 'double_gold'})
@@ -783,19 +818,7 @@ function Card:add_to_deck(from_debuff)
         if self.ability.name == 'Stuntman' then
             G.hand:change_size(-self.ability.extra.h_size)
         end
-        if true then
-            if from_debuff then
-                self.joker_added_to_deck_but_debuffed = nil
-            else
-                if self.edition and self.edition.card_limit then
-                    if self.ability.consumeable then
-                        G.consumeables.config.card_limit = G.consumeables.config.card_limit + self.edition.card_limit
-                    else
-                        G.jokers.config.card_limit = G.jokers.config.card_limit + self.edition.card_limit
-                    end
-                end
-            end
-        end
+        -- removed by SMODS
         if G.GAME.blind and G.GAME.blind.in_blind and not self.from_quantum then G.E_MANAGER:add_event(Event({ func = function() G.GAME.blind:set_blind(nil, true, nil); return true end })) end
         if not from_debuff and G.hand then
             local is_playing_card = self.ability.set == 'Default' or self.ability.set == 'Enhanced'
@@ -855,19 +878,7 @@ function Card:remove_from_deck(from_debuff)
         if self.ability.name == 'Stuntman' then
             G.hand:change_size(self.ability.extra.h_size)
         end
-        if G.jokers then
-            if from_debuff then
-                self.joker_added_to_deck_but_debuffed = true
-            else
-                if self.edition and self.edition.card_limit then
-                    if self.ability.consumeable then
-                        G.consumeables.config.card_limit = G.consumeables.config.card_limit - self.edition.card_limit
-                    elseif self.ability.set == 'Joker' then
-                        G.jokers.config.card_limit = G.jokers.config.card_limit - self.edition.card_limit
-                    end
-                end 
-            end
-        end
+        -- removed by SMODS
         if G.GAME.blind and G.GAME.blind.in_blind and not self.from_quantum then G.E_MANAGER:add_event(Event({ func = function() G.GAME.blind:set_blind(nil, true, nil); return true end })) end
     end
 end
@@ -913,6 +924,7 @@ function Card:generate_UIBox_ability_table(vars_only)
                     bonus_h_dollars = self.ability.perma_h_dollars ~= 0 and self.ability.perma_h_dollars or nil,
                     total_h_dollars = total_h_dollars ~= 0 and total_h_dollars or nil,
                     bonus_chips = bonus_chips ~= 0 and bonus_chips or nil,
+                    bonus_repetitions = self.ability.perma_repetitions ~= 0 and self.ability.perma_repetitions or nil,
                 }
     elseif self.ability.set == 'Joker' then -- all remaining jokers
         if self.ability.name == 'Joker' then loc_vars = {self.ability.mult}
@@ -1117,10 +1129,8 @@ function Card:generate_UIBox_ability_table(vars_only)
         badges.force_rarity = true
     end
     if self.edition then
-        if self.edition.type == 'negative' and self.ability.consumeable then
-            badges[#badges + 1] = 'negative_consumable'
-            elseif self.edition.type == 'negative' and (self.ability.set == 'Enhanced' or self.ability.set == 'Default') then
-                badges[#badges + 1] = 'negative_playing_card'
+        if self.edition.card_limit then
+            badges[#badges + 1] = SMODS.Edition.get_card_limit_key(self)
         else
             badges[#badges + 1] = (self.edition.type == 'holo' and 'holographic' or self.edition.type)
         end
@@ -1690,6 +1700,7 @@ function Card:use_consumeable(area, copier)
         G.E_MANAGER:add_event(Event({trigger = 'before', delay = 0.75, func = function()
             for k, v in pairs(deletable_jokers) do
                 if v ~= chosen_joker then 
+                v.getting_sliced = true
                     v:start_dissolve(nil, _first_dissolve)
                     _first_dissolve = true
                 end
@@ -1742,7 +1753,7 @@ function Card:use_consumeable(area, copier)
                 if self.ability.name == 'Hex' then 
                     local _first_dissolve = nil
                     for k, v in pairs(G.jokers.cards) do
-                        if v ~= eligible_card and (not SMODS.is_eternal(v, self)) then v:start_dissolve(nil, _first_dissolve);_first_dissolve = true end
+                        if v ~= eligible_card and (not SMODS.is_eternal(v, self)) then v.getting_sliced = true; v:start_dissolve(nil, _first_dissolve);_first_dissolve = true end
                     end
                 end
                 if self.ability.name == 'Ectoplasm' then 
@@ -1866,9 +1877,11 @@ end
     if eval.retriggers then
         for rt = 1, #eval.retriggers do
             local rt_eval, rt_post = eval_card(self, { selling_self = true, retrigger_joker = true})
-            table.insert(effects, {eval.retriggers[rt]})
-            table.insert(effects, rt_eval)
-            for _, v in ipairs(rt_post) do effects[#effects+1] = v end
+            if next(rt_eval) then
+                table.insert(effects, {eval.retriggers[rt]})
+                table.insert(effects, rt_eval)
+                for _, v in ipairs(rt_post) do effects[#effects+1] = v end
+            end
         end
     end
     SMODS.trigger_effects(effects, self)
@@ -1973,7 +1986,7 @@ function Card:open()
             G.STATE = G.STATES.SMODS_BOOSTER_OPENED
             SMODS.OPENED_BOOSTER = self
         end
-        G.GAME.pack_choices = self.ability.choose or self.config.center.config.choose or 1
+        G.GAME.pack_choices = math.min((self.ability.choose or self.config.center.config.choose or 1) + (G.GAME.modifiers.booster_choice_mod or 0), self.ability.extra and math.max(1, self.ability.extra + (G.GAME.modifiers.booster_size_mod or 0)) or self.config.center.extra and math.max(1, self.config.center.extra + (G.GAME.modifiers.booster_size_mod or 0)) or 1)
 
         if self.cost > 0 then 
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
@@ -1990,7 +2003,7 @@ function Card:open()
             local pack_cards = {}
 
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 1.3*math.sqrt(G.SETTINGS.GAMESPEED), blockable = false, blocking = false, func = function()
-                local _size = self.ability.extra
+                local _size = math.max(1, self.ability.extra + (G.GAME.modifiers.booster_size_mod or 0))
                 
                 for i = 1, _size do
                     local card = nil
@@ -2034,7 +2047,7 @@ function Card:open()
                         local edition_rate = 2
                         local edition = poll_edition('standard_edition'..G.GAME.round_resets.ante, edition_rate, true)
                         card:set_edition(edition)
-                        card:set_seal(SMODS.poll_seal({mod = 10}))
+                        card:set_seal(SMODS.poll_seal({mod = 10}), true, true)
                     elseif self.ability.name:find('Buffoon') then
                         card = create_card("Joker", G.pack_cards, nil, nil, true, true, nil, 'buf')
 
@@ -2081,6 +2094,7 @@ function Card:redeem()
         end
         if self.shop_voucher then G.GAME.current_round.voucher.spawn[self.config.center_key] = false end
         if self.from_tag then G.GAME.current_round.voucher.spawn[G.GAME.current_round.voucher[1]] = false end
+        G.STATE = G.STATES.SMODS_REDEEM_VOUCHER
 
         self.states.hover.can = false
         G.GAME.used_vouchers[self.config.center_key] = true
@@ -2349,6 +2363,29 @@ function Card:explode(dissolve_colours, explode_time_fac)
 end
 
 function Card:shatter()
+    if self.getting_sliced and not (self.ability.set == 'Default' or self.ability.set == 'Enhanced') then
+        local flags = SMODS.calculate_context({joker_type_destroyed = true, card = self, shatters = true})
+        if flags.no_destroy then self.getting_sliced = nil; return end
+    end
+    if self.skip_destroy_animation then
+        G.E_MANAGER:add_event(Event({
+            func = function()
+                play_sound('tarot1')
+                self.T.r = -0.2
+                self:juice_up(0.3, 0.4)
+                self.states.drag.is = true
+                self.children.center.pinch.x = true
+                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
+                    func = function()
+                            G.jokers:remove_card(self)
+                            self:remove()
+                            self = nil
+                        return true; end})) 
+                return true
+            end
+        })) 
+        return
+    end
     local dissolve_time = 0.7
     self.shattered = true
     self.dissolve = 0
@@ -2403,6 +2440,25 @@ function Card:start_dissolve(dissolve_colours, silent, dissolve_time_fac, no_jui
     if self.getting_sliced and not (self.ability.set == 'Default' or self.ability.set == 'Enhanced') then
         local flags = SMODS.calculate_context({joker_type_destroyed = true, card = self})
         if flags.no_destroy then self.getting_sliced = nil; return end
+    end
+    if self.skip_destroy_animation then
+        G.E_MANAGER:add_event(Event({
+            func = function()
+                play_sound('tarot1')
+                self.T.r = -0.2
+                self:juice_up(0.3, 0.4)
+                self.states.drag.is = true
+                self.children.center.pinch.x = true
+                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
+                    func = function()
+                            G.jokers:remove_card(self)
+                            self:remove()
+                            self = nil
+                        return true; end})) 
+                return true
+            end
+        })) 
+        return
     end
     dissolve_colours = dissolve_colours or (type(self.destroyed) == 'table' and self.destroyed.colours) or nil
     dissolve_time_fac = dissolve_time_fac or (type(self.destroyed) == 'table' and self.destroyed.time) or nil
@@ -2694,23 +2750,25 @@ function Card:calculate_joker(context)
                 end
             end
         elseif context.selling_card then
-                if self.ability.name == 'Campfire' and not context.blueprint then
-                    self.ability.x_mult = self.ability.x_mult + self.ability.extra
-                    G.E_MANAGER:add_event(Event({
-                        func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message =             localize('k_upgrade_ex')}); return true
-               end}))
-            end
-            if self.ability.name == 'Campfire' and not context.blueprint then return nil, true end
+                if self.ability.name == 'Campfire' and not context.blueprint and self ~= context.card then
+                    SMODS.scale_card(self, {
+                        ref_table = self.ability,
+                        ref_value = "x_mult",
+                        scalar_value = "extra",
+                        message_colour = G.C.FILTER
+                    })
+                end
+            return
         elseif context.reroll_shop then
             if self.ability.name == 'Flash Card' and not context.blueprint then
-                self.ability.mult = self.ability.mult + self.ability.extra
-                G.E_MANAGER:add_event(Event({
-                    func = (function()
-                        card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_mult', vars = {self.ability.mult}}, colour =            G.C.MULT})
-                   return true
-               end)}))
+                SMODS.scale_card(self, {
+                    ref_table = self.ability,
+                    ref_value = "mult",
+                    scalar_value = "extra",
+                    message_key = 'a_mult',
+                    message_colour = G.C.RED
+                })
             end
-            if self.ability.name == 'Flash Card' and not context.blueprint then return nil, true end
         elseif context.ending_shop then
             if self.ability.name == 'Perkeo' then
                 if G.consumeables.cards[1] then
@@ -2744,25 +2802,28 @@ function Card:calculate_joker(context)
             return
         elseif context.skipping_booster then
             if self.ability.name == 'Red Card' and not context.blueprint then
-                self.ability.mult = self.ability.mult + self.ability.extra
-                                G.E_MANAGER:add_event(Event({
-                    func = function() 
-                        card_eval_status_text(self, 'extra', nil, nil, nil, {
-                            message = localize{type = 'variable', key = 'a_mult', vars = {self.ability.extra}},
-                            colour = G.C.RED,
-                            delay = 0.45, 
-                            card = self
-                        }) 
-                        return true
-                    end}))
+                SMODS.scale_card(self, {
+                    ref_table = self.ability,
+                    ref_value = "mult",
+                    scalar_value = "extra",
+                    message_key = 'a_mult',
+                    message_colour = G.C.RED
+                })
                 return nil, true
             end
             return
         elseif context.playing_card_added and not self.getting_sliced then
             if self.ability.name == 'Hologram' and (not context.blueprint)
                 and context.cards and context.cards[1] then
-                    self.ability.x_mult = self.ability.x_mult + #context.cards*self.ability.extra
-                    card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {self.ability.x_mult}}})
+                    SMODS.scale_card(self, {
+                        ref_table = self.ability,
+                        ref_value = "x_mult",
+                        scalar_value = "extra",
+                        message_key = 'a_xmult',
+                        operation = function(ref_table, ref_value, initial, scaling)
+                            ref_table[ref_value] = initial + scaling*#context.cards
+                        end
+                    })
                 return nil, true
             end
         elseif context.first_hand_drawn then
@@ -2772,7 +2833,7 @@ function Card:calculate_joker(context)
                         local _card = create_playing_card({
                             front = pseudorandom_element(G.P_CARDS, pseudoseed('cert_fr')),
                             center = G.P_CENTERS.c_base}, G.hand, nil, nil, {G.C.SECONDARY_SET.Enhanced})
-                        _card:set_seal(SMODS.poll_seal({type_key = 'certsl', guaranteed = true}))
+                        _card:set_seal(SMODS.poll_seal({type_key = 'certsl', guaranteed = true}), nil, true)
                         G.GAME.blind:debuff_card(_card)
                         G.hand:sort()
                         if context_blueprint_card then context_blueprint_card:juice_up() else self:juice_up() end
@@ -2805,7 +2866,6 @@ function Card:calculate_joker(context)
                 return nil, true
             end
             if self.ability.name == 'Madness' and not context.blueprint and not context.blind.boss then
-                self.ability.x_mult = self.ability.x_mult + self.ability.extra
                 local destructable_jokers = {}
                 for i = 1, #G.jokers.cards do
                     if G.jokers.cards[i] ~= self and not SMODS.is_eternal(G.jokers.cards[i], self) and not G.jokers.cards[i].getting_sliced then destructable_jokers[#destructable_jokers+1] = G.jokers.cards[i] end
@@ -2820,7 +2880,12 @@ function Card:calculate_joker(context)
                     return true end }))
                 end
                 if not (context.blueprint_card or self).getting_sliced then
-                    card_eval_status_text((context.blueprint_card or self), 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {self.ability.x_mult}}})
+                    SMODS.scale_card(context.blueprint_card or self, {
+                        ref_table = self.ability,
+                        ref_value = "x_mult",
+                        scalar_value = "extra",
+                        message_key = 'a_xmult'
+                    })
                 end
                 return nil, true
             end
@@ -2877,12 +2942,25 @@ function Card:calculate_joker(context)
                     G.GAME.joker_buffer = G.GAME.joker_buffer - 1
                     G.E_MANAGER:add_event(Event({func = function()
                         G.GAME.joker_buffer = 0
-                        self.ability.mult = self.ability.mult + sliced_card.sell_cost*2
+
                         self:juice_up(0.8, 0.8)
                         sliced_card:start_dissolve({HEX("57ecab")}, nil, 1.6)
                         play_sound('slice1', 0.96+math.random()*0.08)
                     return true end }))
-                    card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_mult', vars = {self.ability.mult+2*sliced_card.sell_cost}}, colour = G.C.RED, no_juice = true})
+                    SMODS.scale_card(self, {
+                        ref_table = self.ability,
+                        ref_value = "mult",
+                        scalar_table = sliced_card,
+                        scalar_value = "sell_cost",
+                        operation = function(ref_table, ref_value, initial, scaling)
+                            ref_table[ref_value] = initial + 2*scaling
+                        end,
+                        scaling_message = {
+                            message = localize{type = 'variable', key = 'a_mult', vars = {self.ability.mult+2*sliced_card.sell_cost}},
+                            colour = G.C.RED,
+                            no_juice = true
+                        }
+                    })
                     return nil, true
                 end
             end
@@ -2981,11 +3059,15 @@ function Card:calculate_joker(context)
                     if val:is_face() then face_cards = face_cards + 1 end
                 end
                 if face_cards > 0 then
-                    self.ability.caino_xmult = self.ability.caino_xmult + face_cards*self.ability.extra
-                    G.E_MANAGER:add_event(Event({
-                    func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {self.ability.caino_xmult}}}); return true
-                    end}))                    
-                    return nil, true
+                    SMODS.scale_card(self, {
+                        ref_table = self.ability,
+                        ref_value = 'caino_xmult',
+                        scalar_value = 'extra',
+                        operation = function(ref_table, ref_value, initial, change)
+                            ref_table[ref_value] = initial + face_cards*change
+                        end,
+                        message_key = 'a_xmult'
+                    })
                 end
                 return
             end
@@ -2998,17 +3080,18 @@ function Card:calculate_joker(context)
                 if glass_cards > 0 then 
                     G.E_MANAGER:add_event(Event({
                         func = function()
-                    G.E_MANAGER:add_event(Event({
-                        func = function()
-                            self.ability.x_mult = self.ability.x_mult + self.ability.extra*glass_cards
-                        return true
-                        end
-                    }))
-                    card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {self.ability.x_mult + self.ability.extra*glass_cards}}})
+                    SMODS.scale_card(self, {
+                        ref_table = self.ability,
+                        ref_value = 'x_mult',
+                        scalar_value = 'extra',
+                        operation = function(ref_table, ref_value, initial, change)
+                            ref_table[ref_value] = initial + glass_cards*change
+                        end,
+                        message_key = 'a_xmult'
+                    })
                     return true
                         end
-                    }))                    
-                    return nil, true
+                    }))
                 end
                 return
             end
@@ -3034,10 +3117,12 @@ function Card:calculate_joker(context)
                 return nil, true
             end
             if self.ability.name == 'Constellation' and not context.blueprint and context.consumeable.ability.set == 'Planet' then
-                self.ability.x_mult = self.ability.x_mult + self.ability.extra
-                G.E_MANAGER:add_event(Event({
-                    func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type='variable',key='a_xmult',vars={self.ability.x_mult}}}); return true
-                    end}))
+                SMODS.scale_card(self, {
+                    ref_table = self.ability,
+                    ref_value = "x_mult",
+                    scalar_value = "extra",
+                    message_key = 'a_xmult'
+                })
                 return
                 nil, true
             end
@@ -3066,47 +3151,34 @@ function Card:calculate_joker(context)
         elseif context.discard then
             if self.ability.name == 'Ramen' and not context.blueprint then
                 if self.ability.x_mult - self.ability.extra <= 1 then 
-                    G.E_MANAGER:add_event(Event({
-                        func = function()
-                            play_sound('tarot1')
-                            self.T.r = -0.2
-                            self:juice_up(0.3, 0.4)
-                            self.states.drag.is = true
-                            self.children.center.pinch.x = true
-                            G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
-                                func = function()
-                                        G.jokers:remove_card(self)
-                                        self:remove()
-                                        self = nil
-                                    return true; end})) 
-                            return true
-                        end
-                    })) 
+                    SMODS.destroy_cards(self, nil, nil, true)
                     return {
                         card = self,
                         message = localize('k_eaten_ex'),
                         colour = G.C.FILTER
                     }
                 else
-                    self.ability.x_mult = self.ability.x_mult - self.ability.extra
-                    return {
-                        delay = 0.2,
-                        card = self,
-                        message = localize{type='variable',key='a_xmult_minus',vars={self.ability.extra}},
+                    SMODS.scale_card(self, {
+                        ref_table = self.ability,
+                        ref_value = "x_mult",
+                        scalar_value = "extra",
+                        operation = "-",
+                        message_key = 'a_xmult_minus',
                         colour = G.C.RED
-                    }
+                    })
                 end
             end
             if self.ability.name == 'Yorick' and not context.blueprint then
                 if self.ability.yorick_discards <= 1 then
                     self.ability.yorick_discards = self.ability.extra.discards
-                    self.ability.x_mult = self.ability.x_mult + self.ability.extra.xmult
-                    return {
-                        card = self,
-                        delay = 0.2,
-                        message = localize{type='variable',key='a_xmult',vars={self.ability.x_mult}},
-                        colour = G.C.RED
-                    }
+                    SMODS.scale_card(self, {
+                        ref_table = self.ability,
+                        ref_value = "x_mult",
+                        scalar_table = self.ability.extra,
+                        scalar_value = "xmult",
+                        message_key = 'a_xmult',
+                        message_colour = G.C.RED
+                    })
                 else
                     self.ability.yorick_discards = self.ability.yorick_discards - 1
                     return nil, true
@@ -3149,23 +3221,28 @@ function Card:calculate_joker(context)
             if self.ability.name == 'Hit the Road' and
             not context.other_card.debuff and
             context.other_card:get_id() == 11 and not context.blueprint then
-                self.ability.x_mult = self.ability.x_mult + self.ability.extra
-                return {
-                    message = localize{type='variable',key='a_xmult',vars={self.ability.x_mult}},
-                        colour = G.C.RED,
-                        delay = 0.45, 
-                    card = self
-                }
+                SMODS.scale_card(self, {
+                    ref_table = self.ability,
+                    ref_value = "x_mult",
+                    scalar_value = "extra",
+                    message_key = 'a_xmult',
+                    message_colour = G.C.RED
+                })
             end
             if self.ability.name == 'Green Joker' and not context.blueprint and context.other_card == context.full_hand[#context.full_hand] then
                 local prev_mult = self.ability.mult
-                self.ability.mult = math.max(0, self.ability.mult - self.ability.extra.discard_sub)
-                if self.ability.mult ~= prev_mult then 
-                    return {
-                        message = localize{type='variable',key='a_mult_minus',vars={self.ability.extra.discard_sub}},
-                        colour = G.C.RED,
-                        card = self
-                    }
+                if self.ability.mult ~= 0 then
+                    SMODS.scale_card(self, {
+                        ref_table = self.ability,
+                        ref_value = "mult",
+                        scalar_table = self.ability.extra,
+                        scalar_value = "discard_sub",
+                        operation = function(ref_table, ref_value, initial, change)
+                            ref_table[ref_value] = math.max(0, initial - change)
+                        end,
+                        message_key = 'a_mult_minus',
+                        message_colour = G.C.RED
+                    })
                 end
             end
             
@@ -3209,42 +3286,32 @@ function Card:calculate_joker(context)
                     }
                 end
                 if self.ability.name == 'Rocket' and G.GAME.blind.boss then
-                    self.ability.extra.dollars = self.ability.extra.dollars + self.ability.extra.increase
-                    return {
-                        message = localize('k_upgrade_ex'),
-                        colour = G.C.MONEY
-                    }
+                    SMODS.scale_card(self, {
+                        ref_table = self.ability.extra,
+                        ref_value = "dollars",
+                        scalar_value = "increase",
+                        message_colour = G.C.MONEY
+                    })
                 end
                 if self.ability.name == 'Turtle Bean' and not context.blueprint then
                     if self.ability.extra.h_size - self.ability.extra.h_mod <= 0 then 
-                        G.E_MANAGER:add_event(Event({
-                            func = function()
-                                play_sound('tarot1')
-                                self.T.r = -0.2
-                                self:juice_up(0.3, 0.4)
-                                self.states.drag.is = true
-                                self.children.center.pinch.x = true
-                                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
-                                    func = function()
-                                            G.jokers:remove_card(self)
-                                            self:remove()
-                                            self = nil
-                                        return true; end})) 
-                                return true
-                            end
-                        })) 
+                        SMODS.destroy_cards(self, nil, nil, true)
                         return {
                             card = self,
                             message = localize('k_eaten_ex'),
                             colour = G.C.FILTER
                         }
                     else
-                        self.ability.extra.h_size = self.ability.extra.h_size - self.ability.extra.h_mod
-                        G.hand:change_size(- self.ability.extra.h_mod)
-                        return {
-                            message = localize{type='variable',key='a_handsize_minus',vars={self.ability.extra.h_mod}},
-                            colour = G.C.FILTER
-                        }
+                        SMODS.scale_card(self, {
+                            ref_table = self.ability.extra,
+                            ref_value = "h_size",
+                            scalar_value = "h_mod",
+                            message_key = 'a_handsize_minus',
+                            operation = function(ref_table, ref_value, initial, change)
+                                ref_table[ref_value] = initial - change
+                                G.hand:change_size(- change)
+                            end
+                        })
                     end
                 end
                 if self.ability.name == 'Invisible Joker' and not context.blueprint then
@@ -3260,32 +3327,20 @@ function Card:calculate_joker(context)
                 end
                 if self.ability.name == 'Popcorn' and not context.blueprint then
                     if self.ability.mult - self.ability.extra <= 0 then 
-                        G.E_MANAGER:add_event(Event({
-                            func = function()
-                                play_sound('tarot1')
-                                self.T.r = -0.2
-                                self:juice_up(0.3, 0.4)
-                                self.states.drag.is = true
-                                self.children.center.pinch.x = true
-                                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
-                                    func = function()
-                                            G.jokers:remove_card(self)
-                                            self:remove()
-                                            self = nil
-                                        return true; end})) 
-                                return true
-                            end
-                        })) 
+                        SMODS.destroy_cards(self, nil, nil, true)
                         return {
                             message = localize('k_eaten_ex'),
                             colour = G.C.RED
                         }
                     else
-                        self.ability.mult = self.ability.mult - self.ability.extra
-                        return {
-                            message = localize{type='variable',key='a_mult_minus',vars={self.ability.extra}},
-                            colour = G.C.MULT
-                        }
+                        SMODS.scale_card(self, {
+                            ref_table = self.ability,
+                            ref_value = "mult",
+                            scalar_value = "extra",
+                            message_key = 'a_mult_minus',
+                            colour = G.C.MULT,
+                            operation = '-'
+                        })
                     end
                 end
                 if self.ability.name == 'To Do List' and not context.blueprint then
@@ -3302,12 +3357,16 @@ function Card:calculate_joker(context)
                     }
                 end
                 if self.ability.name == 'Egg' then
-                    self.ability.extra_value = self.ability.extra_value + self.ability.extra
+                    SMODS.scale_card(self, {
+                        ref_table = self.ability,
+                        ref_value = "extra_value",
+                        scalar_value = "extra",
+                        scaling_message = {
+                            message = localize('k_val_up'),
+                            colour = G.C.MONEY
+                        }
+                    })
                     self:set_cost()
-                    return {
-                        message = localize('k_val_up'),
-                        colour = G.C.MONEY
-                    }
                 end
                 if self.ability.name == 'Gift Card' then
                     for k, v in ipairs(G.jokers.cards) do
@@ -3337,22 +3396,7 @@ function Card:calculate_joker(context)
                 
                 if self.ability.name == 'Gros Michel' or self.ability.name == 'Cavendish' then
                     if SMODS.pseudorandom_probability(self, self.ability.name == 'Cavendish' and 'cavendish' or 'gros_michel', 1, self.ability.extra.odds) then 
-                        G.E_MANAGER:add_event(Event({
-                            func = function()
-                                play_sound('tarot1')
-                                self.T.r = -0.2
-                                self:juice_up(0.3, 0.4)
-                                self.states.drag.is = true
-                                self.children.center.pinch.x = true
-                                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
-                                    func = function()
-                                            G.jokers:remove_card(self)
-                                            self:remove()
-                                            self = nil
-                                        return true; end})) 
-                                return true
-                            end
-                        })) 
+                        SMODS.destroy_cards(self, nil, nil, true)
                         if self.ability.name == 'Gros Michel' then G.GAME.pool_flags.gros_michel_extinct = true end
                         return {
                             message = localize('k_extinct_ex')
@@ -3393,7 +3437,12 @@ function Card:calculate_joker(context)
                         }
                 end
                 if self.ability.name == 'Lucky Cat' and context.other_card.lucky_trigger and not context.blueprint then
-                    self.ability.x_mult = self.ability.x_mult + self.ability.extra
+                    SMODS.scale_card(self, {
+                        ref_table = self.ability,
+                        ref_value = "x_mult",
+                        scalar_value = "extra",
+                        no_message = true
+                    })
                     return {
                         extra = {focus = self, message = localize('k_upgrade_ex'), colour = G.C.MULT},
                         card = self
@@ -3401,13 +3450,15 @@ function Card:calculate_joker(context)
                 end
                 if self.ability.name == 'Wee Joker' and
                     context.other_card:get_id() == 2 and not context.blueprint then
-                        self.ability.extra.chips = self.ability.extra.chips + self.ability.extra.chip_mod
-                        
-                        return {
-                            extra = {focus = self, message = localize('k_upgrade_ex')},
-                            card = self,
-                            colour = G.C.CHIPS
-                        }
+                        SMODS.scale_card(self, {
+                            ref_table = self.ability.extra,
+                            ref_value = "chips",
+                            scalar_value = "chip_mod",
+                            scaling_message = {
+                                extra = {focus = self, message = localize('k_upgrade_ex')},
+                                colour = G.C.CHIPS
+                            }
+                        })
                 end
                 if self.ability.name == 'Photograph' then
                     local first_face = nil
@@ -3717,7 +3768,7 @@ function Card:calculate_joker(context)
                 end
             end
         elseif context.other_joker then
-            if self.ability.name == 'Baseball Card' and (context.other_joker.config.center.rarity == 2 or context.other_joker.config.center.rarity == "Uncommon") and self ~= context.other_joker then
+            if self.ability.name == 'Baseball Card' and self ~= context.other_joker and context.other_joker:is_rarity("Uncommon") then
             if context.other_joker.edition and context.other_joker.edition.type == 'mp_phantom' then return end
                 G.E_MANAGER:add_event(Event({
                     func = function()
@@ -3734,12 +3785,12 @@ function Card:calculate_joker(context)
             do
                 if context.before then
                     if self.ability.name == 'Spare Trousers' and (next(context.poker_hands['Two Pair']) or next(context.poker_hands['Full House'])) and not context.blueprint then
-                        self.ability.mult = self.ability.mult + self.ability.extra
-                        return {
-                            message = localize('k_upgrade_ex'),
-                            colour = G.C.RED,
-                            card = self
-                        }
+                        SMODS.scale_card(self, {
+                            ref_table = self.ability,
+                            ref_value = "mult",
+                            scalar_value = "extra",
+                            message_colour = G.C.RED
+                        })
                     end
                     if self.ability.name == 'Space Joker' and SMODS.pseudorandom_probability(self, 'space', 1, self.ability.extra) then
                         return {
@@ -3749,20 +3800,18 @@ function Card:calculate_joker(context)
                         }
                     end
                     if self.ability.name == 'Square Joker' and #context.full_hand == 4 and not context.blueprint then
-                        self.ability.extra.chips = self.ability.extra.chips + self.ability.extra.chip_mod
-                        return {
-                            message = localize('k_upgrade_ex'),
-                            colour = G.C.CHIPS,
-                            card = self
-                        }
+                        SMODS.scale_card(self, {
+                            ref_table = self.ability.extra,
+                            ref_value = "chips",
+                            scalar_value = "chip_mod",
+                        })
                     end
                     if self.ability.name == 'Runner' and next(context.poker_hands['Straight']) and not context.blueprint then
-                        self.ability.extra.chips = self.ability.extra.chips + self.ability.extra.chip_mod
-                        return {
-                            message = localize('k_upgrade_ex'),
-                            colour = G.C.CHIPS,
-                            card = self
-                        }
+                        SMODS.scale_card(self, {
+                            ref_table = self.ability.extra,
+                            ref_value = "chips",
+                            scalar_value = "chip_mod",
+                        })
                     end
                     if self.ability.name == 'Midas Mask' and not context.blueprint then
                         local faces = {}
@@ -3804,12 +3853,16 @@ function Card:calculate_joker(context)
                         end
 
                         if #enhanced > 0 then 
-                            self.ability.x_mult = self.ability.x_mult + self.ability.extra*#enhanced
-                            return {
-                                message = localize{type='variable',key='a_xmult',vars={self.ability.x_mult}},
-                                colour = G.C.MULT,
-                                card = self
-                            }
+                            SMODS.scale_card(self, {
+                                ref_table = self.ability,
+                                ref_value = "x_mult",
+                                scalar_value = "extra",
+                                message_key = 'a_xmult',
+                                message_colour = G.C.MULT,
+                                operation = function(ref_table, ref_value, initial, scaling)
+                                    ref_table[ref_value] = initial + scaling*#enhanced
+                                end
+                            })
                         end
                     end
                     if self.ability.name == 'To Do List' and context.scoring_name == self.ability.to_do_poker_hand then
@@ -3860,7 +3913,12 @@ function Card:calculate_joker(context)
                                 }
                             end
                         else
-                            self.ability.mult = self.ability.mult + self.ability.extra
+                            SMODS.scale_card(self, {
+                                ref_table = self.ability,
+                                ref_value = "mult",
+                                scalar_value = "extra",
+                                no_message = true
+                            })
                         end
                     end
                     if self.ability.name == 'Obelisk' and not context.blueprint then
@@ -3880,65 +3938,43 @@ function Card:calculate_joker(context)
                                 }
                             end
                         else
-                            self.ability.x_mult = self.ability.x_mult + self.ability.extra
+                            SMODS.scale_card(self, {
+                                ref_table = self.ability,
+                                ref_value = "x_mult",
+                                scalar_value = "extra",
+                                no_message = true
+                            })
                         end
                     end
                     if self.ability.name == 'Green Joker' and not context.blueprint then
-                        self.ability.mult = self.ability.mult + self.ability.extra.hand_add
-                        return {
-                            card = self,
-                            message = localize{type='variable',key='a_mult',vars={self.ability.extra.hand_add}}
-                        }
+                        SMODS.scale_card(self, {
+                            ref_table = self.ability,
+                            ref_value = "mult",
+                            scalar_table = self.ability.extra,
+                            scalar_value = "hand_add"
+                        })
                     end
                 elseif context.after then
                     if self.ability.name == 'Ice Cream' and not context.blueprint then
                         if self.ability.extra.chips - self.ability.extra.chip_mod <= 0 then 
-                            G.E_MANAGER:add_event(Event({
-                                func = function()
-                                    play_sound('tarot1')
-                                    self.T.r = -0.2
-                                    self:juice_up(0.3, 0.4)
-                                    self.states.drag.is = true
-                                    self.children.center.pinch.x = true
-                                    G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
-                                        func = function()
-                                                G.jokers:remove_card(self)
-                                                self:remove()
-                                                self = nil
-                                            return true; end})) 
-                                    return true
-                                end
-                            })) 
+                            SMODS.destroy_cards(self, nil, nil, true)
                             return {
                                 message = localize('k_melted_ex'),
                                 colour = G.C.CHIPS
                             }
                         else
-                            self.ability.extra.chips = self.ability.extra.chips - self.ability.extra.chip_mod
-                            return {
-                                message = localize{type='variable',key='a_chips_minus',vars={self.ability.extra.chip_mod}},
-                                colour = G.C.CHIPS
-                            }
+                            SMODS.scale_card(self, {
+                                ref_table = self.ability.extra,
+                                ref_value = "chips",
+                                scalar_value = "chip_mod",
+                                operation = "-",
+                                message_key = 'a_chips_minus'
+                            })
                         end
                     end
                     if self.ability.name == 'Seltzer' and not context.blueprint then
                         if self.ability.extra - 1 <= 0 then 
-                            G.E_MANAGER:add_event(Event({
-                                func = function()
-                                    play_sound('tarot1')
-                                    self.T.r = -0.2
-                                    self:juice_up(0.3, 0.4)
-                                    self.states.drag.is = true
-                                    self.children.center.pinch.x = true
-                                    G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
-                                        func = function()
-                                                G.jokers:remove_card(self)
-                                                self:remove()
-                                                self = nil
-                                            return true; end})) 
-                                    return true
-                                end
-                            })) 
+                            SMODS.destroy_cards(self, nil, nil, true)
                             return {
                                 message = localize('k_drank_ex'),
                                 colour = G.C.FILTER
@@ -4972,7 +5008,7 @@ function Card:save()
         bypass_discovery_ui = self.bypass_discovery_ui,
         bypass_lock = self.bypass_lock,
         unique_val = self.unique_val,
-        unique_val__saved_ID = self.ID,
+        unique_val__saved_ID = self.unique_val__saved_ID or self.ID,
         ignore_base_shader = self.ignore_base_shader,
         ignore_shadow = self.ignore_shadow,
     }
@@ -5048,6 +5084,7 @@ function Card:load(cardTable, other_card)
     self.bypass_discovery_ui = cardTable.bypass_discovery_ui
     self.bypass_lock = cardTable.bypass_lock
     self.unique_val = cardTable.unique_val or self.unique_val
+    self.unique_val__saved_ID = cardTable.unique_val__saved_ID or self.unique_val__saved_ID
     if cardTable.unique_val__saved_ID and G.ID <= cardTable.unique_val__saved_ID then
         G.ID = cardTable.unique_val__saved_ID + 1
     end
@@ -5075,16 +5112,17 @@ function Card:remove()
     if G.in_delete_run then goto skip_game_actions_during_remove end
 
     self:remove_from_deck()
-    if self.joker_added_to_deck_but_debuffed then
-        if self.edition and self.edition.card_limit then
-            if self.ability.consumeable then
-                G.consumeables.config.card_limit = G.consumeables.config.card_limit - self.edition.card_limit
-            elseif self.ability.set == 'Joker' then
-                G.jokers.config.card_limit = G.jokers.config.card_limit - self.edition.card_limit
-            end
+    if self.ability.queue_negative_removal then 
+        if self.ability.consumeable then
+            G.consumeables.config.card_limit = G.consumeables.config.card_limit - 1
+        else
+            G.jokers.config.card_limit = G.jokers.config.card_limit - 1
         end 
     end
 
+    if self.ability and not initial then
+      self.front_hidden = self:should_hide_front()
+    end
     if not G.OVERLAY_MENU then
         if not next(SMODS.find_card(self.config.center.key, true)) then
             G.GAME.used_jokers[self.config.center.key] = nil

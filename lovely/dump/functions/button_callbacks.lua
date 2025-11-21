@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '941c96fbbdc5df50eecfc073079ffc20c8e74e1f94369c2f7018a467b87c243f'
+LOVELY_INTEGRITY = '845a6847504a38add343f66bdabf4e1a19599b88b13b148492d0f4eb989e33bd'
 
 --Moves the tutorial to the next step in queue
 --
@@ -744,8 +744,8 @@ G.FUNCS.change_viewed_back = function(args)
   local deck_pool = SMODS.collection_pool(G.P_CENTER_POOLS.Back)
   G.GAME.viewed_back:change_to(deck_pool[args.to_key])
   if G.sticker_card then G.sticker_card.sticker = get_deck_win_sticker(G.GAME.viewed_back.effect.center) end
-  local max_stake = get_deck_win_stake(G.GAME.viewed_back.effect.center.key) or 0
-  G.viewed_stake = math.min(G.viewed_stake, max_stake + 1)
+  -- local max_stake = get_deck_win_stake(G.GAME.viewed_back.effect.center.key) or 0
+  -- G.viewed_stake = math.min(G.viewed_stake, max_stake + 1)
   G.PROFILES[G.SETTINGS.profile].MEMORY.deck = args.to_val
   for key, val in pairs(G.sticker_card.area.cards) do
   	val.children.back = false
@@ -1977,32 +1977,19 @@ function G.FUNCS.text_super_juice(e, _amount)
 end
 
 G.FUNCS.flame_handler = function(e)
-  G.C.UI_CHIPLICK = G.C.UI_CHIPLICK or {1, 1, 1, 1}
-  G.C.UI_MULTLICK = G.C.UI_MULTLICK or {1, 1, 1, 1}
-  for i=1, 3 do
-    G.C.UI_CHIPLICK[i] = math.min(math.max(((G.C.UI_CHIPS[i]*0.5+G.C.YELLOW[i]*0.5) + 0.1)^2, 0.1), 1)
-    G.C.UI_MULTLICK[i] = math.min(math.max(((G.C.UI_MULT[i]*0.5+G.C.YELLOW[i]*0.5) + 0.1)^2, 0.1), 1)
+  G.ARGS.flame_handler = G.ARGS.flame_handler or {}
+  
+  for key, parameter in pairs(SMODS.Scoring_Parameters) do
+      for i=1, 3 do
+          parameter.lick[i] = math.min(math.max(((parameter.colour[i]*0.5+G.C.YELLOW[i]*0.5) + 0.1)^2, 0.1), 1)
+      end
+      G.ARGS.flame_handler[key] = G.ARGS.flame_handler[key] or parameter:flame_handler()
   end
-
-  G.ARGS.flame_handler = G.ARGS.flame_handler or {
-    chips = {
-      id = 'flame_chips', 
-      arg_tab = 'chip_flames',
-      colour = G.C.UI_CHIPS,
-      accent = G.C.UI_CHIPLICK
-    },
-    mult = {
-      id = 'flame_mult', 
-      arg_tab = 'mult_flames',
-      colour = G.C.UI_MULT,
-      accent = G.C.UI_MULTLICK
-    }
-  }
   for k, v in pairs(G.ARGS.flame_handler) do
     if e.config.id == v.id then 
       if not e.config.object:is(Sprite) or e.config.object.ID ~= v.ID then 
         e.config.object:remove()
-        e.config.object = Sprite(0, 0, 2.5, 2.5, G.ASSET_ATLAS["ui_1"], {x = 2, y = 0})
+        e.config.object = Sprite(0, 0, e.config._w, e.config._h, G.ASSET_ATLAS["ui_1"], {x = 2, y = 0})
         v.ID = e.config.object.ID
         G.ARGS[v.arg_tab] = {
             intensity = 0,
@@ -2127,7 +2114,7 @@ end
 
   G.FUNCS.can_select_card = function(e)
     local card = e.config.ref_table
-    local card_limit = card.edition and card.edition.card_limit or 0
+    local card_limit = card.ability.card_limit - card.ability.extra_slots_used
     if card.ability.set ~= 'Joker' or #G.jokers.cards < G.jokers.config.card_limit + card_limit then
         e.config.colour = G.C.GREEN
         e.config.button = 'use_card'
@@ -2206,7 +2193,16 @@ end
       G.STATES.PLAY_TAROT
       
     G.CONTROLLER.locks.use = true
-    if G.booster_pack and not G.booster_pack.alignment.offset.py and (card.ability.consumeable or not (G.GAME.pack_choices and G.GAME.pack_choices > 1)) then
+    local nc
+    local select_to = card.area == G.pack_cards and G.pack_cards and booster_obj and SMODS.card_select_area(card, booster_obj) and card:selectable_from_pack(booster_obj)
+    if card.ability.consumeable and not select_to then
+        local obj = card.config.center
+        if obj.keep_on_use and type(obj.keep_on_use) == 'function' then
+            nc = obj:keep_on_use(card)
+        end
+    end
+    if G.booster_pack and not G.booster_pack.alignment.offset.py and ((not select_to and card.ability.consumeable) or not (G.GAME.pack_choices and G.GAME.pack_choices > 1)) then
+    
       G.booster_pack.alignment.offset.py = G.booster_pack.alignment.offset.y
       G.booster_pack.alignment.offset.y = G.ROOM.T.y + 29
     end
@@ -2227,14 +2223,6 @@ end
     if card.children.sell_button then card.children.sell_button:remove(); card.children.sell_button = nil end
     if card.children.price then card.children.price:remove(); card.children.price = nil end
 
-    local nc
-    local select_to = card.area == G.pack_cards and booster_obj and booster_obj.select_card and card:selectable_from_pack(booster_obj)
-    if card.ability.consumeable and not select_to then
-        local obj = card.config.center
-        if obj.keep_on_use and type(obj.keep_on_use) == 'function' then
-            nc = obj:keep_on_use(card)
-        end
-    end
     if not card.from_area then card.from_area = card.area end
     if card.area and (not nc or card.area == G.pack_cards) then card.area:remove_card(card) end
     
@@ -2436,8 +2424,8 @@ G.FUNCS.check_for_buy_space = function(card)
   if card.ability.set ~= 'Voucher' and
     card.ability.set ~= 'Enhanced' and
     card.ability.set ~= 'Default' and
-        not (card.ability.set == 'Joker' and #G.jokers.cards < G.jokers.config.card_limit + (card.edition and card.edition.card_limit or 0)) and
-        not (card.ability.consumeable and #G.consumeables.cards < G.consumeables.config.card_limit + (card.edition and card.edition.card_limit or 0)) then
+        not (card.ability.set == 'Joker' and #G.jokers.cards < G.jokers.config.card_limit + card.ability.card_limit - card.ability.extra_slots_used) and
+        not (card.ability.consumeable and #G.consumeables.cards < G.consumeables.config.card_limit + card.ability.card_limit - card.ability.extra_slots_used) then
       alert_no_space(card, card.ability.consumeable and G.consumeables or G.jokers)
     return false
   end
@@ -2716,7 +2704,9 @@ end
               G.E_MANAGER:add_event(Event({func = function()
                 G.CONTROLLER:snap_to({node = _top_button})
               return true end }))
-              _top_button.config.button = 'select_blind'
+              if _top_button.config.button ~= "mp_toggle_ready" then
+              	_top_button.config.button = "select_blind"
+              end
               _top_button.config.colour = G.C.FILTER
               _top_button.config.hover = true
               _top_button.children[1].config.colour = G.C.WHITE

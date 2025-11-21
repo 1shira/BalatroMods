@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '94a3b6ed9c73d74d194ffeaad12efcdcc61f313c29e68ae1ebf43ded42e27441'
+LOVELY_INTEGRITY = 'd415b229b023df51344f8717910dc5e6c28440544a92522a0af533c7b9e61a82'
 
 --- STEAMODDED CORE
 --- MODULE STACKTRACE
@@ -675,6 +675,18 @@ function injectStackTrace()
             table.insert(err, "Invalid UTF-8 string in error message.")
         end
 
+        if V and SMODS and SMODS.save_game and V(SMODS.save_game or '0.0.0') ~= V(SMODS.version or '0.0.0') then
+            table.insert(err, 'This crash may be caused by continuing a run that was started on a previous version of Steamodded. Try creating a new run.')
+        end
+
+        if V and V(MODDED_VERSION or '0.0.0') ~= V(RELEASE_VERSION or '0.0.0') then
+            table.insert(err, '\n\nDevelopment version of Steamodded detected! If you are not actively developing a mod, please try using the latest release instead.\n\n')
+        end
+
+        if not V then
+            table.insert(err, '\nA bad lovely patch has resulted in this crash.\n')
+        end
+
         local success, msg = pcall(getDebugInfoForCrash)
         if success and msg then
             table.insert(err, '\n' .. msg)
@@ -1262,6 +1274,7 @@ end
 
 SMODS = {}
 MODDED_VERSION = require'SMODS.version'
+RELEASE_VERSION = require'SMODS.release'
 SMODS.id = 'Steamodded'
 SMODS.version = MODDED_VERSION:gsub('%-STEAMODDED', '')
 SMODS.can_load = true
@@ -5734,7 +5747,9 @@ function FN.PRE.add_update_event(trigger)
 		FN.PRE.data = FN.PRE.simulate()
 		return true
 	end
-	if FN.PRE.enabled() then G.E_MANAGER:add_event(Event({ trigger = trigger, func = sim_func })) end
+	if FN.PRE.enabled() then
+		G.E_MANAGER:add_event(Event({ trigger = trigger, blockable = false, blocking = false, func = sim_func }))
+	end
 end
 
 -- Update simulation after a consumable (eg. Tarot, Planet) is used:

@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'a96869ba40a54890846acfc72480e655f0fc6b91d1d40ab0e977c84cc61f4445'
+LOVELY_INTEGRITY = 'a22ad324f1cd808b83db7bb7e40d1b8445567eabdda2611aa6ca3deb61784279'
 
 ---@class Controller
 Controller = Object:extend()
@@ -768,7 +768,7 @@ function Controller:button_release_update(button, dt)
 end
 
 function Controller:key_press_update(key, dt)
-    if key == "escape" and G.ACTIVE_MOD_UI then
+    if key == "escape" and (G.ACTIVE_MOD_UI or SMODS.IN_MODS_TAB) then
         G.FUNCS.exit_mods()
     end
     if self.locks.frame then return end

@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = 'b1a769fd40f27e4757f71495b76b79e33f8dfdf48df3f02f29c0310cf7d9d8d2'
+LOVELY_INTEGRITY = 'e00ffeefedfc8f218ca918552f39fab1dc85e08a62cb20cd785c1349688c6a10'
 
 --Class
 Game = Object:extend()
@@ -1161,6 +1161,7 @@ end
 
 function Game:delete_run()
     G.in_delete_run = true
+    booster_obj = nil
     if self.ROOM then
         remove_all(G.STAGE_OBJECTS[G.STAGE])
         self.load_shop_booster = nil
@@ -2034,6 +2035,7 @@ function Game:start_run(args)
     args = args or {}
 
     local saveTable = args.savetext or nil
+    if G.SAVED_GAME then SMODS.save_game = G.SAVED_GAME.GAME.smods_version else SMODS.save_game = nil end
     G.SAVED_GAME = nil
 
     self:prep_stage(G.STAGES.RUN, saveTable and saveTable.STATE or G.STATES.BLIND_SELECT)
@@ -2058,8 +2060,19 @@ function Game:start_run(args)
     self.GAME.stake = args.stake or self.GAME.stake or 1
     self.GAME.STOP_USE = 0
     self.GAME.selected_back = Back(selected_back)
+    if saveTable then
+        self.GAME.selected_back:load(saveTable.BACK)
+    end
     self.GAME.selected_back_key = selected_back
     G._MP_SET_SEED = args.seed
+    
+    if saveTable then
+        self.GAME.current_scoring_calculation = SMODS.Scoring_Calculations[saveTable.SCORING_CALC.key]:load({
+            config = saveTable.SCORING_CALC.config
+        })
+    else
+        self.GAME.current_scoring_calculation = SMODS.Scoring_Calculations['multiply']:new()
+    end
 
     G.C.UI_CHIPS[1], G.C.UI_CHIPS[2], G.C.UI_CHIPS[3], G.C.UI_CHIPS[4] = G.C.BLUE[1], G.C.BLUE[2], G.C.BLUE[3], G.C.BLUE[4]
     G.C.UI_MULT[1], G.C.UI_MULT[2], G.C.UI_MULT[3], G.C.UI_MULT[4] = G.C.RED[1], G.C.RED[2], G.C.RED[3], G.C.RED[4]
@@ -2084,6 +2097,9 @@ function Game:start_run(args)
             self.GAME.challenge = args.challenge.id
             self.GAME.challenge_tab = args.challenge
             local _ch = args.challenge
+            if _ch.apply and type(_ch.apply) == "function" then
+                _ch:apply()
+            end
             if _ch.jokers then
                 for k, v in ipairs(_ch.jokers) do
                     G.E_MANAGER:add_event(Event({
@@ -2149,6 +2165,9 @@ function Game:start_run(args)
             end
             if _ch.restrictions then
                 if _ch.restrictions.banned_cards then
+                   if type(_ch.restrictions.banned_cards) == 'function' then
+                        _ch.restrictions.banned_cards = _ch.restrictions.banned_cards()
+                	end
                     for k, v in ipairs(_ch.restrictions.banned_cards) do
                         G.GAME.banned_keys[v.id] = true
                         if v.ids then
@@ -2159,11 +2178,18 @@ function Game:start_run(args)
                     end
                 end
                 if _ch.restrictions.banned_tags then
+                    if type(_ch.restrictions.banned_tags) == 'function' then
+                        _ch.restrictions.banned_tags = _ch.restrictions.banned_tags()
+                    end
                     for k, v in ipairs(_ch.restrictions.banned_tags) do
                         G.GAME.banned_keys[v.id] = true
                     end
                 end
                 if _ch.restrictions.banned_other then
+                   
+                    if type(_ch.restrictions.banned_other) == 'function' then
+                        _ch.restrictions.banned_other = _ch.restrictions.banned_other()
+                    end
                     for k, v in ipairs(_ch.restrictions.banned_other) do
                         G.GAME.banned_keys[v.id] = true
                     end
@@ -2267,7 +2293,7 @@ function Game:start_run(args)
         0, 0,
         CAI.consumeable_W,
         CAI.consumeable_H, 
-        {card_limit = self.GAME.starting_params.consumable_slots, type = 'joker', highlight_limit = 1})
+        {card_limit = self.GAME.starting_params.consumable_slots, type = 'joker', highlight_limit = 1, negative_info = 'consumable'})
 
     if MP.LOBBY.code then 
 	MP.shared = CardArea(
@@ -2283,7 +2309,7 @@ self.jokers = CardArea(
         0, 0,
         CAI.joker_W,
         CAI.joker_H, 
-        {card_limit = self.GAME.starting_params.joker_slots, type = 'joker', highlight_limit = 1})
+        {card_limit = self.GAME.starting_params.joker_slots, type = 'joker', highlight_limit = 1, negative_info = 'joker'})
 
     self.discard = CardArea(
         0, 0,
@@ -2301,7 +2327,7 @@ self.jokers = CardArea(
     self.hand = CardArea(
         0, 0,
         CAI.hand_W,CAI.hand_H, 
-        {card_limit = self.GAME.starting_params.hand_size, type = 'hand'})
+        {card_limit = self.GAME.starting_params.hand_size, type = 'hand', negative_info = 'playing_card'})
     self.play = CardArea(
         0, 0,
         CAI.play_W,CAI.play_H, 
@@ -2384,8 +2410,8 @@ self.jokers = CardArea(
         if not card_protos then 
             card_protos = {}
             for k, v in pairs(self.P_CARDS) do
-                if type(SMODS.Ranks[v.value].in_pool) == 'function' and not SMODS.Ranks[v.value]:in_pool({initial_deck = true, suit = v.suit})
-                or type(SMODS.Suits[v.suit].in_pool) == 'function' and not SMODS.Suits[v.suit]:in_pool({initial_deck = true, rank = v.value}) then
+                if not SMODS.add_to_pool(SMODS.Ranks[v.value], {initial_deck = true, suit = v.suit})
+                or not SMODS.add_to_pool(SMODS.Suits[v.suit], {initial_deck = true, rank = v.value}) then
                     goto continue
                 end
                 local _ = nil
@@ -2704,7 +2730,7 @@ function Game:update(dt)
                     timer_checkpoint('move', 'update')
         
         for k, v in pairs(self.MOVEABLES) do
-            v:update(dt*self.SPEEDFACTOR)
+            v:update(dt*self.SPEEDFACTOR, self.real_dt)
             v.states.collide.is = false
         end
                     timer_checkpoint('update', 'update')
@@ -3686,13 +3712,16 @@ function Game:update_game_over(dt)
                 blocking = false,
                 func = (function()
                     if G.OVERLAY_MENU and G.OVERLAY_MENU:get_UIE_by_ID('jimbo_spot') then 
-                        Jimbo = Card_Character({x = 0, y = 5})
+                        local quip, extra = SMODS.quip("loss")
+                        extra.x = 0
+                        extra.y = 5
+                        Jimbo = Card_Character(extra)
                         local spot = G.OVERLAY_MENU:get_UIE_by_ID('jimbo_spot')
                         spot.config.object:remove()
                         spot.config.object = Jimbo
                         Jimbo.ui_object_updated = true
-                        Jimbo:add_speech_bubble('lq_'..math.random(1,10), nil, {quip = true})
-                        Jimbo:say_stuff(5)
+                        Jimbo:add_speech_bubble(quip, nil, {quip = true}, extra)
+                        Jimbo:say_stuff((extra and extra.times) or 5, false, quip)
                         end
                     return true
                 end)

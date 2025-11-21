@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '1b08051b341995d6240e41f1872373973d3c32aafdd6697b110c5c3dc91a57af'
+LOVELY_INTEGRITY = '518e4181f875ee020d762e6da27f454068c7897c884aa970bf2ab1551e890f7f'
 
 --Class
 DynaText = Moveable:extend()
@@ -22,6 +22,9 @@ function DynaText:init(config)
     self.colours = config.colours or {G.C.RED}
     self.created_time = G.TIMERS.REAL
     self.silent = (config.silent)
+    self.config.marquee = self.config.marquee and not G.SETTINGS.reduced_motion
+    self.config.hold = self.config.hold or self.config.marquee and 1.5 or nil
+    self.config.scroll_speed = self.config.scroll_speed or self.config.marquee and 0.1 or nil
 
     self.start_pop_in = self.config.pop_in
 
@@ -32,7 +35,7 @@ function DynaText:init(config)
     self.focused_string = 1
 
     self:update_text(true)
-    if self.config.maxw and self.config.W > self.config.maxw then
+    if self.config.maxw and self.config.W > self.config.maxw and not self.config.marquee then
         self.start_pop_in = self.config.pop_in
         self.scale = self.scale*(self.config.maxw/self.config.W)
         self:update_text(true)
@@ -63,7 +66,10 @@ function DynaText:init(config)
     end
 end
 
-function DynaText:update(dt)
+function DynaText:update(dt, real_dt)
+if self.config.marquee then
+    self.dt = (self.dt or 0) + real_dt
+end
     self:update_text()
     self:align_letters()
 end
@@ -134,7 +140,18 @@ function DynaText:update_text(first_pass)
             end
         end
 
-        if self.strings[k].W > self.config.W then self.config.W = self.strings[k].W; self.strings[k].W_offset = 0 end
+        if self.strings[k].W > self.config.W then
+            self.config.W = self.strings[k].W
+            self.strings[k].W_offset = 0
+            if self.config.marquee and self.config.maxw then
+                if self.config.W > self.config.maxw then
+                    self.config.marquee_width = self.config.W/self.config.maxw
+                    self.config.W = self.config.maxw
+                else
+                    self.config.marquee = 'no'
+                end
+            end
+        end
         if self.strings[k].H > self.config.H then self.config.H = self.strings[k].H; self.strings[k].H_offset = 0 end
     end
 
@@ -151,7 +168,7 @@ function DynaText:update_text(first_pass)
     self.start_pop_in = false
 
     for k, v in ipairs(self.strings) do
-        v.W_offset = 0.5*(self.config.W - v.W)
+        v.W_offset = 0.5*(self.config.W - (self.config.marquee and self.config.maxw and self.config.maxw < v.W and self.config.maxw or v.W))
         v.H_offset = 0.5*(self.config.H - v.H + (self.config.offset_y or 0))
     end
 end
@@ -236,6 +253,9 @@ function DynaText:align_letters()
             end
         if self.config.float then letter.offset.y = (G.SETTINGS.reduced_motion and 0 or 1)*math.sqrt(self.scale)*(2+(self.font.FONTSCALE/G.TILESIZE)*2000*math.sin(2.666*G.TIMERS.REAL+200*k)) + 60*(letter.scale-1) end
         if self.config.bump then letter.offset.y = (G.SETTINGS.reduced_motion and 0 or 1)*self.bump_amount*math.sqrt(self.scale)*7*math.max(0, (5+self.bump_rate)*math.sin(self.bump_rate*G.TIMERS.REAL+200*k) - 3 - self.bump_rate) end
+        if self.config.text_effect and SMODS.DynaTextEffects[self.config.text_effect] and type(SMODS.DynaTextEffects[self.config.text_effect].func) == "function" then
+            SMODS.DynaTextEffects[self.config.text_effect].func(self, k, letter) -- k is index
+        end
     end
 end
 
@@ -258,7 +278,21 @@ function DynaText:pulse(amt)
 end
 
 function DynaText:draw()
+    if self.config.text_effect and SMODS.DynaTextEffects[self.config.text_effect] and type(SMODS.DynaTextEffects[self.config.text_effect].draw_override) == "function" then
+        SMODS.DynaTextEffects[self.config.text_effect].draw_override(self)
+        return
+    end
     if self.children.particle_effect then self.children.particle_effect:draw() end
+    local start_index = 1
+    local end_index = #self.strings[self.focused_string].letters
+    if self.config.marquee and self.config.marquee ~= 'no' then
+        local padding = math.floor(#self.strings[self.focused_string].letters / (self.config.marquee_width or 1)) - 1
+        if self.dt and (self.dt - self.config.hold) / self.config.scroll_speed > (#self.strings[self.focused_string].letters + math.ceil(padding/4)) then self.dt = 0 end
+        if self.dt and self.dt > self.config.hold then
+            start_index = 1 + (math.floor((self.dt - self.config.hold) / self.config.scroll_speed) % (#self.strings[self.focused_string].letters + math.ceil(padding/4)))
+        end
+        end_index = math.min(start_index + padding, #self.strings[self.focused_string].letters)
+    end
 
     if self.shadow then 
         prep_draw(self, 1)
@@ -269,8 +303,12 @@ function DynaText:draw()
         else 
             love.graphics.setColor(0, 0, 0, 0.3*self.colours[1][4])
         end
-        for k, letter in ipairs(self.strings[self.focused_string].letters) do
+        for k=start_index, end_index do
+            local letter = self.strings[self.focused_string].letters[k]
             local real_pop_in = self.config.min_cycle_time == 0 and 1 or letter.pop_in
+            if self.config.text_effect and SMODS.DynaTextEffects[self.config.text_effect] and type(SMODS.DynaTextEffects[self.config.text_effect].draw_shadow) == "function" then
+                SMODS.DynaTextEffects[self.config.text_effect].draw_shadow(self, k, letter) -- shadow
+            else
             love.graphics.draw(
                 letter.letter,
                 0.5*(letter.dims.x - letter.offset.x)*self.font.FONTSCALE/G.TILESIZE -self.shadow_parrallax.x*self.scale/(G.TILESIZE),
@@ -282,6 +320,7 @@ function DynaText:draw()
                 0.5*letter.dims.y/self.scale
             )
             love.graphics.translate(letter.dims.x*self.font.FONTSCALE/G.TILESIZE, 0)
+            end
         end
         love.graphics.pop()
     end
@@ -295,10 +334,14 @@ function DynaText:draw()
         self.shadow_parrallax.x/math.sqrt(self.shadow_parrallax.y*self.shadow_parrallax.y + self.shadow_parrallax.x*self.shadow_parrallax.x)*self.font.FONTSCALE/G.TILESIZE,
         self.shadow_parrallax.y/math.sqrt(self.shadow_parrallax.y*self.shadow_parrallax.y + self.shadow_parrallax.x*self.shadow_parrallax.x)*self.font.FONTSCALE/G.TILESIZE
     
-    for k, letter in ipairs(self.strings[self.focused_string].letters) do
+    for k=start_index, end_index do
+        local letter = self.strings[self.focused_string].letters[k]
         local real_pop_in = self.config.min_cycle_time == 0 and 1 or letter.pop_in
         love.graphics.setColor(letter.prefix or letter.suffix or letter.colour or self.colours[k%#self.colours + 1])
 
+        if self.config.text_effect and SMODS.DynaTextEffects[self.config.text_effect] and type(SMODS.DynaTextEffects[self.config.text_effect].draw_letter) == "function" then
+            SMODS.DynaTextEffects[self.config.text_effect].draw_letter(self, k, letter, false) -- actual text
+        else
         love.graphics.draw(
             letter.letter,
             0.5*(letter.dims.x - letter.offset.x)*self.font.FONTSCALE/G.TILESIZE + _shadow_norm.x,
@@ -309,6 +352,7 @@ function DynaText:draw()
             0.5*letter.dims.x/(self.scale),
             0.5*letter.dims.y/(self.scale)
     )
+        end
         love.graphics.translate(letter.dims.x*self.font.FONTSCALE/G.TILESIZE, 0)
     end
     love.graphics.pop()

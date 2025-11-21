@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '77c67eb4736612a7003ad1582d29f2439f47e4a8d048b636628136f674fcd6d3'
+LOVELY_INTEGRITY = 'e4337706347ef58a4837819147d8135e34ebdc4f733b41d8f573029103404269'
 
 --Class
 UIBox = Moveable:extend()
@@ -833,6 +833,14 @@ function UIElement:draw_self()
         self.focus_timer = nil
     end
 
+    if self.config.underline and self.config.underline[4] > 0.01 then 
+        prep_draw(self, 1)
+        love.graphics.scale(1/(G.TILESIZE))
+        love.graphics.setLineWidth(1)
+        love.graphics.setColor(self.config.underline)
+        self:draw_pixellated_under('line', parallax_dist)
+        love.graphics.pop()
+    end
     --Draw the 'chosen triangle'
     if self.config.chosen then 
         prep_draw(self, 0.98)
@@ -1015,6 +1023,10 @@ function UIElement:remove()
         self.config.object = nil
     end
 
+    if self.config and self.config.func then
+        self.config.func = nil
+    end
+    
     if self == G.CONTROLLER.text_input_hook then 
         G.CONTROLLER.text_input_hook = nil 
     end

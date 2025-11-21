@@ -1,4 +1,4 @@
-LOVELY_INTEGRITY = '1597ddc5a9acaafbd6fc72f5738dd0667d836f68edaa7e39174f2043d61bbcaf'
+LOVELY_INTEGRITY = '9cdcf04bbdb7e49466d85b64596f4a29d4de80ecd35d1ba4da0a115b4056995c'
 
 --Create a global UIDEF that contains all UI definition functions\
 --As a rule, these contain functions that return a table T representing the definition for a UIBox
@@ -262,11 +262,12 @@ function G.UIDEF.use_and_sell_buttons(card)
       }},
     }}
   end
-  if card.ability.consumeable and card.area == G.pack_cards and booster_obj and booster_obj.select_card and card:selectable_from_pack(booster_obj) then
+  if card.ability.consumeable and card.area == G.pack_cards and G.pack_cards and booster_obj and SMODS.card_select_area(card, booster_obj) and card:selectable_from_pack(booster_obj) then
       if (card.area == G.pack_cards and G.pack_cards) then
+          local select_button_text = SMODS.get_select_text(card, booster_obj) or localize('b_select')
           return {n=G.UIT.ROOT, config = {padding = 0, colour = G.C.CLEAR}, nodes={
                   {n=G.UIT.R, config={ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5*card.T.w - 0.15, maxw = 0.9*card.T.w - 0.15, minh = 0.3*card.T.h, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'can_select_from_booster'}, nodes={
-                  {n=G.UIT.T, config={text = localize('b_select'),colour = G.C.UI.TEXT_LIGHT, scale = 0.45, shadow = true}}
+                  {n=G.UIT.T, config={text = select_button_text, colour = G.C.UI.TEXT_LIGHT, scale = 0.45, shadow = true}}
                   }},
               }}
       end
@@ -656,7 +657,7 @@ function G.UIDEF.shop()
       G.hand.T.y+G.ROOM.T.y + 9,
       math.min(G.GAME.shop.joker_max*1.02*G.CARD_W,4.08*G.CARD_W),
       1.05*G.CARD_H, 
-      {card_limit = G.GAME.shop.joker_max, type = 'shop', highlight_limit = 1})
+      {card_limit = G.GAME.shop.joker_max, type = 'shop', highlight_limit = 1, negative_info = true})
 
 
     G.shop_vouchers = CardArea(
@@ -1069,12 +1070,18 @@ end
   end
 
   function info_tip_from_rows(desc_nodes, name)
+    local name_nodes
+    if not desc_nodes.name_styled then
+      name_nodes = {{n=G.UIT.T, config={text = name, scale = 0.32, colour = G.C.UI.TEXT_LIGHT}}}
+    else
+      name_nodes = {desc_nodes.name_styled}
+    end
     local t = {}
     for k, v in ipairs(desc_nodes) do
       t[#t+1] = {n=G.UIT.R, config={align = "cm"}, nodes=v}
     end
     return {n=G.UIT.R, config={align = "cm", colour = lighten(G.C.GREY, 0.15), r = 0.1}, nodes={
-      {n=G.UIT.R, config={align = "tm", minh = 0.36, padding = 0.03}, nodes={{n=G.UIT.T, config={text = name, scale = 0.32, colour = G.C.UI.TEXT_LIGHT}}}},
+      {n=G.UIT.R, config={align = "tm", minh = 0.36, padding = 0.03}, nodes=name_nodes},
       {n=G.UIT.R, config={align = "cm", minw = 1.5, minh = 0.4, r = 0.1, padding = 0.05, colour = desc_nodes.background_colour or G.C.WHITE}, nodes={{n=G.UIT.R, config={align = "cm", padding = 0.03}, nodes=t}}}
     }}
   end
@@ -1100,6 +1107,7 @@ end
       local AUT = card.ability_UIBox_table
       local debuffed = card.debuff
       local card_type_colour = get_type_colour(card.config.center or card.config, card)
+      local card_type_text_colour = (AUT.card_type and SMODS.ConsumableTypes[AUT.card_type] and SMODS.ConsumableTypes[AUT.card_type].text_colour) or G.C.UI.TEXT_LIGHT
       local card_type_background = 
           (AUT.card_type == 'Locked' and G.C.BLACK) or 
           ((AUT.card_type == 'Undiscovered') and darken(G.C.JOKER_GREY, 0.3)) or 
@@ -1133,7 +1141,7 @@ end
                   obj:set_card_type_badge(card, badges)
               end
           else
-              badges[#badges + 1] = create_badge(((card.ability.name == 'Pluto' or card.ability.name == 'Ceres' or card.ability.name == 'Eris') and localize('k_dwarf_planet')) or (card.ability.name == 'Planet X' and localize('k_planet_q') or card_type),card_type_colour, nil, 1.2)
+              badges[#badges + 1] = create_badge(((card.ability.name == 'Pluto' or card.ability.name == 'Ceres' or card.ability.name == 'Eris') and localize('k_dwarf_planet')) or (card.ability.name == 'Planet X' and localize('k_planet_q') or card_type), card_type_colour, card_type_text_colour, 1.2)
           end
       end
       if obj and obj.set_badges and type(obj.set_badges) == 'function' then
@@ -1141,10 +1149,14 @@ end
       end
       if AUT.badges then
         for k, v in ipairs(AUT.badges) do
-          if v == 'negative_consumable' or v == 'negative_playing_card' then v = 'negative' end
+          if v:sub(v:len()-14) == '_SMODS_INTERNAL' then
+              if v:sub(1, 9) == 'negative_' then v = 'negative' else v = v:sub(1, v:find('_', v:find('_')+1)-1) end
+          end
           badges[#badges + 1] = create_badge(localize(v, "labels"), get_badge_colour(v))
         end
-      end      if AUT.card_type ~= 'Locked' and AUT.card_type ~= 'Undiscovered' then
+      end
+
+      if AUT.card_type ~= 'Locked' and AUT.card_type ~= 'Undiscovered' then
           SMODS.create_mod_badges(card.config.center, badges)
           if card.base then
               SMODS.create_mod_badges(SMODS.Ranks[card.base.value], badges)
@@ -1155,7 +1167,6 @@ end
           end
           badges.mod_set = nil
       end
-
       AUT.main.background_colour = AUT.main.background_colour or AUT.box_colours and AUT.box_colours[1] or nil
       local multi_boxes = {}
       if AUT.multi_box then
@@ -1370,6 +1381,8 @@ function add_tag(_tag)
   end
   
   G.GAME.tags[#G.GAME.tags+1] = _tag
+  if not _tag.from_load then SMODS.calculate_context({tag_added = _tag}) end
+  _tag.from_load = nil
   _tag.HUD_tag = G.HUD_tags[#G.HUD_tags]
 end
 
@@ -1442,6 +1455,7 @@ function create_UIBox_HUD()
             }},            
     }
 
+--[[
     contents.hand =
         {n=G.UIT.R, config={align = "cm", id = 'hand_text_area', colour = darken(G.C.BLACK, 0.1), r = 0.1, emboss = 0.05, padding = 0.03}, nodes={
             {n=G.UIT.C, config={align = "cm"}, nodes={
@@ -1467,6 +1481,8 @@ function create_UIBox_HUD()
               }}
             }}
           }}
+    --]]
+    contents.hand = SMODS.GUI.hand_score_display_ui(scale)
     contents.dollars_chips = {n=G.UIT.R, config={align = "cm",r=0.1, padding = 0,colour = G.C.DYN_UI.BOSS_MAIN, emboss = 0.05, id = 'row_dollars_chips'}, nodes={
       {n=G.UIT.C, config={align = "cm", padding = 0.1}, nodes={
         {n=G.UIT.C, config={align = "cm", minw = 1.3}, nodes={
@@ -2067,6 +2083,13 @@ function create_toggle(args)
             }}
           }},
         }}
+   if args.hide_label then 
+       local t2 = {}
+       for i = 1, #t.nodes do
+           if i ~= 1 then table.insert(t2, t.nodes[i]) end
+       end
+       t.nodes = t2
+   end
    if args.info then 
      t = {n=args.col and G.UIT.C or G.UIT.R, config={align = "cm"}, nodes={
        t,
@@ -5521,7 +5544,13 @@ function G.UIDEF.challenges(from_game_over)
     end
   end
 
-  local _ch_tab = {comp = _ch_comp, unlocked = G.PROFILES[G.SETTINGS.profile].challenges_unlocked}
+  local unlock_count = 0
+  for k, v in ipairs(G.CHALLENGES) do
+      if SMODS.challenge_is_unlocked(v, k) then
+          unlock_count = unlock_count + 1
+      end
+  end
+  local _ch_tab = {comp = _ch_comp, unlocked = unlock_count}
 
   return {n=G.UIT.ROOT, config={align = "cm", padding = 0.1, colour = G.C.CLEAR, minh = 8, minw = 7}, nodes={
     {n=G.UIT.R, config={align = "cm", padding = 0.1, r = 0.1 ,colour = G.C.BLACK}, nodes={
@@ -5782,10 +5811,12 @@ end
 
 function G.UIDEF.viewed_stake_option()
   G.viewed_stake = G.viewed_stake or 1
+  --[[
   local max_stake = get_deck_win_stake(G.GAME.viewed_back.effect.center.key)
   if G.PROFILES[G.SETTINGS.profile].all_unlocked then max_stake = #G.P_CENTER_POOLS['Stake'] end
-  
+    
   G.viewed_stake = math.min(max_stake+1, G.viewed_stake)
+  ]]--
   if G.viewed_stake > #G.P_CENTER_POOLS.Stake then G.viewed_stake = #G.P_CENTER_POOLS.Stake end
   if _type ~= 'Continue' then G.PROFILES[G.SETTINGS.profile].MEMORY.stake = G.viewed_stake end
   
@@ -5848,14 +5879,7 @@ function G.UIDEF.challenge_list_page(_page)
     if k > G.CHALLENGE_PAGE_SIZE*(_page or 0) and k <= G.CHALLENGE_PAGE_SIZE*((_page or 0) + 1) then
       if G.CONTROLLER.focused.target and G.CONTROLLER.focused.target.config.id == 'challenge_page' then snapped = true end
       local challenge_completed =  G.PROFILES[G.SETTINGS.profile].challenge_progress.completed[v.id or '']
-      local challenge_unlocked = G.PROFILES[G.SETTINGS.profile].challenges_unlocked and (G.PROFILES[G.SETTINGS.profile].challenges_unlocked >= k)
-      if v.unlocked and type(v.unlocked) == 'function' then
-      	challenge_unlocked = v:unlocked()
-      elseif type(v.unlocked) == 'boolean' then
-          challenge_unlocked = v.unlocked
-      end
-      challenge_unlocked = challenge_unlocked or G.PROFILES[G.SETTINGS.profile].all_unlocked
-      
+      local challenge_unlocked = SMODS.challenge_is_unlocked(v, k)
 
       challenge_list[#challenge_list+1] = 
       {n=G.UIT.R, config={align = "cm"}, nodes={
@@ -6226,10 +6250,10 @@ function G.UIDEF.challenge_description_tab(args)
         for k, v in pairs(G.P_CARDS) do
             local _r, _s = SMODS.Ranks[v.value].card_key, SMODS.Suits[v.suit].card_key
             local keep, _e, _d, _g = true, nil, nil, nil
-            if type(SMODS.Ranks[v.value].in_pool) == 'function' and not SMODS.Ranks[v.value]:in_pool({initial_deck = true, suit = v.suit}) then
+            if not SMODS.add_to_pool(SMODS.Ranks[v.value], {initial_deck = true, suit = v.suit}) then
                 keep = false
             end
-            if type(SMODS.Suits[v.suit].in_pool) == 'function' and not SMODS.Suits[v.suit]:in_pool({initial_deck = true, rank = v.value}) then
+            if not SMODS.add_to_pool(SMODS.Suits[v.suit], {initial_deck = true, rank = v.value}) then
                 keep = false
             end
             if _de then
@@ -6732,7 +6756,7 @@ function UIBox_button(args)
   if args.count then 
     table.insert(but_UI_label, 
     {n=G.UIT.R, config={align = "cm", minh = 0.4}, nodes={
-      {n=G.UIT.T, config={scale = 0.35,text = args.count.tally..' / '..args.count.of, colour = {1,1,1,0.9}}}
+      {n=G.UIT.T, config={scale = 0.35,text = args.count.tally..' / '..args.count.of, colour = args.text_colour}}
     }}
     )
   end
@@ -6780,9 +6804,13 @@ function create_UIBox_HUD()
 	local calculate_score_button_wrap =
 		{ n = G.UIT.R, config = { id = "fn_calculate_score_button_wrap", align = "cm", padding = 0.1 }, nodes = {} }
 	table.insert(calculate_score_button_wrap.nodes, FN.PRE.get_calculate_score_button())
+	local score_wrap = {
+		n = G.UIT.R,
+		config = { id = "fn_real_wrap", align = "cm", padding = 0.0 },
+		nodes = { score_node_wrap, calculate_score_button_wrap },
+	}
 
-	table.insert(contents.nodes[1].nodes[1].nodes[4].nodes[1].nodes, score_node_wrap)
-	table.insert(contents.nodes[1].nodes[1].nodes[4].nodes[1].nodes, calculate_score_button_wrap)
+	table.insert(contents.nodes[1].nodes[1].nodes[4].nodes[1].nodes, score_wrap) -- you can only do one so we have to wrap both of them. do not ask. i have no idea why
 
 	return contents
 end
