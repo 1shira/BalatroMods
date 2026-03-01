@@ -1,0 +1,48 @@
+{
+  "buffer_name": "=[SMODS _ \"src/utils.lua\"]",
+  "entries": [
+    {
+      "patch_source": {
+        "file": "BalatroMultiplayer-0.3.0\\lovely\\misc.toml",
+        "pattern": "function SMODS.in_scoring(card, scoring_hand)",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 1925,
+          "end_line": 1925
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "BalatroMultiplayer-0.3.0\\lovely\\misc.toml",
+        "pattern": "for _, area in ipairs(SMODS.get_card_areas('playing_cards')) do",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 1714,
+          "end_line": 1714
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "BalatroMultiplayer-0.3.0\\lovely\\stakes.toml",
+        "pattern": " ",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 7,
+          "end_line": 7
+        }
+      ],
+      "warnings": [
+        "Pattern ' ' on target '=[SMODS _ \"src/utils.lua\"]' for pattern patch from BalatroMultiplayer-0.3.0\\lovely\\stakes.toml resulted in 284 matches, wanted 1",
+        "Ignoring excess matches"
+      ]
+    }
+  ]
+}

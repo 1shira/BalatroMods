@@ -1,0 +1,26 @@
+{
+  "buffer_name": "=[SMODS _ \"src/game_object.lua\"]",
+  "entries": [
+    {
+      "patch_source": {
+        "file": "BalatroMultiplayer-0.3.0\\lovely\\game.toml",
+        "pattern": "for k, v in pairs(G.P_CENTER_POOLS[\"Enhanced\"]) do",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 2342,
+          "end_line": 2343
+        },
+        {
+          "start_line": 2381,
+          "end_line": 2382
+        },
+        {
+          "start_line": 2420,
+          "end_line": 2421
+        }
+      ]
+    }
+  ]
+}
