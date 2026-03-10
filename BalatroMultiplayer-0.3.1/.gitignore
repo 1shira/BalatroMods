@@ -1,0 +1,7 @@
+.vscode
+.luarc.json
+.idea
+.lovelyignore
+.vs
+.DS_Store
+.env
