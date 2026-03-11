@@ -3,25 +3,25 @@
   "entries": [
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\crash_handler.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\crash_handler.toml",
         "patch_type": "copy"
       },
       "regions": [
         {
           "start_line": 1,
-          "end_line": 871
+          "end_line": 886
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\core.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\core.toml",
         "patch_type": "copy"
       },
       "regions": [
         {
-          "start_line": 1269,
-          "end_line": 1349
+          "start_line": 1287,
+          "end_line": 1332
         }
       ]
     },
@@ -32,8 +32,8 @@
       },
       "regions": [
         {
-          "start_line": 1350,
-          "end_line": 4345
+          "start_line": 1333,
+          "end_line": 4328
         }
       ]
     },
@@ -44,115 +44,141 @@
       },
       "regions": [
         {
-          "start_line": 4346,
-          "end_line": 5711
+          "start_line": 4329,
+          "end_line": 5694
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\preview.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\preview.toml",
         "patch_type": "copy"
       },
       "regions": [
         {
-          "start_line": 5712,
-          "end_line": 6021
+          "start_line": 5695,
+          "end_line": 6004
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\crash_handler.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\preflight.toml",
+        "pattern": "if (love.system.getOS() == 'OS X' ) and (jit.arch == 'arm64' or jit.arch == 'arm') then jit.off() end",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 887,
+          "end_line": 887
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\crash_handler.toml",
         "pattern": "function love.errhand(msg)",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1078,
-          "end_line": 1078
+          "start_line": 1094,
+          "end_line": 1094
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "--To control when steam communication happens, make sure to send updates to steam as little as possible",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 964,
-          "end_line": 965
+          "start_line": 980,
+          "end_line": 981
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "--Set up the render window and the stage for the splash screen, then enter the gameloop with :update",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 986,
-          "end_line": 986
+          "start_line": 1002,
+          "end_line": 1002
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "if os == 'OS X' or os == 'Windows' then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 961,
-          "end_line": 961
+          "start_line": 977,
+          "end_line": 977
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "if os == 'OS X' then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 966,
-          "end_line": 966
+          "start_line": 982,
+          "end_line": 982
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "st = require 'luasteam'",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 970,
-          "end_line": 971
+          "start_line": 986,
+          "end_line": 987
         },
         {
-          "start_line": 974,
-          "end_line": 975
+          "start_line": 990,
+          "end_line": 991
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "(?<indent>[\t ]*)if not \\(st.init and st:init\\(\\)\\) then\n[\t ]*(?<quit>love.event.quit\\(\\))",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 984,
-          "end_line": 984
+          "start_line": 1000,
+          "end_line": 1000
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\screenshader_rendering.toml",
+        "pattern": "G.CANVAS = love.graphics.newCanvas(w*G.CANV_SCALE, h*G.CANV_SCALE, {type = '2d', readable = true})\nG.CANVAS:setFilter('linear', 'linear')\n",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 1284,
+          "end_line": 1285
         }
       ]
     },
@@ -164,8 +190,8 @@
       },
       "regions": [
         {
-          "start_line": 1047,
-          "end_line": 1047
+          "start_line": 1063,
+          "end_line": 1063
         }
       ]
     },
@@ -177,8 +203,8 @@
       },
       "regions": [
         {
-          "start_line": 1059,
-          "end_line": 1059
+          "start_line": 1075,
+          "end_line": 1075
         }
       ]
     },
@@ -190,8 +216,8 @@
       },
       "regions": [
         {
-          "start_line": 1015,
-          "end_line": 1015
+          "start_line": 1031,
+          "end_line": 1031
         }
       ]
     },
@@ -203,8 +229,8 @@
       },
       "regions": [
         {
-          "start_line": 1024,
-          "end_line": 1024
+          "start_line": 1040,
+          "end_line": 1040
         }
       ]
     }

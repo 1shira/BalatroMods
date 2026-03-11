@@ -135,6 +135,7 @@ end
 --
 ---@param e {}
 --**e** Is the UIE that called this function
+-- Function overridden by SMODS in src/overrides.lua
 G.FUNCS.HUD_blind_debuff = function(e)
   if G.GAME.blind and G.GAME.blind.loc_debuff_text and G.GAME.blind.loc_debuff_text ~= '' then
     if e.parent.config.minh == 0 or e.config.prev_loc ~= G.GAME.blind.loc_debuff_text then  
@@ -747,10 +748,14 @@ G.FUNCS.change_viewed_back = function(args)
   G.PROFILES[G.SETTINGS.profile].MEMORY.deck = args.to_val
   for key, val in pairs(G.sticker_card.area.cards) do
   	val.children.back = false
+  	local temp_x, temp_y = val.T.x, val.T.y
   	val:set_ability(val.config.center, true)
+  	val.children.back.VT.x, val.children.back.VT.y = temp_x, temp_y
+  	val.children.center.VT.x, val.children.center.VT.y = temp_x, temp_y
   end
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 G.FUNCS.change_stake = function(args)
   G.viewed_stake = args.to_key
   G.PROFILES[G.SETTINGS.profile].MEMORY.stake = args.to_key
@@ -876,6 +881,7 @@ G.FUNCS.change_crt_bloom = function(args)
   G:save_settings()
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 G.FUNCS.change_collab = function(args)
   G.SETTINGS.CUSTOM_DECK.Collabs[args.cycle_config.curr_suit] = G.COLLABS.options[args.cycle_config.curr_suit][args.to_key] or 'default'
   for k, v in pairs(G.I.CARD) do
@@ -2422,8 +2428,8 @@ G.FUNCS.check_for_buy_space = function(card)
   if card.ability.set ~= 'Voucher' and
     card.ability.set ~= 'Enhanced' and
     card.ability.set ~= 'Default' and
-        not (card.ability.set == 'Joker' and #G.jokers.cards < G.jokers.config.card_limit + card.ability.card_limit - card.ability.extra_slots_used) and
-        not (card.ability.consumeable and #G.consumeables.cards < G.consumeables.config.card_limit + card.ability.card_limit - card.ability.extra_slots_used) then
+        not (card.ability.set == 'Joker' and #G.jokers.cards + (1 + card.ability.extra_slots_used) <= G.jokers.config.card_limit + card.ability.card_limit) and
+        not (card.ability.consumeable and #G.consumeables.cards + (1 + card.ability.extra_slots_used) <= G.consumeables.config.card_limit + card.ability.card_limit) then
       alert_no_space(card, card.ability.consumeable and G.consumeables or G.jokers)
     return false
   end

@@ -405,6 +405,7 @@ function get_blind_main_colour(blind) --either in the form of the blind key for 
   blind == 'bl_big' and mix_colours(G.C.ORANGE, G.C.BLACK, 0.6)) or G.C.BLACK
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function evaluate_poker_hand(hand)
 
   local results = {
@@ -601,6 +602,7 @@ function get_flush(hand)
   end
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function get_straight(hand)
   local ret = {}
   local four_fingers = SMODS.four_fingers('flush')
@@ -1184,6 +1186,7 @@ function set_joker_win()
   G:save_settings()
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function get_joker_win_sticker(_center, index)
   if G.PROFILES[G.SETTINGS.profile].joker_usage[_center.key] and
   G.PROFILES[G.SETTINGS.profile].joker_usage[_center.key].wins then 
@@ -1222,6 +1225,7 @@ function set_deck_usage()
   end
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function set_deck_win()
   if G.GAME.selected_back and G.GAME.selected_back.effect and G.GAME.selected_back.effect.center and G.GAME.selected_back.effect.center.key then
     local deck_key = G.GAME.selected_back.effect.center.key
@@ -1264,6 +1268,7 @@ function set_challenge_unlock()
   end
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function get_deck_win_stake(_deck_key)
   if not _deck_key then 
     local _w, _w_low = 0, nil
@@ -1290,6 +1295,7 @@ function get_deck_win_stake(_deck_key)
   return 0
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function get_deck_win_sticker(_center)
   if G.PROFILES[G.SETTINGS.profile].deck_usage[_center.key] and
   G.PROFILES[G.SETTINGS.profile].deck_usage[_center.key].wins then 
@@ -1438,7 +1444,7 @@ function set_discover_tallies()
       backs = {tally = 0, of = 0},
       total = {tally = 0, of = 0},
     }
-  for _, v in ipairs(SMODS.ConsumableType.ctype_buffer) do
+  for _, v in ipairs(SMODS.ConsumableType.obj_buffer) do
       G.DISCOVER_TALLIES[v:lower()..'s'] = {tally = 0, of = 0}
   end  for _, v in pairs(G.DISCOVER_TALLIES) do
       v.tally = 0
@@ -1656,7 +1662,7 @@ function loc_colour(_c, _default)
       for _, v in ipairs(SMODS.Gradient.obj_buffer) do
           G.ARGS.LOC_COLOURS[v:lower()] = SMODS.Gradients[v]
       end
-      for _, v in ipairs(SMODS.ConsumableType.ctype_buffer) do
+      for _, v in ipairs(SMODS.ConsumableType.obj_buffer) do
           G.ARGS.LOC_COLOURS[v:lower()] = G.C.SECONDARY_SET[v]
       end
       for _, v in ipairs(SMODS.Suit.obj_buffer) do
@@ -1731,6 +1737,7 @@ function init_localization()
   end
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function playing_card_joker_effects(cards)
   for i = 1, #G.jokers.cards do
     G.jokers.cards[i]:calculate_joker({playing_card_added = true, cards = cards})
@@ -1964,6 +1971,7 @@ function localize(args, misc_cat)
         if args.type == 'name' then
           final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = part.control.B and args.vars.colours[tonumber(part.control.B)] or part.control.X and loc_colour(part.control.X) or nil, r = 0.05, padding = 0.03, res = 0.15}, nodes={}}
           final_line[#final_line].nodes[1] = {n=G.UIT.O, config={
+          button = part.control.button,
           underline = part.control.u and loc_colour(part.control.u),
             object = DynaText({string = {assembled_string},
               colours = {(part.control.V and args.vars.colours[tonumber(part.control.V)]) or (part.control.C and loc_colour(part.control.C)) or args.text_colour or G.C.UI.TEXT_LIGHT},
@@ -1977,6 +1985,7 @@ function localize(args, misc_cat)
               y_offset = args.y_offset or -0.6,
               spacing = (not args.no_spacing and math.max(0, 0.32*(17 - #(final_name_assembled_string or assembled_string)))) or nil,
               font = SMODS.Fonts[part.control.f] or G.FONTS[tonumber(part.control.f)],
+              button = part.control.button,
               underline = part.control.u and loc_colour(part.control.u),
               scale = (0.55 - 0.004*#(final_name_assembled_string or assembled_string))*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*(args.fixed_scale or 1)
             })
@@ -1993,6 +2002,7 @@ function localize(args, misc_cat)
           end
           final_line[#final_line+1] = {n=G.UIT.C, config={align = "m", colour = part.control.B and args.vars.colours[tonumber(part.control.B)] or part.control.X and loc_colour(part.control.X) or nil, r = 0.05, padding = 0.03, res = 0.15}, nodes={}}
           final_line[#final_line].nodes[1] = {n=G.UIT.O, config={
+          button = part.control.button,
           underline = part.control.u and loc_colour(part.control.u),
             object = DynaText({string = {assembled_string}, colours = {part.control.V and args.vars.colours[tonumber(part.control.V)] or loc_colour(part.control.C or nil)},
             float = _float,
@@ -2001,6 +2011,7 @@ function localize(args, misc_cat)
             bump = _bump,
             spacing = _spacing,
             font = SMODS.Fonts[part.control.f] or G.FONTS[tonumber(part.control.f)],
+            button = part.control.button,
             underline = part.control.u and loc_colour(part.control.u),
             text_effect = text_effects,
             scale = 0.32*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*desc_scale})
@@ -2010,6 +2021,7 @@ function localize(args, misc_cat)
               {n=G.UIT.T, config={
                 text = assembled_string,
                 font = SMODS.Fonts[part.control.f] or G.FONTS[tonumber(part.control.f)],
+                button = part.control.button,
                 underline = part.control.u and loc_colour(part.control.u),
                 colour = part.control.V and args.vars.colours[tonumber(part.control.V)] or loc_colour(part.control.C or nil),
                 scale = 0.32*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*desc_scale}},
@@ -2019,6 +2031,7 @@ function localize(args, misc_cat)
           detailed_tooltip = part.control.T and (G.P_CENTERS[part.control.T] or G.P_TAGS[part.control.T]) or nil,
           text = assembled_string,
           font = SMODS.Fonts[part.control.f] or G.FONTS[tonumber(part.control.f)],
+          button = part.control.button,
           underline = part.control.u and loc_colour(part.control.u),
           shadow = args.shadow,
           colour = part.control.V and args.vars.colours[tonumber(part.control.V)] or not part.control.C and args.text_colour or loc_colour(part.control.C or nil, args.default_col),
@@ -2059,6 +2072,7 @@ function get_stake_sprite(_stake, _scale)
   return stake_sprite
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function get_front_spriteinfo(_front)
   if _front and _front.suit and (_front.value == 'Jack' or _front.value == 'Queen' or _front.value == 'King') then
     if G.SETTINGS.CUSTOM_DECK and G.SETTINGS.CUSTOM_DECK.Collabs[_front.suit] then

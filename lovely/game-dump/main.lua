@@ -492,6 +492,18 @@ end
 -- Note: The below code is not from the original StackTracePlus.lua
 local stackTraceAlreadyInjected = false
 
+local function doRestart()
+    if SMODS and SMODS.restart_game then
+        SMODS.restart_game()
+    else
+        local test, msg = pcall(function()
+            require"lovely".reload_patches()
+        end)
+        if not test then sendErrorMessage("Failed to reload patches... " .. tostring(msg), "StackTrace") end
+        love.event.quit("restart")
+    end
+end
+
 function getDebugInfoForCrash()
     local version = VERSION
     if not version or type(version) ~= "string" then
@@ -660,7 +672,10 @@ function injectStackTrace()
         local err = {}
 
         table.insert(err, "Oops! The game crashed:")
-        if sanitizedmsg:find("Syntax error: game.lua:4: '=' expected near 'Game'") then
+        
+        if smods_dupe then
+            table.insert(err, 'Duplicate installation of Steamodded detected! Please remove the duplicate steamodded/smods folder/zip in your mods folder.')
+        elseif sanitizedmsg:find("Syntax error: game.lua:4: '=' expected near 'Game'") then
             table.insert(err,
                 'Duplicate installation of Steamodded detected! Please clean your installation: Steam Library > Balatro > Properties > Installed Files > Verify integrity of game files.')
         elseif sanitizedmsg:find("Syntax error: game.lua:%d+: duplicate label 'continue'") then
@@ -681,8 +696,8 @@ function injectStackTrace()
             table.insert(err, '\n\nDevelopment version of Steamodded detected! If you are not actively developing a mod, please try using the latest release instead.\n\n')
         end
 
-        if not V then
-            table.insert(err, '\nA mod you have installed has caused a syntax error through patching. Please share this crash with the mod developer.\n')
+        if not V and not smods_dupe then
+            table.insert(err, '\nA mod you have installed has caused a syntax error through patching. Please share this crash with the mod developer.\n')            
         end
 
         local success, msg = pcall(getDebugInfoForCrash)
@@ -803,13 +818,13 @@ function injectStackTrace()
 
             for e, a, b, c in love.event.poll() do
                 if e == "quit" then
-                    return 1
+                    return a or 0
                 elseif e == "keypressed" and a == "escape" then
                     return 1
                 elseif e == "keypressed" and a == "c" and love.keyboard.isDown("lctrl", "rctrl") then
                     copyToClipboard()
                 elseif e == "keypressed" and a == "r" then
-                    SMODS.restart_game()
+                    doRestart()
                 elseif e == "keypressed" and a == "down" then
                     scrollDown()
                 elseif e == "keypressed" and a == "up" then
@@ -829,7 +844,7 @@ function injectStackTrace()
                 elseif e == "gamepadpressed" and b == "dpup" then
                     scrollUp()
                 elseif e == "gamepadpressed" and b == "a" then
-                    return "restart"
+                    doRestart()
                 elseif e == "gamepadpressed" and b == "x" then
                     copyToClipboard()
                 elseif e == "gamepadpressed" and (b == "b" or b == "back" or b == "start") then
@@ -847,7 +862,7 @@ function injectStackTrace()
                     if pressed == 1 then
                         return 1
                     elseif pressed == 3 then
-                        return "restart"
+                        doRestart()
                     elseif pressed == 4 then
                         copyToClipboard()
                     end
@@ -869,6 +884,7 @@ injectStackTrace()
 -- ----------------------------------------------
 -- --------MOD CORE API STACKTRACE END-----------
 
+if SMODS and SMODS.preflight_force_quit then if SMODS.preflight_quit_before then SMODS.preflight_quit_before() end return end
 if (love.system.getOS() == 'OS X' ) and (jit.arch == 'arm64' or jit.arch == 'arm') then jit.off() end
 require "engine/object"
 require "bit"
@@ -961,8 +977,8 @@ function love.load()
 	if os == 'OS X' or os == 'Windows' or os == 'Linux' then
 		local st = nil
 		--To control when steam communication happens, make sure to send updates to steam as little as possible
-		local cwd = NFS.getWorkingDirectory()
-		NFS.setWorkingDirectory(love.filesystem.getSourceBaseDirectory())
+		local cwd = SMODS.NFS.getWorkingDirectory()
+		SMODS.NFS.setWorkingDirectory(love.filesystem.getSourceBaseDirectory())
 		if os == 'OS X' or os == 'Linux' then
 			local dir = love.filesystem.getSourceBaseDirectory()
 			local old_cpath = package.cpath
@@ -983,7 +999,7 @@ function love.load()
 		if not (st.init and st:init()) then
 			st = nil
 		end
-		NFS.setWorkingDirectory(cwd)
+		SMODS.NFS.setWorkingDirectory(cwd)
 		--Set up the render window and the stage for the splash screen, then enter the gameloop with :update
 		G.STEAM = st
 	else
@@ -1265,88 +1281,55 @@ function love.resize(w, h)
 
 	G.CANVAS = love.graphics.newCanvas(w*G.CANV_SCALE, h*G.CANV_SCALE, {type = '2d', readable = true})
 	G.CANVAS:setFilter('linear', 'linear')
+	G.SHADER_CANVAS_A = SMODS.create_canvas()
+	G.SHADER_CANVAS_B = SMODS.create_canvas()
 end 
 
---- STEAMODDED CORE
---- MODULE CORE
-
-SMODS = {}
-MODDED_VERSION = require'SMODS.version'
-RELEASE_VERSION = require'SMODS.release'
-SMODS.id = 'Steamodded'
-SMODS.version = MODDED_VERSION:gsub('%-STEAMODDED', '')
-SMODS.can_load = true
-SMODS.meta_mod = true
-SMODS.config_file = 'config.lua'
-
--- Include lovely and nativefs modules
-local nativefs = require "nativefs"
-local lovely = require "lovely"
-local json = require "json"
-
-local lovely_mod_dir = lovely.mod_dir:gsub("/$", "")
-NFS = nativefs
--- make lovely_mod_dir an absolute path.
--- respects symlink/.. combos
-NFS.setWorkingDirectory(lovely_mod_dir)
-lovely_mod_dir = NFS.getWorkingDirectory()
--- make sure NFS behaves the same as love.filesystem
-NFS.setWorkingDirectory(love.filesystem.getSaveDirectory())
-
-JSON = json
-
-local function set_mods_dir()
-    local love_dirs = {
-        love.filesystem.getSaveDirectory(),
-        love.filesystem.getSourceBaseDirectory()
-    }
-    for _, love_dir in ipairs(love_dirs) do
-        if lovely_mod_dir:sub(1, #love_dir) == love_dir then
-            -- relative path from love_dir
-            SMODS.MODS_DIR = lovely_mod_dir:sub(#love_dir+2)
-            NFS.setWorkingDirectory(love_dir)
-            return
-        end
-    end
-    SMODS.MODS_DIR = lovely_mod_dir
-end
-set_mods_dir()
-
-local function find_self(directory, target_filename, target_line, depth)
-    depth = depth or 1
-    if depth > 3 then return end
-    for _, filename in ipairs(NFS.getDirectoryItems(directory)) do
-        local file_path = directory .. "/" .. filename
-        local file_type = NFS.getInfo(file_path).type
-        if file_type == 'directory' or file_type == 'symlink' then
-            local f = find_self(file_path, target_filename, target_line, depth+1)
-            if f then return f end
-        elseif filename == target_filename then
-            local first_line = NFS.read(file_path):match('^(.-)\n')
-            if first_line == target_line then
-                -- use parent directory
-                return directory:match('^(.+/)')
-            end
-        end
-    end
-end
-
-SMODS.path = find_self(SMODS.MODS_DIR, 'core.lua', '--- STEAMODDED CORE')
-
+assert(SMODS.path, "SMODS was not properly setup.\n\n!!!!!!!!!!!!!!\nPlease make sure your lovely is up to date (Minimum lovely v0.9.0)\n!!!!!!!!!!!!!!")
 for _, path in ipairs {
     "src/ui.lua",
     "src/index.lua",
     "src/utils.lua",
     "src/overrides.lua",
     "src/game_object.lua",
-    "src/logging.lua",
     "src/compat_0_9_8.lua",
-    "src/loader.lua",
 } do
-    assert(load(NFS.read(SMODS.path..path), ('=[SMODS _ "%s"]'):format(path)))()
+    assert(load(SMODS.NFS.read(SMODS.path..path), ('=[SMODS _ "%s"]'):format(path)))()
 end
 
+function boot_print_stage(stage)
+    if not SMODS.booted then
+        boot_timer(nil, "STEAMODDED - " .. stage, 0.95)
+    end
+end
+
+local catimg = NFS.getInfo(SMODS.path.."assets/cat.png") and love.graphics.newImage(love.filesystem.newFileData(NFS.read(SMODS.path.."assets/cat.png")))
+function boot_timer(_label, _next, progress)
+    progress = progress or 0
+    G.LOADING = G.LOADING or {
+        font = love.graphics.setNewFont("resources/fonts/m6x11plus.ttf", 20),
+        love.graphics.dis
+    }
+    local realw, realh = love.window.getMode()
+    love.graphics.setCanvas()
+    love.graphics.push()
+    love.graphics.setShader()
+    love.graphics.clear(0, 0, 0, 1)
+    love.graphics.setColor(0.6, 0.8, 0.9, 1)
+    if progress > 0 then love.graphics.rectangle('fill', realw / 2 - 150, realh / 2 - 15, progress * 300, 30, 5) end
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setLineWidth(3)
+    love.graphics.rectangle('line', realw / 2 - 150, realh / 2 - 15, 300, 30, 5)
+    if catimg then love.graphics.draw(catimg, realw/2 - 264, realh/2 - 27, 0, 1, 1); love.graphics.rectangle('line', realw/2 - 264, realh/2 - 27, 96, 96, 5) end
+    love.graphics.print("LOADING: " .. _next, realw / 2 - 150, realh / 2 + 40)
+    love.graphics.pop()
+    love.graphics.present()
+
+    G.ARGS.bt = G.ARGS.bt or love.timer.getTime()
+    G.ARGS.bt = love.timer.getTime()
+end
 sendInfoMessage("Steamodded v" .. SMODS.version, "SMODS")
+
 
 Handy = setmetatable({
 	version = "1.4.2b",

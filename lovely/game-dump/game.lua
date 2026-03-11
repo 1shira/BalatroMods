@@ -131,10 +131,8 @@ function Game:start_up()
         if extension == '.fs' then
             local shader_name = string.sub(filename, 1, -4)
             local shader = "resources/shaders/"..filename
-            local lovely_success, lovely = pcall(require, "lovely")
-            if lovely_success and lovely.apply_patches then
-                shader = assert(lovely.apply_patches(filename, love.filesystem.read(shader)))
-            end
+            local lovely = require "lovely"
+            shader = assert(lovely.apply_patches(filename, love.filesystem.read(shader)))
             self.SHADERS[shader_name] = love.graphics.newShader(shader)
         end
     end
@@ -211,7 +209,7 @@ function Game:start_up()
     --Create the event manager for the game
     self.E_MANAGER = EventManager()
     self.SPEEDFACTOR = 1
-    initSteamodded()
+    require "SMODS.preflight.loader".initSteamodded()
 
     set_profile_progress()
     boot_timer('prep stage', 'splash prep',1)
@@ -2341,6 +2339,10 @@ self.jokers = CardArea(
     G.playing_cards = {}
 
     set_screen_positions()
+    -- Add align config to existing areas that should use it
+    self.jokers.config.align_buttons = true
+    self.consumeables.config.align_buttons = true
+    
     for _, mod in ipairs(SMODS.mod_list) do
         if mod.can_load and mod.custom_card_areas and type(mod.custom_card_areas) == "function" then
             mod.custom_card_areas(self)
@@ -2405,6 +2407,18 @@ self.jokers = CardArea(
             v:align_cards()
             v:hard_set_cards()
         end
+        if saveTable then
+            if saveTable.SMODS then
+                SMODS.last_hand = {scoring_hand = {}, full_hand = {}, scoring_name = saveTable.SMODS.last_hand.scoring_name}
+                for _, v in ipairs({'scoring_hand','full_hand'}) do
+                    for _, card in ipairs(G.playing_cards) do
+                        if card.ability['SMODS_'..v] then
+                            SMODS.last_hand[v][card.ability['SMODS_'..v]] = card
+                        end
+                    end
+                end
+        	end
+        end
         table.sort(G.playing_cards, function (a, b) return a.playing_card > b.playing_card end )
     else
         local card_protos = nil
@@ -2423,6 +2437,21 @@ self.jokers = CardArea(
                 if not SMODS.add_to_pool(SMODS.Ranks[v.value], {initial_deck = true, suit = v.suit})
                 or not SMODS.add_to_pool(SMODS.Suits[v.suit], {initial_deck = true, rank = v.value}) then
                     goto continue
+                end
+                if self.GAME.selected_back_key.initial_deck then
+                    local _id = self.GAME.selected_back_key.initial_deck
+                    local _exclude = _id.exclude
+                    for i,_tab in ipairs({_id.Ranks or _id.exclude and {} or SMODS.Rank.obj_buffer, _id.Suits}) do
+                        if _tab ~= nil then
+                            local _create = not not _exclude
+                            for _,_v in ipairs(_tab) do
+                                if (i==1 and v.value or v.suit) == _v then _create = not _exclude; break end
+                            end
+                            if not _create then
+                                goto continue
+                            end
+                        end
+                    end
                 end
                 local _ = nil
                 if self.GAME.starting_params.erratic_suits_and_ranks then
@@ -2846,7 +2875,7 @@ function Game:draw()
     reset_drawhash()
     if G.OVERLAY_TUTORIAL and not G.OVERLAY_MENU then G.under_overlay = true end
     timer_checkpoint('start->canvas', 'draw')
-    love.graphics.setCanvas{self.CANVAS}
+    love.graphics.setCanvas{self.CANVAS, stencil = true}
     love.graphics.push()
     love.graphics.scale(G.CANV_SCALE)
     
@@ -3070,6 +3099,42 @@ love.graphics.pop()
     love.graphics.setCanvas()
     love.graphics.setShader()
 
+    local last_canvas = self.CANVAS
+    G.SHADER_CANVAS_A = G.SHADER_CANVAS_A or SMODS.create_canvas()
+    G.SHADER_CANVAS_B = G.SHADER_CANVAS_B or SMODS.create_canvas()
+    for index, key in ipairs(SMODS.ScreenShader.obj_buffer) do
+        local shader = SMODS.ScreenShaders[key]
+    	if (shader.should_apply and shader:should_apply()) or (not shader.should_apply) then
+            --hypothetically less table accesses
+            local shader_object = G.SHADERS[shader.shader]
+    		assert(shader_object, "Shader " .. shader.key .. " not found in G.SHADERS")
+    
+            -- effectively swaps between A and B
+            local current_canvas = (last_canvas == G.SHADER_CANVAS_A) and G.SHADER_CANVAS_B or G.SHADER_CANVAS_A
+    
+            if shader.send_vars then
+                local vars = shader:send_vars()
+                for k,v in pairs(vars) do
+                    shader_object:send(k, unpack( (type(v) == "table" and v.array) and v.array or {v} ))
+                end
+    
+            end
+    		
+    		love.graphics.setCanvas(current_canvas)
+    		love.graphics.setShader(shader_object)
+    		love.graphics.draw(last_canvas, 0, 0)
+    
+            last_canvas = current_canvas
+    	end
+    end
+    -- I don't like having this out here but id rather not run it when i don't have to
+    -- also less setcanvas and setshader means it should run a smidge faster
+    love.graphics.setCanvas()
+    love.graphics.setShader()
+    if last_canvas then
+        love.graphics.draw(last_canvas, 0, 0)
+        -- Draw everything we just did to the main canvas (what the player actually sees)
+    end
     if G.AA_CANVAS then 
         love.graphics.push()
             love.graphics.scale(1/G.CANV_SCALE)

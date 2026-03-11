@@ -437,6 +437,7 @@ end
                 if from then card = from:remove_card(card) end
                 if card then drawn = true end
                 local stay_flipped = G.GAME and G.GAME.blind and G.GAME.blind:stay_flipped(to, card, from)
+                if SMODS.to_area then to = SMODS.to_area; SMODS.to_area = nil end
                 if G.GAME.modifiers.flipped_cards and to == G.hand then
                     if pseudorandom(pseudoseed('flipped_card')) < 1/G.GAME.modifiers.flipped_cards then
                         stay_flipped = true
@@ -501,7 +502,7 @@ function play_area_status_text(text, silent, delay)
     }))
 end
 
-function level_up_hand(card, hand, instant, amount)
+function level_up_hand(card, hand, instant, amount, statustext)
     amount = amount or 1
     SMODS.upgrade_poker_hands({
         hands = hand,
@@ -510,7 +511,8 @@ function level_up_hand(card, hand, instant, amount)
         end,
         level_up = amount,
         from = card,
-        instant = instant
+        instant = instant,
+        StatusText = statustext
     })
     --[[
     G.GAME.hands[hand].level = math.max(0, G.GAME.hands[hand].level + amount)
@@ -536,11 +538,11 @@ function level_up_hand(card, hand, instant, amount)
         update_hand_text({sound = 'button', volume = 0.7, pitch = 0.9, delay = 0}, {level=G.GAME.hands[hand].level})
         delay(1.3)
     end
+    ]]
     G.E_MANAGER:add_event(Event({
         trigger = 'immediate',
         func = (function() check_for_unlock{type = 'upgrade_hand', hand = hand, level = G.GAME.hands[hand].level} return true end)
     }))
-    ]]
 end
 
 function update_hand_text(config, vals)
@@ -562,9 +564,9 @@ function update_hand_text(config, vals)
                 G.hand_text_area[name] = G.hand_text_area[name] or G.HUD:get_UIE_by_ID('hand_'..name) or nil
                 if G.hand_text_area[name] then
                     G.hand_text_area[name]:update(0)
-                    if vals.StatusText then 
-                        attention_text({
-                            text =delta,
+                    if vals.StatusText then
+                        local StatusText = {
+                            text = delta,
                             scale = 0.8, 
                             hold = 1,
                             cover = G.hand_text_area[name].parent,
@@ -572,8 +574,16 @@ function update_hand_text(config, vals)
                             emboss = 0.05,
                             align = 'cm',
                             cover_align = G.hand_text_area[name].parent.config.align
-                        })
+                        }
+                        if type(vals.StatusText) == 'string' then StatusText.text = vals.StatusText
+                        elseif type(vals.StatusText) == 'table' then
+                            for k,v in pairs(vals.StatusText) do
+                                if v ~= nil then StatusText[k] = v end
+                            end
+                        end
+                        attention_text(StatusText)
                     end
+
                     if (vals[name.."_juice"] or parameter.juice_on_update) and not G.TAROT_INTERRUPT then G.hand_text_area[name]:juice_up() end
                 end
             end
@@ -620,7 +630,9 @@ function eval_card(card, context)
         end
         return {}, {}
     end
-    if context.other_card and context.other_card.can_calculate and not context.other_card:can_calculate(context.ignore_other_debuff or context.ignore_debuff) then return {}, {} end
+	local vanilla_debuff_handling
+    for _, key in ipairs(SMODS.custom_debuff_handling) do if card.config.center_key == key then vanilla_debuff_handling = true; break end end
+    if context.other_card and context.other_card.can_calculate and not context.other_card:can_calculate(context.ignore_other_debuff or context.ignore_debuff) and not vanilla_debuff_handling then return {}, {} end
     local ret = {}
 
     if context.repetition_only then
@@ -1031,6 +1043,7 @@ function card_eval_status_text(card, eval_type, amt, percent, dir, extra)
                 text = text,
                 scale = config.scale or 1, 
                 hold = delay - 0.2,
+                colour = extra and extra.text_colour,
                 backdrop_colour = colour,
                 align = card_aligned,
                 major = card,
@@ -1053,6 +1066,7 @@ function card_eval_status_text(card, eval_type, amt, percent, dir, extra)
                         text = text,
                         scale = config.scale or 1, 
                         hold = delay - 0.2,
+                        colour = extra and extra.text_colour,
                         backdrop_colour = colour,
                         align = card_aligned,
                         major = card,
@@ -2198,6 +2212,7 @@ function create_playing_card(card_init, area, skip_materialize, silent, colours,
     return card
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function get_pack(_key, _type)
     if not G.GAME.first_shop_buffoon and not G.GAME.banned_keys['p_buffoon_normal_1'] then
         G.GAME.first_shop_buffoon = true
@@ -2337,6 +2352,7 @@ local rarity = _rarity or SMODS.poll_rarity("Joker", 'rarity'..G.GAME.round_rese
         return _pool, _pool_key..(not _legendary and G.GAME.round_resets.ante or '')
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function poll_edition(_key, _mod, _no_neg, _guaranteed)
     _mod = _mod or 1
     local edition_poll = pseudorandom(pseudoseed(_key or 'edition_generic'))
@@ -2477,22 +2493,8 @@ function copy_card(other, new_card, card_scale, playing_card, strip_edition)
     new_card:set_ability(other.config.center)
     new_card.ability.type = other.ability.type
     new_card:set_base(other.config.card)
-    for k, v in pairs(other.ability) do
-        if type(v) == 'table' then 
-            new_card.ability[k] = copy_table(v)
-        else
-            new_card.ability[k] = v
-        end
-    end
 
-    if other.edition then
-        new_card.ability.card_limit = new_card.ability.card_limit - (other.edition.card_limit or 0)
-        new_card.ability.extra_slots_used = new_card.ability.extra_slots_used - (other.edition.extra_slots_used or 0)
-    end
-    if other.seal then
-        new_card.ability.card_limit = new_card.ability.card_limit - (other.ability.seal.card_limit or 0)
-        new_card.ability.extra_slots_used = new_card.ability.extra_slots_used - (other.ability.seal.extra_slots_used or 0)
-    end
+
     if not strip_edition then 
         new_card:set_edition(other.edition or {}, nil, true)
         for k,v in pairs(other.edition or {}) do
@@ -2520,6 +2522,21 @@ function copy_card(other, new_card, card_scale, playing_card, strip_edition)
     end
     new_card.debuff = other.debuff
     new_card.pinned = other.pinned
+    if other.edition then
+        new_card.ability.card_limit = new_card.ability.card_limit - (other.edition.card_limit or 0)
+        new_card.ability.extra_slots_used = new_card.ability.extra_slots_used - (other.edition.extra_slots_used or 0)
+    end
+    if other.seal then
+        new_card.ability.card_limit = new_card.ability.card_limit - (other.ability.seal.card_limit or 0)
+        new_card.ability.extra_slots_used = new_card.ability.extra_slots_used - (other.ability.seal.extra_slots_used or 0)
+    end
+    for k, v in pairs(other.ability) do
+        if type(v) == 'table' then 
+            new_card.ability[k] = copy_table(v)
+        else
+            new_card.ability[k] = v
+        end
+    end
     return new_card
 end
 
@@ -2754,6 +2771,7 @@ function get_type_colour(_c, card)
     ((_c.unlocked == false and not (card and card.bypass_lock)) and G.C.BLACK) or 
     ((_c.unlocked ~= false and (_c.set == 'Joker' or _c.consumeable or _c.set == 'Voucher') and not _c.discoveredand and not ((_c.area ~= G.jokers and _c.area ~= G.consumeables and _c.area) or not _c.area)) and G.C.JOKER_GREY) or
     (card and card.debuff and mix_colours(G.C.RED, G.C.GREY, 0.7)) or 
+    _c.badge_colour or
     (_c.set == 'Joker' and G.C.RARITY[_c.rarity]) or 
     (_c.set == 'Edition' and G.C.DARK_EDITION) or 
     (_c.set == 'Booster' and G.C.BOOSTER) or 
@@ -3003,7 +3021,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
             card.generate_ds_card_ui(card, card.deckskin, card.palette, info_queue, desc_nodes, specific_vars, full_UI_table)
         else
             if specific_vars.nominal_chips then
-                localize{type = 'other', key = 'card_chips', nodes = desc_nodes, vars = {specific_vars.nominal_chips}}
+                localize{type = 'other', key = 'card_chips'..(specific_vars.nominal_chips < 0 and '_minus' or ''), nodes = desc_nodes, vars = {specific_vars.nominal_chips}}
             end
             if specific_vars.bonus_chips then
                 localize{type = 'other', key = 'card_extra_chips', nodes = desc_nodes, vars = {SMODS.signed(specific_vars.bonus_chips)}}
@@ -3012,7 +3030,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
     SMODS.localize_perma_bonuses(specific_vars, desc_nodes)
     elseif _c.set == 'Enhanced' then 
         if specific_vars and _c.name ~= 'Stone Card' and specific_vars.nominal_chips then
-            localize{type = 'other', key = 'card_chips', nodes = desc_nodes, vars = {specific_vars.nominal_chips}}
+            localize{type = 'other', key = 'card_chips'..(specific_vars.nominal_chips < 0 and '_minus' or ''), nodes = desc_nodes, vars = {specific_vars.nominal_chips}}
         end
         if _c.effect == 'Mult Card' then loc_vars = {SMODS.signed(cfg.mult)}
         elseif _c.effect == 'Wild Card' then
@@ -3186,19 +3204,6 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         end
     end
 
-    if card and card.ability and (card.ability.extra_slots_used or 0) ~= 0 then
-        local str = 'generic_extra_slots'
-        if card.ability.set == 'Default' or card.ability.set == 'Enhanced' then str = str .. '_pc' end
-        info_queue[#info_queue + 1] = {set = 'Other', key = str, vars = {card.ability.extra_slots_used + 1}}
-    end
-    if card and card.ability and (card.ability.card_limit or 0) ~= 0 then
-        if not (card.edition and card.edition.card_limit == card.ability.card_limit) then
-            local amount = card.ability.card_limit - (card.edition and card.edition.card_limit or 0)
-            local str = 'generic_card_limit'
-            if card.ability.set == 'Default' or card.ability.set == 'Enhanced' then str = str .. '_pc' end
-            info_queue[#info_queue + 1] = {set = 'Other', key = amount == 1 and str or str..'_plural', vars = {localize({type='variable', key= amount > 0 and 'a_chips' or 'a_chips_minus', vars ={math.abs(amount)}})}}
-        end
-    end
     if first_pass and not (_c.set == 'Edition') and badges then
         for k, v in ipairs(badges) do
             v = (v == 'holographic' and 'holo' or v)
@@ -3258,6 +3263,19 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
         end
     end
 
+    if card and card.ability and (card.ability.extra_slots_used or 0) ~= 0 then
+        local str = 'generic_extra_slots'
+        if card.ability.set == 'Default' or card.ability.set == 'Enhanced' then str = str .. '_pc' end
+        info_queue[#info_queue + 1] = {set = 'Other', key = str, vars = {card.ability.extra_slots_used + 1}}
+    end
+    if card and card.ability and (card.ability.card_limit or 0) ~= 0 then
+        if not (card.edition and card.edition.card_limit == card.ability.card_limit) then
+            local amount = card.ability.card_limit - (card.edition and card.edition.card_limit or 0)
+            local str = 'generic_card_limit'
+            if card.ability.set == 'Default' or card.ability.set == 'Enhanced' then str = str .. '_pc' end
+            info_queue[#info_queue + 1] = {set = 'Other', key = amount == 1 and str or str..'_plural', vars = {localize({type='variable', key= amount > 0 and 'a_chips' or 'a_chips_minus', vars ={math.abs(amount)}})}}
+        end
+    end
     SMODS.compat_0_9_8.generate_UIBox_ability_table_card = nil
     for _, v in ipairs(info_queue) do
         generate_card_ui(v, full_UI_table)
@@ -3552,6 +3570,8 @@ if not FN.SIM.run then
 			unplasma(FN.SIM.running.min)
 			unplasma(FN.SIM.running.exact)
 			unplasma(FN.SIM.running.max)
+		elseif FN.SIM.is_deck("b_mp_echodeck") then
+			-- Do something?
 		else
 			-- Other decks do not impact scoring; refer to Back:trigger_effect(..)
 		end
@@ -3694,6 +3714,7 @@ if not FN.SIM.run then
 		-- Reset and collect repetitions:
 		FN.SIM.running.reps = 1
 		if card.seal == "Red" then FN.SIM.add_reps(1) end
+		if FN.SIM.is_deck("b_mp_echodeck") then FN.SIM.add_reps(1) end -- I guess this works?
 		FN.SIM.simulate_all_jokers(cardarea, { other_card = card, repetition = true })
 
 		-- Apply effects:

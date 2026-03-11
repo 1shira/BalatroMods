@@ -62,15 +62,29 @@ function Blind:set_text()
                 local res = obj:loc_vars() or {}
                 target.vars = res.vars or target.vars
                 target.key = res.key or target.key
+                target.set = res.set or target.set
+                target.scale = res.scale
+                target.text_colour = res.text_colour
             end
             local loc_target = localize(target)
             if loc_target then 
                 self.loc_name = self.name == '' and self.name or localize{type ='name_text', key = self.config.blind.key, set = 'Blind'}
                 self.loc_debuff_text = ''
                 EMPTY(self.loc_debuff_lines)
+                if G.localization.descriptions[target.set][target.key] then
+                    for k, v in ipairs(G.localization.descriptions[target.set][target.key].text_parsed) do
+                        self.loc_debuff_lines[k] = v
+                    end
+                    self.loc_debuff_lines.vars = target.vars
+                    self.loc_debuff_lines.scale = target.scale
+                    self.loc_debuff_lines.text_colour = target.text_colour
+                else
+                    for k, v in ipairs(loc_target) do
+                        self.loc_debuff_lines[k] = v
+                    end
+                end
                 for k, v in ipairs(loc_target) do
                     self.loc_debuff_text = self.loc_debuff_text..v..(k <= #loc_target and ' ' or '')
-                    self.loc_debuff_lines[k] = v
                 end
             else
                 self.loc_name = ''; self.loc_debuff_text = ''

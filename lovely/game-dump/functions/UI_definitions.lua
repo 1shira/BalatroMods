@@ -142,6 +142,7 @@ function create_UIBox_debug_tools()
   return t
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function create_UIBox_notify_alert(_achievement, _type)
   local _c, _atlas = G.P_CENTERS[_achievement],
     _type == 'Joker' and G.ASSET_ATLAS["Joker"] or
@@ -476,6 +477,7 @@ function create_UIBox_highlight(rect)
 return t
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function G.UIDEF.deck_preview(args) 
 
   local _minh, _minw = 0.35, 0.5
@@ -773,7 +775,7 @@ end
         end
           G.GAME.spectral_rate = G.GAME.spectral_rate or 0
           local total_rate = G.GAME.joker_rate + G.GAME.playing_card_rate
-          for _,v in ipairs(SMODS.ConsumableType.ctype_buffer) do
+          for _,v in ipairs(SMODS.ConsumableType.obj_buffer) do
               total_rate = total_rate + G.GAME[v:lower()..'_rate']
           end
           local polled_rate = pseudorandom(pseudoseed('cdt'..MP.ante_based()))*total_rate
@@ -786,7 +788,7 @@ end
             {type = (G.GAME.used_vouchers["v_illusion"] and pseudorandom(pseudoseed('illusion')) > 0.6) and 'Enhanced' or 'Base', val = G.GAME.playing_card_rate},
             {type = 'Spectral', val = G.GAME.spectral_rate},
           }
-          for _, v in ipairs(SMODS.ConsumableType.ctype_buffer) do
+          for _, v in ipairs(SMODS.ConsumableType.obj_buffer) do
               if not (v == 'Tarot' or v == 'Planet' or v == 'Spectral') then
                   table.insert(rates, { type = v, val = G.GAME[v:lower()..'_rate'] })
               end
@@ -934,8 +936,8 @@ end
             T = {args.pos.x,args.pos.y,0,0},
             definition = 
               {n=G.UIT.ROOT, config = {align = args.cover_align or 'cm', minw = (args.cover and args.cover.T.w or 0.001) + (args.cover_padding or 0), minh = (args.cover and args.cover.T.h or 0.001) + (args.cover_padding or 0), padding = 0.03, r = 0.1, emboss = args.emboss, colour = args.cover_colour}, nodes={
-                type(args.text) == 'string' and {n=G.UIT.O, config={draw_layer = 1, object = DynaText({scale = args.scale, string = args.text, maxw = args.maxw, colours = {args.colour},float = true, shadow = true, silent = not args.noisy, args.scale, pop_in = 0, pop_in_rate = 6, rotate = args.rotate or nil})}} or
-                args.text,
+                type(args.text) == "table" and args.text.n and args.text or
+                {n=G.UIT.O, config={draw_layer = 1, object = DynaText({scale = args.scale, string = args.text, maxw = args.maxw, colours = {args.colour},float = true, shadow = true, silent = not args.noisy, args.scale, pop_in = 0, pop_in_rate = 6, rotate = args.rotate or nil})}},
               }}, 
             config = args.uibox_config
           }
@@ -1109,7 +1111,7 @@ end
       local AUT = card.ability_UIBox_table
       local debuffed = card.debuff
       local card_type_colour = get_type_colour(card.config.center or card.config, card)
-      local card_type_text_colour = (AUT.card_type and SMODS.ConsumableTypes[AUT.card_type] and SMODS.ConsumableTypes[AUT.card_type].text_colour) or G.C.UI.TEXT_LIGHT
+      local card_type_text_colour = SMODS.get_card_type_text_colour(AUT.card_type, card.config.center or card.config, card)
       local card_type_background = 
           (AUT.card_type == 'Locked' and G.C.BLACK) or 
           ((AUT.card_type == 'Undiscovered') and darken(G.C.JOKER_GREY, 0.3)) or 
@@ -1154,7 +1156,7 @@ end
           if v:sub(v:len()-14) == '_SMODS_INTERNAL' then
               if v:sub(1, 9) == 'negative_' then v = 'negative' else v = v:sub(1, v:find('_', v:find('_')+1)-1) end
           end
-          badges[#badges + 1] = create_badge(localize(v, "labels"), get_badge_colour(v))
+          badges[#badges + 1] = create_badge(localize(v, "labels"), get_badge_colour(v), SMODS.get_badge_text_colour(v))
         end
       end
 
@@ -1253,6 +1255,7 @@ end
       purple_seal = G.C.PURPLE,
       pinned_left = G.C.ORANGE,
     }
+    if G.BADGE_COL[key] then return G.BADGE_COL[key] end
     for _, v in ipairs(G.P_CENTER_POOLS.Edition) do
     	G.BADGE_COL[v.key:sub(3)] = v.badge_colour
     end
@@ -1685,10 +1688,12 @@ function create_UIBox_blind_choice(type, run_info)
       local res = obj:loc_vars() or {}
       target.vars = res.vars or target.vars
       target.key = res.key or target.key
+      target.set = res.set or target.set
+      target.scale = res.scale
+      target.text_colour = res.text_colour
   end
-  local loc_target = localize(target)
   local loc_name = localize{type = 'name_text', key = blind_choice.config.key, set = 'Blind'}
-  local text_table = loc_target
+  local text_table = G.localization.descriptions[target.set][target.key].text_parsed
   local blind_col = get_blind_main_colour(type)
   local blind_amt = get_blind_amount(G.GAME.round_resets.blind_ante)*blind_choice.config.mult*G.GAME.starting_params.ante_scaling
 
@@ -1698,9 +1703,7 @@ function create_UIBox_blind_choice(type, run_info)
   if blind_state == 'Select' then blind_state = 'Current' end
   local blind_desc_nodes = {}
   for k, v in ipairs(text_table) do
-    blind_desc_nodes[#blind_desc_nodes+1] = {n=G.UIT.R, config={align = "cm", maxw = 2.8}, nodes={
-      {n=G.UIT.T, config={text = v or '-', scale = 0.32, colour = disabled and G.C.UI.TEXT_INACTIVE or G.C.WHITE, shadow = not disabled}}
-    }}
+    blind_desc_nodes[#blind_desc_nodes+1] = {n=G.UIT.R, config={align = "cm", maxw = 2.8}, nodes=SMODS.localize_box(v, {default_col = disabled and G.C.UI.TEXT_INACTIVE or target.text_colour or G.C.WHITE, shadow = not disabled, vars = target.vars, scale = target.scale})}
   end
   local run_info_colour = run_info and (blind_state == 'Defeated' and G.C.GREY or blind_state == 'Skipped' and G.C.BLUE or blind_state == 'Upcoming' and G.C.ORANGE or blind_state == 'Current' and G.C.RED or G.C.GOLD)
   local t = 
@@ -2703,51 +2706,19 @@ function create_UIBox_customize_deck()
 end
 
 
+-- Function overridden by SMODS in src/ui.lua
 function G.UIDEF.custom_deck_tab(_suit)
   local t = {}
 
-  local rankCount = 0
-local lookup = {}
-for i, s in ipairs(SMODS.Suit:obj_list(true)) do
-    local options = G.COLLABS.options[s.key]
-    for i = 1, #options do
-        local skin = SMODS.DeckSkins[options[i]]
-        if skin.palettes and not (skin.display_ranks or skin.ranks) then
-            for _, p in ipairs(skin.palettes) do
-                local p_ranks = p.display_ranks or p.ranks
-                for j = 1, #p_ranks do
-                    if not lookup[p_ranks[j]] then
-                        lookup[p_ranks[j]] = true
-                        rankCount = rankCount + 1
-                    end
-                end
-            end
-        elseif not skin.palettes and (skin.display_ranks or skin.ranks) then
-            local ranks = skin.display_ranks or skin.ranks
-            for j = 1, #ranks do
-                if not lookup[skin.ranks[j]] then
-                    lookup[skin.ranks[j]] = true
-                    rankCount = rankCount + 1
-                end
-            end
-        end
-
-    end
-end
-
-G.cdds_cards = CardArea(
+  local face_cards = CardArea(
     0,0,
-    math.min(math.max(rankCount*G.CARD_W*0.6, 4*G.CARD_W), 10*G.CARD_W),
-    1.4*G.CARD_H,
-    {card_limit = rankCount, type = 'title', highlight_limit = 0})
-
-G.cdds_cards.rankCount = rankCount
-
-
+    4*G.CARD_W,
+    1.4*G.CARD_H, 
+    {card_limit = 3, type = 'title', highlight_limit = 0})
 
   table.insert(t, 
     {n=G.UIT.R, config={align = "cm", colour = G.C.BLACK, r = 0.1, padding = 0.07, no_fill = true}, nodes={
-      {n=G.UIT.O, config={object = G.cdds_cards}}
+      {n=G.UIT.O, config={object = face_cards}}
     }}
   )
 
@@ -2769,26 +2740,15 @@ G.cdds_cards.rankCount = rankCount
       create_option_cycle({options = loc_options, w = 5.5, cycle_shoulders = true, curr_suit = _suit, opt_callback = 'change_collab', current_option = current_option, colour = G.C.RED, focus_args = {snap_to = true, nav = 'wide'}}),
     }}
   )
-  local deckskin_key = G.COLLABS.options[_suit][current_option]
-  
-  local palette_loc_options = SMODS.DeckSkin.get_palette_loc_options(deckskin_key, _suit)
-  
-  local selected_palette = 1
-  for i, v in ipairs(G.COLLABS.colour_palettes[deckskin_key]) do
-      if G.SETTINGS.colour_palettes[_suit] == v then
-          selected_palette = i
-      end
-  end
-  
-  table.insert(t,
-      {n=G.UIT.R, config={align = "cm", id = 'palette_selector'}, nodes={
-        create_option_cycle({options = palette_loc_options, w = 5.5, cycle_shoulders = false, curr_suit = _suit, curr_skin = deckskin_key, opt_callback = 'change_colour_palette', current_option = selected_palette, colour = G.C.ORANGE, focus_args = {snap_to = true, nav = 'wide'}}),
-      }}
-    )
+  table.insert(t, create_toggle({label = localize('b_high_contrast_cards'), ref_table = G.SETTINGS, ref_value = 'colourblind_option', callback = G.FUNCS.refresh_contrast_mode}))
 
   local faces = {'K','Q','J'}
-  G.FUNCS.update_collab_cards(current_option, _suit, true)
-
+  for i = 1, 3 do
+    local card_code = (string.sub(_suit, 1, 1))..'_'..faces[i]
+    local card = Card(0,0, G.CARD_W*1.2, G.CARD_H*1.2, G.P_CARDS[card_code], G.P_CENTERS.c_base)
+    card.no_ui = true
+    face_cards:emplace(card)
+  end
 
   return {n=G.UIT.ROOT, config={align = "cm", padding = 0, colour = G.C.CLEAR, r = 0.1, minw = 7, minh = 4.2}, nodes=t}
 end
@@ -3285,6 +3245,7 @@ function create_UIBox_current_hand_row(handname, simple, in_collection)
   or nil
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function create_UIBox_current_hands(simple)
   local hands = {
     create_UIBox_current_hand_row("Flush Five", simple),
@@ -3377,6 +3338,7 @@ function G.UIDEF.current_blinds()
   }}
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function G.UIDEF.deck_stake_column(_deck_key)
   local deck_usage = G.PROFILES[G.SETTINGS.profile].deck_usage[_deck_key]
   local stake_col = {}
@@ -3458,6 +3420,7 @@ function G.UIDEF.current_stake()
   }}
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function G.UIDEF.view_deck(unplayed_only)
   local deck_tables = {}
   remove_nils(G.playing_cards)
@@ -3629,6 +3592,7 @@ function G.UIDEF.view_deck(unplayed_only)
   return t
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function tally_sprite(pos, value, tooltip, suit)
   local text_colour = G.C.BLACK
   if type(value) == "table" and value[1].string==value[2].string then 
@@ -3765,6 +3729,7 @@ function create_UIBox_your_collection()
   return t
 end
 
+-- Function overridden by SMODS in src/ui.lua
 function create_UIBox_your_collection_jokers()
   local deck_tables = {}
 
@@ -3858,6 +3823,7 @@ function create_UIBox_your_collection_tarots()
   return t
 end
 
+-- Function overridden by SMODS in src/ui.lua
 function create_UIBox_your_collection_boosters()
   local deck_tables = {}
 
@@ -4005,6 +3971,7 @@ function create_UIBox_your_collection_spectrals()
   return t
 end
 
+-- Function overridden by SMODS in src/ui.lua
 function create_UIBox_your_collection_vouchers(exit)
   local deck_tables = {}
 
@@ -4048,6 +4015,7 @@ function create_UIBox_your_collection_vouchers(exit)
   return t
 end
 
+-- Function overridden by SMODS in src/ui.lua
 function create_UIBox_your_collection_seals(exit)
   local deck_tables = {}
 
@@ -4075,6 +4043,7 @@ function create_UIBox_your_collection_seals(exit)
   return t
 end
 
+-- Function overridden by SMODS in src/ui.lua
 function create_UIBox_your_collection_enhancements(exit)
   local deck_tables = {}
 
@@ -4106,6 +4075,7 @@ function create_UIBox_your_collection_enhancements(exit)
   return t
 end
 
+-- Function overridden by SMODS in src/ui.lua
 function create_UIBox_your_collection_editions()
   G.your_collection = {}
   G.your_collection[1] = CardArea(
@@ -4188,6 +4158,7 @@ function create_UIBox_your_collection_decks()
   return t
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function create_UIBox_your_collection_tags()
   local tag_matrix = {}
   local counter = 0
@@ -4261,6 +4232,7 @@ function create_UIBox_your_collection_tags()
   return t
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function create_UIBox_your_collection_blinds(exit)
   local blind_matrix = {
     {},{},{}, {}, {}, {}
@@ -4409,15 +4381,18 @@ function create_UIBox_blind_popup(blind, discovered, vars)
       local res = blind:collection_loc_vars() or {}
       target.vars = res.vars or target.vars
       target.key = res.key or target.key
+      target.set = res.set or target.set
+      target.scale = res.scale
+      target.text_colour = res.text_colour
   end
-  local loc_target = localize(target)
+  local loc_target = G.localization.descriptions[target.set][target.key].text_parsed
   local loc_name = localize{type = 'name_text', key = blind.key, set = 'Blind'}
 
   if discovered then 
     local ability_text = {}
     if loc_target then 
       for k, v in ipairs(loc_target) do
-        ability_text[#ability_text + 1] = {n=G.UIT.R, config={align = "cm"}, nodes={{n=G.UIT.T, config={text = v, scale = 0.35, shadow = true, colour = G.C.WHITE}}}}
+        ability_text[#ability_text + 1] = {n=G.UIT.R, config={align = "cm"}, nodes=SMODS.localize_box(v, {default_col = target.text_colour or G.C.WHITE, shadow = true, vars = target.vars, scale = target.scale})}
       end
     end
     local stake_sprite = get_stake_sprite(G.GAME.stake or 1, 0.4)
@@ -5818,6 +5793,7 @@ function G.UIDEF.stake_description(_stake)
   }}
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function G.UIDEF.stake_option(_type)
   local middle = {n=G.UIT.R, config={align = "cm", minh = 1.7, minw = 7.3}, nodes={
     {n=G.UIT.O, config={id = nil, func = 'RUN_SETUP_check_stake2', object = Moveable()}},
@@ -5914,7 +5890,7 @@ function G.UIDEF.challenge_list_page(_page)
         {n=G.UIT.C, config={align = 'cl', minw = 0.8}, nodes = {
           {n=G.UIT.T, config={text = k..'', scale = 0.4, colour = G.C.WHITE}},
         }},
-        UIBox_button({id = k, col = true, label = {challenge_unlocked and localize(v.id, 'challenge_names') or localize('k_locked'),}, button = challenge_unlocked and 'change_challenge_description' or 'nil', colour = challenge_unlocked and (v.button_colour or G.C.RED) or G.C.GREY, minw = 4, scale = 0.4, minh = 0.6, focus_args = {snap_to = not snapped}}),
+        UIBox_button({id = k, col = true, label = {challenge_unlocked and localize(v.id, 'challenge_names') or localize('k_locked'),}, button = challenge_unlocked and 'change_challenge_description' or 'nil', text_colour = v.text_colour, colour = challenge_unlocked and (v.button_colour or G.C.RED) or G.C.GREY, minw = 4, scale = 0.4, minh = 0.6, focus_args = {snap_to = not snapped}}),
         {n=G.UIT.C, config={align = 'cm', padding = 0.05, minw = 0.6}, nodes = {
           {n=G.UIT.C, config={minh = 0.4, minw = 0.4, emboss = 0.05, r = 0.1, colour = challenge_completed and G.C.GREEN or G.C.BLACK}, nodes = {
             challenge_completed and {n=G.UIT.O, config={object = Sprite(0,0,0.4,0.4, G.ASSET_ATLAS["icons"], {x=1, y=0})}} or nil

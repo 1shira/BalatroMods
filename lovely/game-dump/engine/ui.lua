@@ -167,6 +167,7 @@ function UIBox:calculate_xywh(node, _T, recalculate, _scale)
                 if i == 2 then
                     local restriction = node.config.maxw or node.config.maxh
                     fac = fac*restriction/(node.config.maxw and _ct.w or _ct.h)
+                    if node.config.no_overflow then fac = _scale or 1 end
                 end
                 _nt.x, _nt.y, _nt.w, _nt.h = 
                     _T.x,
@@ -211,6 +212,18 @@ function UIBox:calculate_xywh(node, _T, recalculate, _scale)
         node.content_dimensions.h = _ct.h + padding
         _nt.w = math.max(_ct.w + padding, _nt.w)
         _nt.h = math.max(_ct.h + padding, _nt.h)-- 
+        if node.config and node.config.no_overflow then
+            if node.config.w then
+                _nt.w = node.config.w
+            elseif node.config.maxw then
+                _nt.w = math.min(_nt.w, node.config.maxw)
+            end
+            if node.config.h then
+                _nt.h = node.config.h
+            elseif node.config.maxh then
+                _nt.h = math.min(_nt.h, node.config.maxh)
+            end
+        end
         node:set_values(_nt, recalculate)
         return _nt.w, _nt.h
     end
@@ -568,6 +581,18 @@ function UIElement:set_wh()
         for k, w in pairs(self.children) do
             if w.UIT == G.UIT.R then w.T.w = _max_w end
             if w.UIT == G.UIT.C then w.T.h = _max_h end
+            if w.config and w.config.no_overflow then
+                if w.config.w then
+                    w.T.w = w.config.w
+                elseif w.config.maxw then
+                    w.T.w = math.min(w.T.w, w.config.maxw)
+                end
+                if w.config.h then
+                    w.T.h = w.config.h
+                elseif w.config.maxh then
+                    w.T.h = math.min(w.T.h, w.config.maxh)
+                end
+            end
         end
     end
     return self.T.w, self.T.h

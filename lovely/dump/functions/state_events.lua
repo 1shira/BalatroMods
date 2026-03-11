@@ -112,10 +112,11 @@ end
             -- context.end_of_round calculations
             SMODS.saved = false
             G.GAME.saved_text = nil
-            SMODS.calculate_context({end_of_round = true, game_over = game_over, beat_boss = G.GAME.blind.boss })
+            SMODS.last_hand = SMODS.last_hand or {scoring_hand = {}, full_hand = {}}
+            SMODS.calculate_context({end_of_round = true, game_over = game_over, beat_boss = G.GAME.blind.boss, scoring_hand = SMODS.last_hand.scoring_hand, scoring_name = SMODS.last_hand.scoring_name, full_hand = SMODS.last_hand.full_hand })
             if SMODS.saved then game_over = false end
             -- TARGET: main end_of_round evaluation
-            if G.GAME.round_resets.ante == G.GAME.win_ante and G.GAME.blind:get_type() == 'Boss' then
+            if not G.GAME.won and G.GAME.round_resets.ante >= G.GAME.win_ante and G.GAME.blind:get_type() == 'Boss' then
                 game_won = true
                 G.GAME.won = true
             end
@@ -209,6 +210,17 @@ end
                     func = function()
                         G.STATE = G.STATES.ROUND_EVAL
                         G.STATE_COMPLETE = false
+                        local mp_nemesis_spoof = false
+                        if G.GAME.round_resets.blind == G.P_BLINDS.bl_mp_nemesis then
+                        	mp_nemesis_spoof = true
+                        	if G.GAME.blind_on_deck == "Small" then
+                        		G.GAME.round_resets.blind = G.P_BLINDS.bl_small
+                        	elseif G.GAME.blind_on_deck == "Big" then
+                        		G.GAME.round_resets.blind = G.P_BLINDS.bl_big
+                        	else
+                        		mp_nemesis_spoof = false
+                        	end
+                        end
                         local temp_furthest_blind = 0
 
                         if G.GAME.round_resets.blind == G.P_BLINDS.bl_small then
@@ -231,6 +243,9 @@ end
                         	MP.ACTIONS.set_furthest_blind(MP.GAME.furthest_blind)
                         
                         	MP.GAME.pincher_index = MP.GAME.pincher_index + 1
+                        end
+                        if mp_nemesis_spoof then
+                        	G.GAME.round_resets.blind = G.P_BLINDS.bl_mp_nemesis
                         end
                         if G.GAME.round_resets.temp_handsize then G.hand:change_size(-G.GAME.round_resets.temp_handsize); G.GAME.round_resets.temp_handsize = nil end
                         if G.GAME.round_resets.temp_reroll_cost then G.GAME.round_resets.temp_reroll_cost = nil; calculate_reroll_cost(true) end
@@ -284,6 +299,17 @@ function new_round()
 
             G.GAME.round_bonus.next_hands = 0
             G.GAME.round_bonus.discards = 0
+            local mp_nemesis_spoof = false
+            if G.GAME.round_resets.blind == G.P_BLINDS.bl_mp_nemesis then
+            	mp_nemesis_spoof = true
+            	if G.GAME.blind_on_deck == "Small" then
+            		G.GAME.round_resets.blind = G.P_BLINDS.bl_small
+            	elseif G.GAME.blind_on_deck == "Big" then
+            		G.GAME.round_resets.blind = G.P_BLINDS.bl_big
+            	else
+            		mp_nemesis_spoof = false
+            	end
+            end
 
             local blhash = ''
             if G.GAME.round_resets.blind == G.P_BLINDS.bl_small then
@@ -300,6 +326,9 @@ function new_round()
             end
             G.GAME.subhash = (G.GAME.round_resets.ante)..(blhash)
 
+            if mp_nemesis_spoof then
+            	G.GAME.round_resets.blind = G.P_BLINDS.bl_mp_nemesis
+            end
             G.GAME.blind:set_blind(G.GAME.round_resets.blind)
             
             SMODS.calculate_context({setting_blind = true, blind = G.GAME.round_resets.blind})
@@ -358,7 +387,7 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
             hand_space = math.min(#G.deck.cards, 3)
     end
     delay(0.3)
-    SMODS.cards_to_draw = (SMODS.cards_to_draw or 0) + space_taken
+    SMODS.cards_to_draw = (SMODS.cards_to_draw or 0) + hand_space
     SMODS.drawn_cards = {}
     for i=1, hand_space do --draw cards from deckL
         if G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK then 
@@ -370,7 +399,7 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
     G.E_MANAGER:add_event(Event({
         trigger = 'immediate',
         func = function()                
-            SMODS.cards_to_draw = SMODS.cards_to_draw - space_taken
+            SMODS.cards_to_draw = SMODS.cards_to_draw - hand_space
             return true
         end
     }))
@@ -555,6 +584,7 @@ G.FUNCS.play_cards_from_highlighted = function(e)
         }))
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 G.FUNCS.get_poker_hand_info = function(_cards)
     local poker_hands = evaluate_poker_hand(_cards)
     local scoring_hand = {}
@@ -606,7 +636,7 @@ G.FUNCS.evaluate_play = function(e)
             end
         end
         local effects = {}
-        SMODS.calculate_context({modify_scoring_hand = true, other_card =  G.play.cards[i], full_hand = G.play.cards, scoring_hand = scoring_hand, in_scoring = true}, effects)
+        SMODS.calculate_context({modify_scoring_hand = true, other_card =  G.play.cards[i], full_hand = G.play.cards, scoring_hand = scoring_hand, in_scoring = true, ignore_other_debuff = true}, effects)
         local flags = SMODS.trigger_effects(effects, G.play.cards[i])
         if flags.add_to_hand then splashed = true end
     	if flags.remove_from_hand then unsplashed = true end
@@ -648,6 +678,14 @@ SMODS.displaying_scoring = true
 
         local hand_text_set = false
         -- context.before calculations
+        if SMODS.last_hand then
+            for _, v in ipairs({'scoring_hand', 'full_hand'}) do
+                for _, _c in ipairs(SMODS.last_hand[v]) do
+                    _c.ability['SMODS_'..v] = nil
+                end
+            end
+        end
+        SMODS.last_hand = {scoring_hand = scoring_hand, scoring_name = text, full_hand = G.play.cards}
         SMODS.calculate_context({full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, before = true})
         
         -- TARGET: effects before scoring starts

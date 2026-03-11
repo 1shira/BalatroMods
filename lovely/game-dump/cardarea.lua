@@ -19,7 +19,8 @@ function CardArea:init(X, Y, W, H, config)
         __newindex = function(t, key, value)
             if key == 'card_limit' then
                 if not t.card_limits.base then rawset(t.card_limits, 'base', value) end
-                rawset(t.card_limits, 'mod', value - t.card_limits.base - (t.card_limits.extra_slots or 0))
+                if not t.card_limits.total_slots then rawset(t.card_limits, 'total_slots', value) end
+                rawset(t.card_limits, 'mod', value - t.card_limits.base - (t.card_limits.extra_slots or 0) + (t.card_limits.extra_slots_used or 0))
             else
                 rawset(t, key, value)
             end
@@ -62,7 +63,7 @@ end
     end
 
     if #self.cards > self.config.card_limit then
-        if self == G.deck then
+        if self == G.deck and G.GAME.blind then
             self.config.card_limit = #self.cards
         end
     end
@@ -295,7 +296,7 @@ function CardArea:update(dt)
     end
     --Check and see if controller is being used
     if G.CONTROLLER.HID.controller and self ~= G.hand then self:unhighlight_all() end
-    if self == G.deck and (self.config.card_limit ~= #G.playing_cards or self.config.total_slots ~= #G.playing_cards) then
+    if self == G.deck and self.config.card_limit ~= #G.playing_cards then
         self.config.card_limit = #G.playing_cards
         self.config.card_limits.total_slots = #G.playing_cards
     end
@@ -656,6 +657,7 @@ function CardArea:draw_card_from(area, stay_flipped, discarded_only)
                     card.T.r = 0
                 end
                 local stay_flipped = G.GAME and G.GAME.blind and G.GAME.blind:stay_flipped(self, card, area)
+                if SMODS.to_area then to = SMODS.to_area; SMODS.to_area = nil end
                 if (self == G.hand) and G.GAME.modifiers.flipped_cards then
                     if pseudorandom(pseudoseed('flipped_card')) < 1/G.GAME.modifiers.flipped_cards then
                         stay_flipped = true
@@ -703,7 +705,7 @@ function CardArea:load(cardAreaTable)
         __newindex = function(t, key, value)
             if key == 'card_limit' then
                 if not t.card_limits.base then rawset(t.card_limits, 'base', value) end
-                rawset(t.card_limits, 'mod', value - t.card_limits.base - (t.card_limits.extra_slots or 0))
+                rawset(t.card_limits, 'mod', value - t.card_limits.base - (t.card_limits.extra_slots or 0) + (t.card_limits.extra_slots_used or 0))
             else
                 rawset(t, key, value)
             end

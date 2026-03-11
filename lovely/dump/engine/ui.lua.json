@@ -3,149 +3,188 @@
   "entries": [
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scoring_calculation.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scoring_calculation.toml",
         "pattern": "if self == G.CONTROLLER.text_input_hook then \n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1024,
-          "end_line": 1027
+          "start_line": 1049,
+          "end_line": 1052
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\ui.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\ui.toml",
         "pattern": "if self.config.choice then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 992,
-          "end_line": 992
+          "start_line": 1017,
+          "end_line": 1017
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\ui.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\ui.toml",
         "pattern": "self.config.chosen = true",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 997,
-          "end_line": 997
+          "start_line": 1022,
+          "end_line": 1022
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\ui_additional_text_props.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\ui_additional_text_props.toml",
         "pattern": "--Draw the 'chosen triangle'\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 834,
-          "end_line": 841
+          "start_line": 859,
+          "end_line": 866
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\ui_elements.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\ui_elements.toml",
         "pattern": "love.graphics.polygon(\"fill\", get_chosen_triangle_from_rect(self.layered_parallax.x, self.layered_parallax.y, self.VT.w*G.TILESIZE, self.VT.h*G.TILESIZE, self.config.chosen == 'vert'))",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 855,
-          "end_line": 855
+          "start_line": 880,
+          "end_line": 880
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\ui_additional_text_props.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\ui_overflow.toml",
+        "pattern": "_nt.h = math.max(_ct.h + padding, _nt.h)-- ",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 215,
+          "end_line": 226
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\ui_overflow.toml",
+        "pattern": "fac = fac*restriction/(node.config.maxw and _ct.w or _ct.h)",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 170,
+          "end_line": 170
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\ui_overflow.toml",
+        "pattern": "if w.UIT == G.UIT.C then w.T.h = _max_h end",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 584,
+          "end_line": 595
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\ui_additional_text_props.toml",
         "pattern": "self.config.lang.font",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 620,
-          "end_line": 620
+          "start_line": 645,
+          "end_line": 645
         },
         {
-          "start_line": 694,
-          "end_line": 694
+          "start_line": 719,
+          "end_line": 719
         },
         {
-          "start_line": 695,
-          "end_line": 695
+          "start_line": 720,
+          "end_line": 720
         },
         {
-          "start_line": 704,
-          "end_line": 704
+          "start_line": 729,
+          "end_line": 729
         },
         {
-          "start_line": 704,
-          "end_line": 704
+          "start_line": 729,
+          "end_line": 729
         },
         {
-          "start_line": 705,
-          "end_line": 705
+          "start_line": 730,
+          "end_line": 730
         },
         {
-          "start_line": 705,
-          "end_line": 705
+          "start_line": 730,
+          "end_line": 730
         },
         {
-          "start_line": 707,
-          "end_line": 707
+          "start_line": 732,
+          "end_line": 732
         },
         {
-          "start_line": 707,
-          "end_line": 707
+          "start_line": 732,
+          "end_line": 732
         },
         {
-          "start_line": 708,
-          "end_line": 708
+          "start_line": 733,
+          "end_line": 733
         },
         {
-          "start_line": 723,
-          "end_line": 723
+          "start_line": 748,
+          "end_line": 748
         },
         {
-          "start_line": 723,
-          "end_line": 723
+          "start_line": 748,
+          "end_line": 748
         },
         {
-          "start_line": 724,
-          "end_line": 724
+          "start_line": 749,
+          "end_line": 749
         },
         {
-          "start_line": 724,
-          "end_line": 724
+          "start_line": 749,
+          "end_line": 749
         },
         {
-          "start_line": 726,
-          "end_line": 726
+          "start_line": 751,
+          "end_line": 751
         },
         {
-          "start_line": 726,
-          "end_line": 726
+          "start_line": 751,
+          "end_line": 751
         },
         {
-          "start_line": 727,
-          "end_line": 727
+          "start_line": 752,
+          "end_line": 752
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\ui_additional_text_props.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\ui_additional_text_props.toml",
         "pattern": "node.config.lang.font",
         "patch_type": "regex"
       },

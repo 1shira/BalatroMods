@@ -1027,7 +1027,7 @@ function Controller:get_cursor_collision(cursor_trans)
     local DRAW_HASH_SQUARE = G.DRAW_HASH
     for i = #DRAW_HASH_SQUARE, 1, -1 do
         local v = DRAW_HASH_SQUARE[i]
-        if v:collides_with_point(cursor_trans) and not v.REMOVED then 
+        if v:collides_with_point(cursor_trans) and not v.REMOVED and v:inside_overflow_boundaries(cursor_trans) then
             self.nodes_at_cursor[#self.nodes_at_cursor+1] = v
             if v.states.collide.can then
                 v.states.collide.is = true

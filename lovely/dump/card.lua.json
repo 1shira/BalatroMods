@@ -3,19 +3,19 @@
   "entries": [
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\preview.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\preview.toml",
         "patch_type": "copy"
       },
       "regions": [
         {
-          "start_line": 5150,
-          "end_line": 6157
+          "start_line": 5164,
+          "end_line": 6175
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\atlas.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\atlas.toml",
         "pattern": "self.T.scale = 0.95",
         "patch_type": "pattern"
       },
@@ -28,7 +28,7 @@
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\atlas.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\atlas.toml",
         "pattern": "self:set_ability(center, true)",
         "patch_type": "pattern"
       },
@@ -41,98 +41,98 @@
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\atlas.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\atlas.toml",
         "pattern": "local X, Y, W, H = self.T.x, self.T.y, self.T.w, self.T.h\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 246,
-          "end_line": 250
+          "start_line": 247,
+          "end_line": 251
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "self:calculate_joker{selling_self = true}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1870,
-          "end_line": 1883
+          "start_line": 1880,
+          "end_line": 1893
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "            for i = 1, #G.jokers.cards do\n                G.jokers.cards[i]:calculate_joker({open_booster = true, card = self})\n            end\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2070,
-          "end_line": 2070
+          "start_line": 2080,
+          "end_line": 2080
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "        for i = 1, #G.jokers.cards do\n            G.jokers.cards[i]:calculate_joker({buying_card = true, card = self})\n        end\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2131,
-          "end_line": 2131
+          "start_line": 2141,
+          "end_line": 2141
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "if context.discard then\n    if self.seal == 'Purple' and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2591,
-          "end_line": 2592
+          "start_line": 2601,
+          "end_line": 2602
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "function Card:apply_to_run(center)",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2155,
-          "end_line": 2158
+          "start_line": 2165,
+          "end_line": 2168
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "if self.ability.set == \"Planet\" and not self.debuff then\n    if context.joker_main then\n        if G.GAME.used_vouchers.v_observatory and self.ability.consumeable.hand_type == context.scoring_name then\n            return {\n                message = localize{type = 'variable', key = 'a_xmult', vars = {G.P_CENTERS.v_observatory.config.extra}},\n                Xmult_mod = G.P_CENTERS.v_observatory.config.extra\n            }\n        end\n    end\nend",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2637,
-          "end_line": 2637
+          "start_line": 2647,
+          "end_line": 2647
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "self.discard_pos = {\n    r = 3.6*(math.random()-0.5),\n    x = math.random(),\n    y = math.random()\n}",
         "patch_type": "pattern"
       },
@@ -145,675 +145,733 @@
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "G.E_MANAGER:add_event(Event({\n    func = function()\n        local _card = create_playing_card({\n            front = pseudorandom_element(G.P_CARDS, pseudoseed('cert_fr')),\n            center = G.P_CENTERS.c_base}, G.hand, nil, nil, {G.C.SECONDARY_SET.Enhanced})\n        local seal_type = pseudorandom(pseudoseed('certsl'))\n        if seal_type > 0.75 then _card:set_seal('Red', true)\n        elseif seal_type > 0.5 then _card:set_seal('Blue', true)\n        elseif seal_type > 0.25 then _card:set_seal('Gold', true)\n        else _card:set_seal('Purple', true)\n        end\n        G.GAME.blind:debuff_card(_card)\n        G.hand:sort()\n        if context.blueprint_card then context.blueprint_card:juice_up() else self:juice_up() end\n        return true\n    end}))\n\nplaying_card_joker_effects({true})\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2808,
-          "end_line": 2821
+          "start_line": 2818,
+          "end_line": 2831
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "G.E_MANAGER:add_event(Event({\n    func = function()\n        local front = pseudorandom_element(G.P_CARDS, pseudoseed('marb_fr'))\n        G.playing_card = (G.playing_card and G.playing_card + 1) or 1\n        local card = Card(G.play.T.x + G.play.T.w/2, G.play.T.y, G.CARD_W, G.CARD_H, front, G.P_CENTERS.m_stone, {playing_card = G.playing_card})\n        card:start_materialize({G.C.SECONDARY_SET.Enhanced})\n        G.play:emplace(card)\n        table.insert(G.playing_cards, card)\n        return true\n    end}))\ncard_eval_status_text(context.blueprint_card or self, 'extra', nil, nil, nil, {message = localize('k_plus_stone'), colour = G.C.SECONDARY_SET.Enhanced})\n\nG.E_MANAGER:add_event(Event({\n    func = function()\n        G.deck.config.card_limit = G.deck.config.card_limit + 1\n        return true\n    end}))\n    draw_card(G.play,G.deck, 90,'up', nil)\n\nplaying_card_joker_effects({true})\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2945,
-          "end_line": 2958
+          "start_line": 2955,
+          "end_line": 2968
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "playing_cards_created = {true}",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3889,
-          "end_line": 3889
+          "start_line": 3899,
+          "end_line": 3899
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "if context.cardarea == G.jokers then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3773,
-          "end_line": 3773
+          "start_line": 3783,
+          "end_line": 3783
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "local dissolve_time = 0.7*(dissolve_time_fac or 1)\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2459,
-          "end_line": 2460
+          "start_line": 2469,
+          "end_line": 2470
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "G.E_MANAGER:add_event(Event({\n    func = function()\n        play_sound('tarot1')\n        self.T.r = -0.2\n        self:juice_up(0.3, 0.4)\n        self.states.drag.is = true\n        self.children.center.pinch.x = true\n        G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,\n            func = function()\n                    G.jokers:remove_card(self)\n                    self:remove()\n                    self = nil\n                return true; end})) \n        return true\n    end\n})) \n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3131,
-          "end_line": 3131
+          "start_line": 3141,
+          "end_line": 3141
         },
         {
-          "start_line": 3282,
-          "end_line": 3282
+          "start_line": 3292,
+          "end_line": 3292
         },
         {
-          "start_line": 3315,
-          "end_line": 3315
+          "start_line": 3325,
+          "end_line": 3325
         },
         {
-          "start_line": 3386,
-          "end_line": 3386
+          "start_line": 3396,
+          "end_line": 3396
         },
         {
-          "start_line": 3955,
-          "end_line": 3955
+          "start_line": 3965,
+          "end_line": 3965
         },
         {
-          "start_line": 3973,
-          "end_line": 3973
+          "start_line": 3983,
+          "end_line": 3983
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "function Card:start_dissolve(dissolve_colours, silent, dissolve_time_fac, no_juice)\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2436,
-          "end_line": 2458
+          "start_line": 2446,
+          "end_line": 2468
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "function Card:shatter()\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2362,
-          "end_line": 2384
+          "start_line": 2372,
+          "end_line": 2394
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "if my_pos and G.jokers.cards[my_pos+1] and not self.getting_sliced and not G.jokers.cards[my_pos+1].ability.eternal and not G.jokers.cards[my_pos+1].getting_sliced then \n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2916,
-          "end_line": 2916
+          "start_line": 2926,
+          "end_line": 2926
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "if G.jokers.cards[i] ~= self and not G.jokers.cards[i].ability.eternal and not G.jokers.cards[i].getting_sliced then destructable_jokers[#destructable_jokers+1] = G.jokers.cards[i] end\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2848,
-          "end_line": 2848
+          "start_line": 2858,
+          "end_line": 2858
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "if not v.ability.eternal then deletable_jokers[#deletable_jokers + 1] = v end\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1688,
-          "end_line": 1688
+          "start_line": 1698,
+          "end_line": 1698
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "if v ~= eligible_card and (not v.ability.eternal) then v:start_dissolve(nil, _first_dissolve);_first_dissolve = true end\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1752,
-          "end_line": 1752
+          "start_line": 1762,
+          "end_line": 1762
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "not self.ability.eternal then\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1933,
-          "end_line": 1933
+          "start_line": 1943,
+          "end_line": 1943
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "if self.ability.name == 'Campfire' and not context.blueprint then\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2727,
-          "end_line": 2727
+          "start_line": 2737,
+          "end_line": 2737
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "if self.ability.name == 'Sixth Sense' and #context.full_hand == 1 and context.full_hand[1]:get_id() == 6 and G.GAME.current_round.hands_played == 0 then\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2963,
-          "end_line": 2964
+          "start_line": 2973,
+          "end_line": 2974
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "if other_joker and other_joker ~= self then\n    context.blueprint = (context.blueprint and (context.blueprint + 1)) or 1\n    context.blueprint_card = context.blueprint_card or self\n    if context.blueprint > #G.jokers.cards + 1 then return end\n    local other_joker_ret = other_joker:calculate_joker(context)\n    if other_joker_ret then \n        other_joker_ret.card = context.blueprint_card or self\n        other_joker_ret.colour = G.C.BLUE\n        return other_joker_ret\n    end\nend\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2644,
-          "end_line": 2648
+          "start_line": 2654,
+          "end_line": 2658
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "if other_joker and other_joker ~= self then\n    context.blueprint = (context.blueprint and (context.blueprint + 1)) or 1\n    context.blueprint_card = context.blueprint_card or self\n    if context.blueprint > #G.jokers.cards + 1 then return end\n    local other_joker_ret = other_joker:calculate_joker(context)\n    if other_joker_ret then \n        other_joker_ret.card = context.blueprint_card or self\n        other_joker_ret.colour = G.C.RED\n        return other_joker_ret\n    end\nend\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2652,
-          "end_line": 2656
+          "start_line": 2662,
+          "end_line": 2666
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc_fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc_fixes.toml",
         "pattern": "function Card:calculate_joker(context)\n    if self.debuff then return nil end\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2636,
-          "end_line": 2636
+          "start_line": 2646,
+          "end_line": 2646
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc_fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc_fixes.toml",
         "pattern": "if context.blueprint_card then context.blueprint_card:juice_up() else self:juice_up() end",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2816,
-          "end_line": 2816
+          "start_line": 2826,
+          "end_line": 2826
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\booster.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\booster.toml",
         "pattern": "if self.ability.name:find('Arcana') then\n            G.STATE = G.STATES.TAROT_PACK\n            G.GAME.pack_size = self.ability.extra\n        elseif self.ability.name:find('Celestial') then\n            G.STATE = G.STATES.PLANET_PACK\n            G.GAME.pack_size = self.ability.extra\n        elseif self.ability.name:find('Spectral') then\n            G.STATE = G.STATES.SPECTRAL_PACK\n            G.GAME.pack_size = self.ability.extra\n        elseif self.ability.name:find('Standard') then\n            G.STATE = G.STATES.STANDARD_PACK\n            G.GAME.pack_size = self.ability.extra\n        elseif self.ability.name:find('Buffoon') then\n            G.STATE = G.STATES.BUFFOON_PACK\n            G.GAME.pack_size = self.ability.extra\n        end\n\n        G.GAME.pack_choices = self.config.center.config.choose or 1",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1980,
-          "end_line": 1985
+          "start_line": 1990,
+          "end_line": 1995
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\booster.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\booster.toml",
         "pattern": "local _size = self.ability.extra\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2002,
-          "end_line": 2002
+          "start_line": 2012,
+          "end_line": 2012
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\booster.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\booster.toml",
         "pattern": "if G.STATE == G.STATES.SELECTING_HAND or G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1832,
-          "end_line": 1832
+          "start_line": 1842,
+          "end_line": 1842
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\booster.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\booster.toml",
         "pattern": "if self.shop_voucher then G.GAME.current_round.voucher = nil end",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2093,
-          "end_line": 2093
+          "start_line": 2103,
+          "end_line": 2103
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\card_limit.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\card_limit.toml",
         "pattern": "if self.edition and self.edition.negative then \n            if from_debuff then \n                self.ability.queue_negative_removal = nil\n            else\n                if self.ability.consumeable then\n                    G.consumeables.config.card_limit = G.consumeables.config.card_limit + 1\n                else\n                    G.jokers.config.card_limit = G.jokers.config.card_limit + 1\n                end\n            end\n        end\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 817,
-          "end_line": 817
+          "start_line": 827,
+          "end_line": 827
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\card_limit.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\card_limit.toml",
         "pattern": "if self.edition and self.edition.negative and G.jokers then\n            if from_debuff then\n                self.ability.queue_negative_removal = true \n            else\n                if self.ability.consumeable then\n                    G.consumeables.config.card_limit = G.consumeables.config.card_limit - 1\n                else\n                    G.jokers.config.card_limit = G.jokers.config.card_limit - 1\n                end \n            end\n        end\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 879,
-          "end_line": 879
+          "start_line": 889,
+          "end_line": 889
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\cardareas.toml",
+        "pattern": "((self.area == G.jokers) or (self.area == G.consumeables)) and \"cr\" or\n",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 4950,
+          "end_line": 4950
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\cardareas.toml",
+        "pattern": "((self.area == G.jokers) or (self.area == G.consumeables)) and {x=x_off - 0.4,y=0} or\n",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 4953,
+          "end_line": 4953
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "self.ability.bonus = (self.ability.bonus or 0) + (center.config.bonus or 0)",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 403,
-          "end_line": 411
+          "start_line": 412,
+          "end_line": 420
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
+        "pattern": "self:set_sprites(center)\n",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 319,
+          "end_line": 327
+        },
+        {
+          "start_line": 333,
+          "end_line": 341
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "function Card:calculate_joker(context)\n    if self.debuff then return nil end\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2631,
-          "end_line": 2635
+          "start_line": 2641,
+          "end_line": 2645
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "if G.STAGE == G.STAGES.RUN then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 4486,
-          "end_line": 4489
+          "start_line": 4496,
+          "end_line": 4499
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "return generate_card_ui(self.config.center, nil, loc_vars, card_type, badges, hide_desc, main_start, main_end)",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1151,
-          "end_line": 1151
+          "start_line": 1161,
+          "end_line": 1161
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "if self.config.center.name == \"Half Joker\" then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 5024,
-          "end_line": 5027
+          "start_line": 5036,
+          "end_line": 5039
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "function Card:calculate_dollar_bonus()\n    if self.debuff then return end",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1941,
-          "end_line": 1944
+          "start_line": 1951,
+          "end_line": 1954
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "function Card:generate_UIBox_ability_table()",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 890,
-          "end_line": 890
+          "start_line": 900,
+          "end_line": 900
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "local badges = {}",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1121,
-          "end_line": 1121
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\edition.toml",
-        "pattern": "added_to_deck = self.added_to_deck,",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 4994,
-          "end_line": 4994
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\edition.toml",
-        "pattern": "if self.edition.type == 'negative' and self.ability.consumeable then\n    badges[#badges + 1] = 'negative_consumable'\n",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 1130,
+          "start_line": 1131,
           "end_line": 1131
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
+        "pattern": "remove_all(self.children)\n",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 5109,
+          "end_line": 5109
+        },
+        {
+          "start_line": 5154,
+          "end_line": 5154
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\edition.toml",
+        "pattern": "added_to_deck = self.added_to_deck,",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 5006,
+          "end_line": 5006
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\edition.toml",
+        "pattern": "if self.edition.type == 'negative' and self.ability.consumeable then\n    badges[#badges + 1] = 'negative_consumable'\n",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 1140,
+          "end_line": 1141
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "if self.ability.effect == 'Stone Card' and not self.vampired then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1169,
-          "end_line": 1169
+          "start_line": 1179,
+          "end_line": 1179
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "if temp_ID >= G.hand.cards[i].base.id and G.hand.cards[i].ability.effect ~= 'Stone Card' then temp_Mult = G.hand.cards[i].base.nominal; temp_ID = G.hand.cards[i].base.id; raised_card = G.hand.cards[i] end",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3682,
-          "end_line": 3686
+          "start_line": 3692,
+          "end_line": 3696
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "if context.scoring_hand[i].ability.name ~= 'Wild Card' then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 4169,
-          "end_line": 4169
+          "start_line": 4179,
+          "end_line": 4179
         },
         {
-          "start_line": 4173,
-          "end_line": 4173
+          "start_line": 4183,
+          "end_line": 4183
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "if context.scoring_hand[i].ability.name == 'Wild Card' then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 4177,
-          "end_line": 4177
+          "start_line": 4187,
+          "end_line": 4187
         },
         {
-          "start_line": 4180,
-          "end_line": 4181
+          "start_line": 4190,
+          "end_line": 4191
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "if self.ability.name == \"Wild Card\" then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 4410,
-          "end_line": 4410
+          "start_line": 4420,
+          "end_line": 4420
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "if self.ability.name == \"Wild Card\" and not self.debuff then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 4398,
-          "end_line": 4398
+          "start_line": 4408,
+          "end_line": 4408
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "if delay_sprites then \n    G.E_MANAGER:add_event(Event({\n        func = function()\n            if not self.REMOVED then\n                self:set_sprites(center)\n            end\n            return true\n        end\n    })) \n",
         "patch_type": "pattern"
       },
-      "regions": [
-        {
-          "start_line": 314,
-          "end_line": 328
-        }
+      "regions": [],
+      "warnings": [
+        "Pattern 'if delay_sprites then \\n    G.E_MANAGER:add_event(Event({\\n        func = function()\\n            if not self.REMOVED then\\n                self:set_sprites(center)\\n            end\\n            return true\\n        end\\n    })) \\n' on target 'card.lua' for pattern patch from smods-1.0.0-beta-1503a\\lovely\\enhancement.toml resulted in no matches"
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "if self.seal == 'Blue' and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1287,
-          "end_line": 1287
+          "start_line": 1297,
+          "end_line": 1297
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "if card.ability.name == 'Glass Card' then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1543,
-          "end_line": 1543
+          "start_line": 1553,
+          "end_line": 1553
         },
         {
-          "start_line": 1562,
-          "end_line": 1562
+          "start_line": 1572,
+          "end_line": 1572
         },
         {
-          "start_line": 1616,
-          "end_line": 1616
+          "start_line": 1626,
+          "end_line": 1626
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "if self.seal == 'Blue' and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1288,
-          "end_line": 1288
+          "start_line": 1298,
+          "end_line": 1298
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "function Card:set_ability(center, initial, delay_sprites)",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 236,
-          "end_line": 245
+          "start_line": 237,
+          "end_line": 246
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "self:set_sprites(center)",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 321,
-          "end_line": 323
+          "start_line": 324,
+          "end_line": 326
         },
         {
-          "start_line": 331,
-          "end_line": 333
+          "start_line": 338,
+          "end_line": 340
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "if not G.OVERLAY_MENU then ",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 475,
-          "end_line": 477
+          "start_line": 484,
+          "end_line": 486
         },
         {
-          "start_line": 5119,
-          "end_line": 5121
+          "start_line": 5132,
+          "end_line": 5134
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "function Card:set_base(card, initial)",
         "patch_type": "pattern"
       },
@@ -826,20 +884,20 @@
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "function Card:set_seal(_seal, silent, immediate)",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 607,
-          "end_line": 611
+          "start_line": 617,
+          "end_line": 621
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "if not initial then G.GAME.blind:debuff_card(self) end",
         "patch_type": "pattern"
       },
@@ -849,368 +907,381 @@
           "end_line": 149
         },
         {
-          "start_line": 502,
-          "end_line": 502
+          "start_line": 511,
+          "end_line": 511
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "bypass_lock = self.bypass_lock,",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 5006,
-          "end_line": 5009
+          "start_line": 5018,
+          "end_line": 5021
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "self.bypass_lock = cardTable.bypass_lock",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 5082,
-          "end_line": 5089
+          "start_line": 5094,
+          "end_line": 5101
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "self.config.center = center",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 254,
-          "end_line": 264
+          "start_line": 255,
+          "end_line": 265
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "if G.consumeables and self.area == G.consumeables then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 494,
-          "end_line": 497
+          "start_line": 503,
+          "end_line": 506
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "self.label = center.label or self.config.card.label or self.ability.set",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 465,
-          "end_line": 465
+          "start_line": 474,
+          "end_line": 474
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "if v.config.center == G.P_CENTERS.m_steel then self.ability.steel_tally = self.ability.steel_tally+1 end",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 4525,
-          "end_line": 4525
+          "start_line": 4535,
+          "end_line": 4535
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "if v.config.center == G.P_CENTERS.m_stone then self.ability.stone_tally = self.ability.stone_tally+1 end",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 4537,
-          "end_line": 4537
+          "start_line": 4547,
+          "end_line": 4547
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "context.other_card.ability.name == 'Gold Card' then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3509,
-          "end_line": 3509
+          "start_line": 3519,
+          "end_line": 3519
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "if val.ability.name == 'Glass Card' then shattered_glass = shattered_glass + 1 end",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3081,
-          "end_line": 3081
+          "start_line": 3091,
+          "end_line": 3091
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "if v.config.center ~= G.P_CENTERS.c_base then self.ability.driver_tally = self.ability.driver_tally+1 end",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 4519,
-          "end_line": 4519
+          "start_line": 4529,
+          "end_line": 4529
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "G.GAME.round_resets.reroll_cost = G.GAME.round_resets.reroll_cost - self.ability.extra",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2209,
-          "end_line": 2209
+          "start_line": 2219,
+          "end_line": 2219
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "G.GAME.current_round.reroll_cost = math.max(0, G.GAME.current_round.reroll_cost - self.ability.extra)",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2210,
-          "end_line": 2210
+          "start_line": 2220,
+          "end_line": 2220
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "if next(find_joker('Smeared Joker')) and (self.base.suit == 'Hearts' or self.base.suit == 'Diamonds') == (suit == 'Hearts' or suit == 'Diamonds') then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 4401,
-          "end_line": 4401
+          "start_line": 4411,
+          "end_line": 4411
         },
         {
-          "start_line": 4413,
-          "end_line": 4413
+          "start_line": 4423,
+          "end_line": 4423
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "local suits = {\n    ['Hearts'] = 0,\n    ['Diamonds'] = 0,\n    ['Spades'] = 0,\n    ['Clubs'] = 0\n}\nfor i = 1, #context.scoring_hand do\n    if not SMODS.has_any_suit(context.scoring_hand[i]) then\n        if context.scoring_hand[i]:is_suit('Hearts') then suits[\"Hearts\"] = suits[\"Hearts\"] + 1 end\n        if context.scoring_hand[i]:is_suit('Diamonds') then suits[\"Diamonds\"] = suits[\"Diamonds\"] + 1 end\n        if context.scoring_hand[i]:is_suit('Spades') then suits[\"Spades\"] = suits[\"Spades\"] + 1 end\n        if context.scoring_hand[i]:is_suit('Clubs') then suits[\"Clubs\"] = suits[\"Clubs\"] + 1 end\n    end\nend\nfor i = 1, #context.scoring_hand do\n    if SMODS.has_any_suit(context.scoring_hand[i]) then\n        if context.scoring_hand[i]:is_suit('Clubs') and suits[\"Clubs\"] == 0 then suits[\"Clubs\"] = suits[\"Clubs\"] + 1\n        elseif context.scoring_hand[i]:is_suit('Diamonds') and suits[\"Diamonds\"] == 0  then suits[\"Diamonds\"] = suits[\"Diamonds\"] + 1\n        elseif context.scoring_hand[i]:is_suit('Spades') and suits[\"Spades\"] == 0  then suits[\"Spades\"] = suits[\"Spades\"] + 1\n        elseif context.scoring_hand[i]:is_suit('Hearts') and suits[\"Hearts\"] == 0  then suits[\"Hearts\"] = suits[\"Hearts\"] + 1 end\n    end\nend\nif (suits[\"Hearts\"] > 0 or\nsuits[\"Diamonds\"] > 0 or\nsuits[\"Spades\"] > 0) and\nsuits[\"Clubs\"] > 0 then\n    return {\n        message = localize{type='variable',key='a_xmult',vars={self.ability.extra}},\n        Xmult_mod = self.ability.extra\n    }\nend",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 4195,
-          "end_line": 4200
+          "start_line": 4205,
+          "end_line": 4210
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "local card = create_card(card_type,G.consumeables, nil, nil, nil, nil, _planet, 'blusl')",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1302,
-          "end_line": 1302
+          "start_line": 1312,
+          "end_line": 1312
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "if self.area then self.area:remove_card(self) end",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 5108,
-          "end_line": 5108
+          "start_line": 5121,
+          "end_line": 5121
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "if G.playing_cards then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 5128,
-          "end_line": 5128
+          "start_line": 5141,
+          "end_line": 5141
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "if v ~= chosen_joker then \n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1699,
-          "end_line": 1699
+          "start_line": 1709,
+          "end_line": 1709
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
+        "pattern": "nominal_chips = self.base.nominal > 0 and self.base.nominal or nil,",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 923,
+          "end_line": 923
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "self.ability.yorick_discards = self.ability.yorick_discards - 1",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3165,
-          "end_line": 3165
+          "start_line": 3175,
+          "end_line": 3175
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize('k_plus_tarot'), colour = G.C.PURPLE})",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2605,
-          "end_line": 2605
+          "start_line": 2615,
+          "end_line": 2615
         },
         {
-          "start_line": 2673,
-          "end_line": 2673
+          "start_line": 2683,
+          "end_line": 2683
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "message = localize('k_eaten_ex'),\ncolour = G.C.FILTER",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3133,
-          "end_line": 3133
+          "start_line": 3143,
+          "end_line": 3143
         },
         {
-          "start_line": 3284,
-          "end_line": 3284
+          "start_line": 3294,
+          "end_line": 3294
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "message = localize{type='variable',key='a_xmult_minus',vars={self.ability.extra}},",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3142,
-          "end_line": 3143
+          "start_line": 3152,
+          "end_line": 3153
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "delay = 0.2,\nmessage = localize{type='variable',key='a_xmult',vars={self.ability.x_mult}},",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3157,
-          "end_line": 3158
+          "start_line": 3167,
+          "end_line": 3168
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "message = localize('$')..self.ability.extra.dollars,\n    dollars = self.ability.extra.dollars,",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3865,
-          "end_line": 3865
+          "start_line": 3875,
+          "end_line": 3875
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "message = localize('$')..self.ability.extra,\n    dollars = self.ability.extra,",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3116,
-          "end_line": 3116
+          "start_line": 3126,
+          "end_line": 3126
         },
         {
-          "start_line": 4080,
-          "end_line": 4080
+          "start_line": 4090,
+          "end_line": 4090
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\playing_card.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\playing_card.toml",
         "pattern": "self.VT.h = self.T.H",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 5057,
-          "end_line": 5057
+          "start_line": 5069,
+          "end_line": 5069
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\playing_card.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\playing_card.toml",
         "pattern": "function Card:set_base(card, initial)",
         "patch_type": "pattern"
       },
@@ -1223,7 +1294,7 @@
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\playing_card.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\playing_card.toml",
         "pattern": "if next(card) then",
         "patch_type": "pattern"
       },
@@ -1236,453 +1307,453 @@
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\pool.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\pool.toml",
         "pattern": "self.config.center = center",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 265,
-          "end_line": 267
+          "start_line": 266,
+          "end_line": 268
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\rarity.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\rarity.toml",
         "pattern": "if self.ability.name == 'Baseball Card' and context.other_joker.config.center.rarity == 2 and self ~= context.other_joker then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3759,
-          "end_line": 3759
+          "start_line": 3769,
+          "end_line": 3769
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.mult = self.ability.mult + sliced_card.sell_cost*2\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2922,
-          "end_line": 2922
+          "start_line": 2932,
+          "end_line": 2932
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_mult', vars = {self.ability.mult+2*sliced_card.sell_cost}}, colour = G.C.RED, no_juice = true})",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2927,
-          "end_line": 2940
+          "start_line": 2937,
+          "end_line": 2950
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.mult = self.ability.mult + self.ability.extra\nG.E_MANAGER:add_event(Event({\n    func = (function()\n        card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_mult', vars = {self.ability.mult}}, colour = G.C.MULT})\n    return true\nend)}))\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2739,
-          "end_line": 2746
+          "start_line": 2749,
+          "end_line": 2756
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.mult = self.ability.mult + self.ability.extra\n                G.E_MANAGER:add_event(Event({\n    func = function() \n        card_eval_status_text(self, 'extra', nil, nil, nil, {\n            message = localize{type = 'variable', key = 'a_mult', vars = {self.ability.extra}},\n            colour = G.C.RED,\n            delay = 0.45, \n            card = self\n        }) \n        return true\n    end}))\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2781,
-          "end_line": 2788
+          "start_line": 2791,
+          "end_line": 2798
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.mult = self.ability.mult + self.ability.extra\nreturn {\n    message = localize('k_upgrade_ex'),\n    colour = G.C.RED,\n    card = self\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3776,
-          "end_line": 3782
+          "start_line": 3786,
+          "end_line": 3792
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "else\n    self.ability.mult = self.ability.mult + self.ability.extra\nend\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3907,
-          "end_line": 3915
+          "start_line": 3917,
+          "end_line": 3925
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.extra_value = self.ability.extra_value + self.ability.extra\nself:set_cost()\nreturn {\n    message = localize('k_val_up'),\n    colour = G.C.MONEY\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3346,
-          "end_line": 3356
+          "start_line": 3356,
+          "end_line": 3366
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.extra.chips = self.ability.extra.chips + self.ability.extra.chip_mod\nreturn {\n    message = localize('k_upgrade_ex'),\n    colour = G.C.CHIPS,\n    card = self\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3792,
-          "end_line": 3797
+          "start_line": 3802,
+          "end_line": 3807
         },
         {
-          "start_line": 3800,
-          "end_line": 3805
+          "start_line": 3810,
+          "end_line": 3815
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.extra.chips = self.ability.extra.chips + self.ability.extra.chip_mod\n                  \nreturn {\n    message = localize('k_upgrade_ex'),\n    card = self,\n    colour = G.C.CHIPS\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3184,
-          "end_line": 3189
+          "start_line": 3194,
+          "end_line": 3199
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.extra.chips = self.ability.extra.chips + self.ability.extra.chip_mod\n\nreturn {\n    extra = {focus = self, message = localize('k_upgrade_ex')},\n    card = self,\n    colour = G.C.CHIPS\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3440,
-          "end_line": 3449
+          "start_line": 3450,
+          "end_line": 3459
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.extra.chips = self.ability.extra.chips - self.ability.extra.chip_mod\nreturn {\n    message = localize{type='variable',key='a_chips_minus',vars={self.ability.extra.chip_mod}},\n    colour = G.C.CHIPS\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3961,
-          "end_line": 3968
+          "start_line": 3971,
+          "end_line": 3978
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "if self.ability.name == 'Madness' and not context.blueprint and not context.blind.boss then\n    self.ability.x_mult = self.ability.x_mult + self.ability.extra\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2845,
-          "end_line": 2845
+          "start_line": 2855,
+          "end_line": 2855
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "if not (context.blueprint_card or self).getting_sliced then\n    card_eval_status_text((context.blueprint_card or self), 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {self.ability.x_mult}}})\nend\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2859,
-          "end_line": 2866
+          "start_line": 2869,
+          "end_line": 2876
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "if self.ability.name == 'Constellation' and not context.blueprint and context.consumeable.ability.set == 'Planet' then\n    self.ability.x_mult = self.ability.x_mult + self.ability.extra\n    G.E_MANAGER:add_event(Event({\n        func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type='variable',key='a_xmult',vars={self.ability.x_mult}}}); return true\n        end}))\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3098,
-          "end_line": 3104
+          "start_line": 3108,
+          "end_line": 3114
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.x_mult = self.ability.x_mult + self.ability.extra\nG.E_MANAGER:add_event(Event({\n    func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize('k_upgrade_ex')}); return true\n    end}))\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2728,
-          "end_line": 2734
+          "start_line": 2738,
+          "end_line": 2744
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.x_mult = self.ability.x_mult + self.ability.extra\nreturn {\n    extra = {focus = self, message = localize('k_upgrade_ex'), colour = G.C.MULT},\n    card = self\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3427,
-          "end_line": 3436
+          "start_line": 3437,
+          "end_line": 3446
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "else\n    self.ability.x_mult = self.ability.x_mult + self.ability.extra\nend\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3933,
-          "end_line": 3941
+          "start_line": 3943,
+          "end_line": 3951
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.x_mult = self.ability.x_mult + self.ability.extra\nreturn {\n    message = localize{type='variable',key='a_xmult',vars={self.ability.x_mult}},\n        colour = G.C.RED,\n        delay = 0.45, \n    card = self\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3204,
-          "end_line": 3212
+          "start_line": 3214,
+          "end_line": 3222
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.mult = math.max(0, self.ability.mult - self.ability.extra.discard_sub)\nif self.ability.mult ~= prev_mult then \n    return {\n        message = localize{type='variable',key='a_mult_minus',vars={self.ability.extra.discard_sub}},\n        colour = G.C.RED,\n        card = self\n    }\nend\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3216,
-          "end_line": 3229
+          "start_line": 3226,
+          "end_line": 3239
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.mult = self.ability.mult + self.ability.extra.hand_add\nreturn {\n    card = self,\n    message = localize{type='variable',key='a_mult',vars={self.ability.extra.hand_add}}\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3944,
-          "end_line": 3950
+          "start_line": 3954,
+          "end_line": 3960
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.x_mult = self.ability.x_mult + self.ability.extra*#enhanced\nreturn {\n    message = localize{type='variable',key='a_xmult',vars={self.ability.x_mult}},\n    colour = G.C.MULT,\n    card = self\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3847,
-          "end_line": 3857
+          "start_line": 3857,
+          "end_line": 3867
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.x_mult = self.ability.x_mult + #context.cards*self.ability.extra\ncard_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {self.ability.x_mult}}})\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2795,
-          "end_line": 2803
+          "start_line": 2805,
+          "end_line": 2813
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.extra.dollars = self.ability.extra.dollars + self.ability.extra.increase\nreturn {\n    message = localize('k_upgrade_ex'),\n    colour = G.C.MONEY\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3272,
-          "end_line": 3278
+          "start_line": 3282,
+          "end_line": 3288
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.extra.h_size = self.ability.extra.h_size - self.ability.extra.h_mod\nG.hand:change_size(- self.ability.extra.h_mod)\nreturn {\n    message = localize{type='variable',key='a_handsize_minus',vars={self.ability.extra.h_mod}},\n    colour = G.C.FILTER\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3289,
-          "end_line": 3299
+          "start_line": 3299,
+          "end_line": 3309
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.mult = self.ability.mult - self.ability.extra\nreturn {\n    message = localize{type='variable',key='a_mult_minus',vars={self.ability.extra}},\n    colour = G.C.MULT\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3321,
-          "end_line": 3329
+          "start_line": 3331,
+          "end_line": 3339
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.x_mult = self.ability.x_mult - self.ability.extra\nreturn {\n    delay = 0.2,\n    card = self,\n    message = localize{type='variable',key='a_xmult_minus',vars={self.ability.extra}},\n    colour = G.C.RED\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3138,
-          "end_line": 3147
+          "start_line": 3148,
+          "end_line": 3157
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.x_mult = self.ability.x_mult + self.ability.extra.xmult\nreturn {\n    card = self,\n    delay = 0.2,\n    message = localize{type='variable',key='a_xmult',vars={self.ability.x_mult}},\n    colour = G.C.RED\n}\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3153,
-          "end_line": 3162
+          "start_line": 3163,
+          "end_line": 3172
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "self.ability.caino_xmult = self.ability.caino_xmult + face_cards*self.ability.extra\nG.E_MANAGER:add_event(Event({\nfunc = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {self.ability.caino_xmult}}}); return true\nend}))\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3039,
-          "end_line": 3048
+          "start_line": 3049,
+          "end_line": 3058
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scaling.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scaling.toml",
         "pattern": "G.E_MANAGER:add_event(Event({\n    func = function()\n        self.ability.x_mult = self.ability.x_mult + self.ability.extra*glass_cards\n    return true\n    end\n}))\ncard_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {self.ability.x_mult + self.ability.extra*glass_cards}}})\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3061,
-          "end_line": 3069
+          "start_line": 3071,
+          "end_line": 3079
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scoring_calculation.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scoring_calculation.toml",
         "pattern": "update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {handname=localize(self.ability.consumeable.hand_type, 'poker_hands'),chips = G.GAME.hands[self.ability.consumeable.hand_type].chips, mult = G.GAME.hands[self.ability.consumeable.hand_type].mult, level=G.GAME.hands[self.ability.consumeable.hand_type].level})\nlevel_up_hand(used_tarot, self.ability.consumeable.hand_type)\nupdate_hand_text({sound = 'button', volume = 0.7, pitch = 1.1, delay = 0}, {mult = 0, chips = 0, handname = '', level = ''})\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1525,
-          "end_line": 1525
+          "start_line": 1535,
+          "end_line": 1535
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\scoring_calculation.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\scoring_calculation.toml",
         "pattern": "update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {handname=localize(text, 'poker_hands'),chips = G.GAME.hands[text].chips, mult = G.GAME.hands[text].mult, level=G.GAME.hands[text].level})\nlevel_up_hand(context.blueprint_card or self, text, nil, 1)\nupdate_hand_text({sound = 'button', volume = 0.7, pitch = 1.1, delay = 0}, {mult = 0, chips = 0, handname = '', level = ''})\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3125,
-          "end_line": 3125
+          "start_line": 3135,
+          "end_line": 3135
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\seal.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\seal.toml",
         "pattern": "if G.STAGE == G.STAGES.RUN then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 4490,
-          "end_line": 4493
+          "start_line": 4500,
+          "end_line": 4503
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\seal.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\seal.toml",
         "pattern": "function Card:update_alert()",
         "patch_type": "pattern"
       },
@@ -1695,688 +1766,675 @@
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\seal.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\seal.toml",
         "pattern": "G:save_progress()",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 4657,
-          "end_line": 4659
+          "start_line": 4668,
+          "end_line": 4670
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\seal.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\seal.toml",
         "pattern": "G.CONTROLLER.locks.seal = true",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 627,
-          "end_line": 627
+          "start_line": 637,
+          "end_line": 637
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\seal.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\seal.toml",
         "pattern": "play_sound('gold_seal', 1.2, 0.4)",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 630,
-          "end_line": 631
+          "start_line": 640,
+          "end_line": 641
         },
         {
-          "start_line": 639,
-          "end_line": 640
+          "start_line": 649,
+          "end_line": 650
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\seal.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\seal.toml",
         "pattern": "self.seal = _seal",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 615,
-          "end_line": 624
+          "start_line": 625,
+          "end_line": 634
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\seal.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\seal.toml",
         "pattern": "end\n    if self.ability.name == 'Gold Card' and self.seal == 'Gold' and self.playing_card then \n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 654,
-          "end_line": 655
+          "start_line": 664,
+          "end_line": 665
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\shop.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\shop.toml",
         "pattern": "if self.shop_voucher then G.GAME.current_round.voucher = nil end\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2091,
-          "end_line": 2092
+          "start_line": 2101,
+          "end_line": 2102
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\shop.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\shop.toml",
         "pattern": "G.GAME.current_round.voucher = nil\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2126,
-          "end_line": 2126
+          "start_line": 2136,
+          "end_line": 2136
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\shop.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\shop.toml",
         "pattern": "G.GAME.current_round.free_rerolls = G.GAME.current_round.free_rerolls + 1\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 789,
-          "end_line": 789
+          "start_line": 799,
+          "end_line": 799
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\shop.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\shop.toml",
         "pattern": "G.GAME.current_round.free_rerolls = G.GAME.current_round.free_rerolls - 1\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 851,
-          "end_line": 851
+          "start_line": 861,
+          "end_line": 861
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\shop.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\shop.toml",
         "pattern": "ability = self.ability,",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 4998,
-          "end_line": 4998
+          "start_line": 5010,
+          "end_line": 5010
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\shop.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\shop.toml",
         "pattern": "self.ability = cardTable.ability",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 5091,
-          "end_line": 5091
+          "start_line": 5103,
+          "end_line": 5103
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\sticker.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\sticker.toml",
         "pattern": "if self.sticker or ((self.sticker_run and self.sticker_run~='NONE') and G.SETTINGS.run_stake_stickers)  then loc_vars = loc_vars or {}; loc_vars.sticker=(self.sticker or self.sticker_run) end",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1144,
-          "end_line": 1148
+          "start_line": 1154,
+          "end_line": 1158
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc.toml",
         "pattern": "(?<indent>[\\t ]*)for i = 1, #G.jokers.cards do[\\n\\s]*G.jokers.cards\\[i\\]:calculate_joker\\(\\{remove_playing_cards = true, removed = destroyed_cards\\}\\)[\\s\\n]*end",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 1627,
-          "end_line": 1627
+          "start_line": 1637,
+          "end_line": 1637
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\better_calc_fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\better_calc_fixes.toml",
         "pattern": "card_eval_status_text\\(context\\.blueprint_card or self",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2685,
-          "end_line": 2685
+          "start_line": 2695,
+          "end_line": 2695
         },
         {
-          "start_line": 2712,
-          "end_line": 2712
+          "start_line": 2722,
+          "end_line": 2722
         },
         {
-          "start_line": 2720,
-          "end_line": 2720
+          "start_line": 2730,
+          "end_line": 2730
         },
         {
-          "start_line": 2723,
-          "end_line": 2723
+          "start_line": 2733,
+          "end_line": 2733
         },
         {
-          "start_line": 2759,
-          "end_line": 2759
+          "start_line": 2769,
+          "end_line": 2769
         },
         {
-          "start_line": 2873,
-          "end_line": 2873
+          "start_line": 2883,
+          "end_line": 2883
         },
         {
-          "start_line": 2891,
-          "end_line": 2891
+          "start_line": 2901,
+          "end_line": 2901
         },
         {
-          "start_line": 2906,
-          "end_line": 2906
+          "start_line": 2916,
+          "end_line": 2916
         },
         {
-          "start_line": 2977,
-          "end_line": 2977
+          "start_line": 2987,
+          "end_line": 2987
         },
         {
-          "start_line": 3124,
-          "end_line": 3124
+          "start_line": 3134,
+          "end_line": 3134
         },
         {
-          "start_line": 3241,
-          "end_line": 3241
+          "start_line": 3251,
+          "end_line": 3251
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\blind.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\blind.toml",
         "pattern": "self\\.debuff = should_debuff\n(?<indent>[\\t ]*)end\n",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 726,
-          "end_line": 727
+          "start_line": 736,
+          "end_line": 737
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\booster.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\booster.toml",
         "pattern": "(?<indent>[\\t ]*)if self\\.ability\\.name:find\\('Arcana'\\) then[\\t\\n ]*if G\\.GAME\\.used_vouchers\\.v_omen_globe and pseudorandom\\('omen_globe'\\) > 0\\.8 then",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2006,
-          "end_line": 2014
+          "start_line": 2016,
+          "end_line": 2024
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\booster.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\booster.toml",
         "pattern": "(?<indent>[\\t ]*)align = \\(G\\.STATE[\\s\\S]*and -0\\.2 or 0},",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 1770,
-          "end_line": 1771
+          "start_line": 1780,
+          "end_line": 1781
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\booster.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\booster.toml",
         "pattern": "(?<indent>[\\t ]*)ease_dollars\\(-self\\.cost\\)\\n[\\s\\S]{8}inc_career_stat\\('c_shop_dollars_spent', self\\.cost\\)",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2119,
-          "end_line": 2122
+          "start_line": 2129,
+          "end_line": 2132
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "(?<indent>[\t ]*)if not G\\.OVERLAY_MENU then \n",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 478,
-          "end_line": 482
+          "start_line": 487,
+          "end_line": 491
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "(?<else>else)\n[\t ]*if self.ability.name == 'Loyalty Card' then\n[\t ]*self.ability.loyalty_remaining",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 3986,
-          "end_line": 3986
+          "start_line": 3996,
+          "end_line": 3996
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "(?<indent>[\t ]*)if self.ability.consumeable.mod_conv or self.ability.consumeable.suit_conv then",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 1357,
-          "end_line": 1361
+          "start_line": 1367,
+          "end_line": 1371
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "(?<indent>[\t ]*)if self.ability.name == 'The Hermit' or self.ability.consumeable.hand_type",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 1791,
-          "end_line": 1794
+          "start_line": 1801,
+          "end_line": 1804
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "(?<indent>[\t ]*)if center_table.name == 'Overstock'",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2163,
-          "end_line": 2167
+          "start_line": 2173,
+          "end_line": 2177
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "(?<indent>[\\t ]*)if self.ability.h_size ~= 0 then\\n[\\t ]*G\\.hand:change_size\\(self.ability.h_size\\)",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 768,
-          "end_line": 773
+          "start_line": 778,
+          "end_line": 783
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\center.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\center.toml",
         "pattern": "(?<indent>[\\t ]*)if self.ability.h_size ~= 0 then\\n[\\t ]*G\\.hand:change_size\\(-self.ability.h_size\\)",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 835,
-          "end_line": 840
+          "start_line": 845,
+          "end_line": 850
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\edition.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\edition.toml",
         "pattern": "(?<indent>[\\t ]*)self.ex([a-z._\\s=+(0-9)]*)\\n([\\t ]*)([a-z._\\s=+(0-9)]*)or 0\\)",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 509,
-          "end_line": 515
+          "start_line": 518,
+          "end_line": 524
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "(?<indent>[\\t ]*)if self\\.ability\\.effect == 'Stone Card' then\n[\\t ]*    return self\\.ability\\.bonus \\+ \\(self\\.ability\\.perma_bonus or 0\\)\n[\\t ]*end",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 1192,
-          "end_line": 1194
+          "start_line": 1202,
+          "end_line": 1204
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\enhancement.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\enhancement.toml",
         "pattern": "(?<indent>[\\t ]*)if self\\.ability\\.effect == 'Stone Card' then",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 1163,
-          "end_line": 1165
+          "start_line": 1173,
+          "end_line": 1175
         },
         {
-          "start_line": 4395,
-          "end_line": 4395
+          "start_line": 4405,
+          "end_line": 4405
         },
         {
-          "start_line": 4407,
-          "end_line": 4407
+          "start_line": 4417,
+          "end_line": 4417
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "(?<indent>[\\t ]*)self\\.ability = (\\{[\\s\\S]*?\n[\\t ]*\\})\n",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 340,
-          "end_line": 399
+          "start_line": 348,
+          "end_line": 408
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\fixes.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\fixes.toml",
         "pattern": "if G\\.GAME\\.blind then",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 818,
-          "end_line": 818
+          "start_line": 828,
+          "end_line": 828
         },
         {
-          "start_line": 880,
-          "end_line": 880
+          "start_line": 890,
+          "end_line": 890
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*G\\.GAME\\.blind:disable\\(\\)\n(?<indent>[ \\t]*)end",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2686,
-          "end_line": 2688
+          "start_line": 2696,
+          "end_line": 2698
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*return true\n[ \\t]*end\\)\n[ \\t]*\\}\\)\\)\n(?<indent>[ \\t]*)end\n",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2696,
-          "end_line": 2700
+          "start_line": 2706,
+          "end_line": 2710
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*if card\\.ability\\.invis_rounds then card\\.ability\\.invis_rounds = 0 end\n[ \\t]*card:add_to_deck\\(\\)\n(?<indent>[ \\t]*)G\\.jokers:emplace\\(card\\)",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2717,
-          "end_line": 2718
+          "start_line": 2727,
+          "end_line": 2728
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*card_eval_status_text\\(context[._]blueprint_card or self, 'extra', nil, nil, nil, \\{message = localize\\('k_duplicated_ex'\\)\\}\\)\n(?<indent>[ \\t]*)end",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2759,
-          "end_line": 2761
+          "start_line": 2769,
+          "end_line": 2771
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n[ \\t]*return\n(?<indent>[ \\t]*)elseif context\\.skipping_booster",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2776,
-          "end_line": 2776
+          "start_line": 2786,
+          "end_line": 2786
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n[ \\t]*return\n(?<indent>[ \\t]*)elseif context\\.playing_card_added",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2789,
-          "end_line": 2789
+          "start_line": 2799,
+          "end_line": 2799
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n(?<indent>[ \\t]*)elseif context\\.first_hand_drawn",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2804,
-          "end_line": 2804
+          "start_line": 2814,
+          "end_line": 2814
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n(?<indent>[ \\t]*)if self\\.ability\\.name == 'DNA' and not context\\.blueprint",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2822,
-          "end_line": 2822
+          "start_line": 2832,
+          "end_line": 2832
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n(?<indent>[ \\t]*)if self\\.ability\\.name == 'Madness' ",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2843,
-          "end_line": 2843
+          "start_line": 2853,
+          "end_line": 2853
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n(?<indent>[ \\t]*)if self\\.ability\\.name == 'Burglar' ",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2867,
-          "end_line": 2867
+          "start_line": 2877,
+          "end_line": 2877
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n(?<indent>[ \\t]*)if self\\.ability\\.name == 'Riff-raff' ",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2875,
-          "end_line": 2875
+          "start_line": 2885,
+          "end_line": 2885
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n(?<indent>[ \\t]*)if self\\.ability\\.name == 'Cartomancer' ",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2892,
-          "end_line": 2892
+          "start_line": 2902,
+          "end_line": 2902
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n(?<indent>[ \\t]*)if self\\.ability\\.name == 'Ceremonial Dagger' and not context.blueprint",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2909,
-          "end_line": 2909
+          "start_line": 2919,
+          "end_line": 2919
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n[ \\t]*end\n(?<indent>[ \\t]*)if self\\.ability\\.name == 'Marble Joker' ",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2941,
-          "end_line": 2941
+          "start_line": 2951,
+          "end_line": 2951
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n[ \\t]*return\n(?<indent>[ \\t]*)elseif context.destroying_card",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 2959,
-          "end_line": 2959
+          "start_line": 2969,
+          "end_line": 2969
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "if glass_cards > 0 then(.*\\n){0,20}?.*\n[ \\t]*return true\n[ \\t]*end\n(?<indent>[ \\t]*)\\}\\)\\)",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 3072,
-          "end_line": 3073
+          "start_line": 3082,
+          "end_line": 3083
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n[ \\t]*return\n[ \\t]*end\n(?<indent>[ \\t]*)if self\\.ability\\.name == 'Fortune Teller' and not context\\.blueprint",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 3088,
-          "end_line": 3088
+          "start_line": 3098,
+          "end_line": 3098
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n(?<indent>[ \\t]*)if self\\.ability\\.name == 'Constellation' and not context\\.blueprint",
-        "patch_type": "regex"
-      },
-      "regions": [
-        {
-          "start_line": 3096,
-          "end_line": 3096
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
-        "pattern": "[ \\t]*end\n[ \\t]*return\n(?<indent>[ \\t]*)elseif context.debuffed_hand",
         "patch_type": "regex"
       },
       "regions": [
@@ -2388,46 +2446,59 @@
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
+        "pattern": "[ \\t]*end\n[ \\t]*return\n(?<indent>[ \\t]*)elseif context.debuffed_hand",
+        "patch_type": "regex"
+      },
+      "regions": [
+        {
+          "start_line": 3116,
+          "end_line": 3116
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n(?<indent>[ \\t]*)elseif context.discard",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 3126,
-          "end_line": 3126
+          "start_line": 3136,
+          "end_line": 3136
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_retriggers.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_retriggers.toml",
         "pattern": "[ \\t]*end\n[ \\t]*end\n[ \\t]*return\n(?<indent>[ \\t]*)elseif context.end_of_round",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 3245,
-          "end_line": 3245
+          "start_line": 3255,
+          "end_line": 3255
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\playing_card.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\playing_card.toml",
         "pattern": "function Card:get_nominal\\(mod\\)\\n([\\t ]+.*\\n)*end",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 1154,
-          "end_line": 1166
+          "start_line": 1164,
+          "end_line": 1176
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\playing_card.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\playing_card.toml",
         "pattern": "(?<indent>[\t ]*)if self.base.value == '2' then self.base.nominal = 2; self.base.id = 2(\n[\t ]+elseif .*)*",
         "patch_type": "regex"
       },
@@ -2440,7 +2511,7 @@
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\playing_card.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\playing_card.toml",
         "pattern": "(?<indent>[\t ]*)if self.base.suit == 'Diamonds' then self.base.suit_nominal = 0.01; self.base.suit_nominal_original = suit_base_nominal_original or 0.001 (\n[\t ]+elseif .*)*",
         "patch_type": "regex"
       },
@@ -2453,629 +2524,681 @@
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\playing_card.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\playing_card.toml",
         "pattern": "(?<indent>[\t ]*)local new_code = [\\s\\S]*?local new_val = [\\s\\S]*?local new_card = G.P_CARDS\\[new_code..new_val\\]",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 738,
-          "end_line": 740
+          "start_line": 748,
+          "end_line": 750
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\playing_card.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\playing_card.toml",
         "pattern": "(?<indent>[\t ]*)if id == 11 or id == 12 or id == 13 or next\\(find_joker\\(\"Pareidolia\"\\)\\) then",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 1178,
-          "end_line": 1180
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\pool.toml",
-        "pattern": "(?<indent>[\\t ]*)for k, v in pairs\\(G\\.P_CENTERS\\) do\n[\\t ]*if v\\.name == self\\.ability\\.name then\n[\\t ]*G\\.GAME\\.used_jokers\\[k\\] = true\n[\\t ]*end\n[\\t ]*end",
-        "patch_type": "regex"
-      },
-      "regions": [
-        {
-          "start_line": 484,
-          "end_line": 486
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\pool.toml",
-        "pattern": "(?<indent>[\\t ]*)for k, v in pairs\\(G\\.P_CENTERS\\) do\n[\\t ]*if v\\.name == self\\.ability\\.name then\n[\\t ]*if not next\\(find_joker\\(self\\.ability\\.name, true\\)\\) then \n[\\t ]*G\\.GAME\\.used_jokers\\[k\\] = nil\n[\\t ]*end\n[\\t ]*end\n[\\t ]*end",
-        "patch_type": "regex"
-      },
-      "regions": [
-        {
-          "start_line": 5123,
-          "end_line": 5125
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\seal.toml",
-        "pattern": "(?<indent>[\\t ]*)local seal_rate = 10\n[\\n\\t ]*local seal_poll = pseudorandom\\(pseudoseed\\('stdseal'..G.GAME.round_resets.ante\\)\\)\n[\\n\\t ]*if seal_poll > 1 - 0.02\\*seal_rate then\n[\\n\\t ]*local seal_type = pseudorandom\\(pseudoseed\\('stdsealtype'..G.GAME.round_resets.ante\\)\\)\n[\\n\\t ]*if seal_type > 0.75 then card:set_seal\\('Red'\\)\n[\\n\\t ]*elseif seal_type > 0.5 then card:set_seal\\('Blue'\\)\n[\\n\\t ]*elseif seal_type > 0.25 then card:set_seal\\('Gold'\\)\n[\\n\\t ]*else card:set_seal\\('Purple'\\)\n[\\n\\t ]*end\n[\\n\\t ]*end",
-        "patch_type": "regex"
-      },
-      "regions": [
-        {
-          "start_line": 2046,
-          "end_line": 2046
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\seal.toml",
-        "pattern": "function Card:calculate_seal\\(context\\)\\n(?<indent>[\\t ]*)if self.debuff then return nil end",
-        "patch_type": "regex"
-      },
-      "regions": [
-        {
-          "start_line": 2572,
-          "end_line": 2581
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\seal.toml",
-        "pattern": "(?<indent>[\\t ]*)if self\\.seal == 'Gold' then",
-        "patch_type": "regex"
-      },
-      "regions": [
-        {
-          "start_line": 1320,
-          "end_line": 1323
-        },
-        {
-          "start_line": 4821,
-          "end_line": 4824
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\can_calculate.toml",
-        "pattern": "function Card:get_end_of_round_effect(context)\n    if self.debuff then return {} end",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 1280,
-          "end_line": 1280
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\can_calculate.toml",
-        "pattern": "function Card:calculate_dollar_bonus()\n    if self.debuff then return end",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 1939,
-          "end_line": 1940
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\can_calculate.toml",
-        "pattern": "function Card:calculate_seal(context)\n    if self.debuff then return nil end",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 2572,
-          "end_line": 2572
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\can_calculate.toml",
-        "pattern": "function Card:calculate_joker(context)\n    if self.debuff then return nil end",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 2630,
-          "end_line": 2630
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\can_calculate.toml",
-        "pattern": "if self.ability.set == \"Joker\" and not self.debuff then",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 2638,
-          "end_line": 2638
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\can_calculate.toml",
-        "pattern": "if self.debuff then return 0 end",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 1191,
-          "end_line": 1191
-        },
-        {
-          "start_line": 1199,
-          "end_line": 1199
-        },
-        {
-          "start_line": 1215,
-          "end_line": 1215
-        },
-        {
-          "start_line": 1223,
-          "end_line": 1223
-        },
-        {
-          "start_line": 1230,
-          "end_line": 1230
-        },
-        {
-          "start_line": 1318,
-          "end_line": 1318
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\compat_0_9_8.toml",
-        "pattern": "self.ability.bonus = (self.ability.bonus or 0) + (center.config.bonus or 0)",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 402,
-          "end_line": 402
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_size.toml",
-        "pattern": "if _center.name == 'Square Joker' and (_center.discovered or self.bypass_discovery_center) then \n    self.children.center.scale.y = self.children.center.scale.x\nend\n",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 209,
-          "end_line": 214
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_size.toml",
-        "pattern": "if center.name == \"Wee Joker\" and (center.discovered or self.bypass_discovery_center) then \n    H = H*0.7\n    W = W*0.7\n    self.T.h = H\n    self.T.w = W\nend\n",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 299,
-          "end_line": 312
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\joker_size.toml",
-        "pattern": "self.VT.h = self.T.h\nself.VT.w = self.T.w\n",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 5047,
-          "end_line": 5056
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\listed_probabilities.toml",
-        "pattern": "elseif self.ability.name == 'Space Joker' then loc_vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra}",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 941,
-          "end_line": 941
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\listed_probabilities.toml",
-        "pattern": "elseif self.ability.name == '8 Ball' then loc_vars = {''..(G.GAME and G.GAME.probabilities.normal or 1),self.ability.extra}",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 979,
-          "end_line": 979
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\listed_probabilities.toml",
-        "pattern": "elseif self.ability.name == 'Gros Michel' then loc_vars = {self.ability.extra.mult, ''..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra.odds}",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 986,
-          "end_line": 986
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\listed_probabilities.toml",
-        "pattern": "elseif self.ability.name == 'Business Card' then loc_vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra}",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 990,
-          "end_line": 990
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\listed_probabilities.toml",
-        "pattern": "elseif self.ability.name == 'Bloodstone' then loc_vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra.odds, self.ability.extra.Xmult}",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 1028,
-          "end_line": 1030
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\listed_probabilities.toml",
-        "pattern": "elseif self.ability.name == 'Cavendish' then loc_vars = {self.ability.extra.Xmult, ''..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra.odds}",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 1045,
-          "end_line": 1045
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\listed_probabilities.toml",
-        "pattern": "elseif self.ability.name == 'Reserved Parking' then loc_vars = {self.ability.extra.dollars, ''..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra.odds}",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 1077,
-          "end_line": 1077
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\listed_probabilities.toml",
-        "pattern": "elseif self.ability.name == 'Hallucination' then loc_vars = {G.GAME.probabilities.normal, self.ability.extra}",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 1080,
-          "end_line": 1080
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\listed_probabilities.toml",
-        "pattern": "elseif context.buying_card then\n",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 2677,
-          "end_line": 2680
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\mod.toml",
-        "pattern": "function Card:set_debuff(should_debuff)",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 689,
-          "end_line": 714
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\perma_bonus.toml",
-        "pattern": "loc_vars = { playing_card = not not self.base.colour, value = self.base.value, suit = self.base.suit, colour = self.base.colour,",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 910,
-          "end_line": 911
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\perma_bonus.toml",
-        "pattern": "bonus_chips = (self.ability.bonus + (self.ability.perma_bonus or 0)) > 0 and (self.ability.bonus + (self.ability.perma_bonus or 0)) or nil,",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 914,
-          "end_line": 925
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\perma_bonus.toml",
-        "pattern": "x_mult = center.config.Xmult or 1,",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 351,
-          "end_line": 355
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\perma_bonus.toml",
-        "pattern": "perma_bonus = self.ability and self.ability.perma_bonus or 0,",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 364,
-          "end_line": 375
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\perma_bonus.toml",
-        "pattern": "function Card:get_chip_bonus(*",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 1190,
+          "start_line": 1188,
           "end_line": 1190
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\perma_bonus.toml",
-        "pattern": "if self.ability.effect == \"Lucky Card\" then\n    if pseudorandom('lucky_mult') < G.GAME.probabilities.normal/5 then\n        self.lucky_trigger = true\n        return self.ability.mult\n    else\n        return 0\n    end\nelse\n    return self.ability.mult\nend",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\pool.toml",
+        "pattern": "(?<indent>[\\t ]*)for k, v in pairs\\(G\\.P_CENTERS\\) do\n[\\t ]*if v\\.name == self\\.ability\\.name then\n[\\t ]*G\\.GAME\\.used_jokers\\[k\\] = true\n[\\t ]*end\n[\\t ]*end",
+        "patch_type": "regex"
+      },
+      "regions": [
+        {
+          "start_line": 493,
+          "end_line": 495
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\pool.toml",
+        "pattern": "(?<indent>[\\t ]*)for k, v in pairs\\(G\\.P_CENTERS\\) do\n[\\t ]*if v\\.name == self\\.ability\\.name then\n[\\t ]*if not next\\(find_joker\\(self\\.ability\\.name, true\\)\\) then \n[\\t ]*G\\.GAME\\.used_jokers\\[k\\] = nil\n[\\t ]*end\n[\\t ]*end\n[\\t ]*end",
+        "patch_type": "regex"
+      },
+      "regions": [
+        {
+          "start_line": 5136,
+          "end_line": 5138
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\seal.toml",
+        "pattern": "(?<indent>[\\t ]*)local seal_rate = 10\n[\\n\\t ]*local seal_poll = pseudorandom\\(pseudoseed\\('stdseal'..G.GAME.round_resets.ante\\)\\)\n[\\n\\t ]*if seal_poll > 1 - 0.02\\*seal_rate then\n[\\n\\t ]*local seal_type = pseudorandom\\(pseudoseed\\('stdsealtype'..G.GAME.round_resets.ante\\)\\)\n[\\n\\t ]*if seal_type > 0.75 then card:set_seal\\('Red'\\)\n[\\n\\t ]*elseif seal_type > 0.5 then card:set_seal\\('Blue'\\)\n[\\n\\t ]*elseif seal_type > 0.25 then card:set_seal\\('Gold'\\)\n[\\n\\t ]*else card:set_seal\\('Purple'\\)\n[\\n\\t ]*end\n[\\n\\t ]*end",
+        "patch_type": "regex"
+      },
+      "regions": [
+        {
+          "start_line": 2056,
+          "end_line": 2056
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\seal.toml",
+        "pattern": "function Card:calculate_seal\\(context\\)\\n(?<indent>[\\t ]*)if self.debuff then return nil end",
+        "patch_type": "regex"
+      },
+      "regions": [
+        {
+          "start_line": 2582,
+          "end_line": 2591
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\seal.toml",
+        "pattern": "(?<indent>[\\t ]*)if self\\.seal == 'Gold' then",
+        "patch_type": "regex"
+      },
+      "regions": [
+        {
+          "start_line": 1330,
+          "end_line": 1333
+        },
+        {
+          "start_line": 4833,
+          "end_line": 4836
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\can_calculate.toml",
+        "pattern": "function Card:get_end_of_round_effect(context)\n    if self.debuff then return {} end",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 1290,
+          "end_line": 1290
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\can_calculate.toml",
+        "pattern": "function Card:calculate_dollar_bonus()\n    if self.debuff then return end",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 1949,
+          "end_line": 1950
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\can_calculate.toml",
+        "pattern": "function Card:calculate_seal(context)\n    if self.debuff then return nil end",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 2582,
+          "end_line": 2582
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\can_calculate.toml",
+        "pattern": "function Card:calculate_joker(context)\n    if self.debuff then return nil end",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 2640,
+          "end_line": 2640
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\can_calculate.toml",
+        "pattern": "if self.ability.set == \"Joker\" and not self.debuff then",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 2648,
+          "end_line": 2648
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\can_calculate.toml",
+        "pattern": "if self.debuff then return 0 end",
         "patch_type": "pattern"
       },
       "regions": [
         {
           "start_line": 1201,
-          "end_line": 1211
+          "end_line": 1201
+        },
+        {
+          "start_line": 1209,
+          "end_line": 1209
+        },
+        {
+          "start_line": 1225,
+          "end_line": 1225
+        },
+        {
+          "start_line": 1233,
+          "end_line": 1233
+        },
+        {
+          "start_line": 1240,
+          "end_line": 1240
+        },
+        {
+          "start_line": 1328,
+          "end_line": 1328
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\perma_bonus.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\compat_0_9_8.toml",
+        "pattern": "self.ability.bonus = (self.ability.bonus or 0) + (center.config.bonus or 0)",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 411,
+          "end_line": 411
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_size.toml",
+        "pattern": "if _center.name == 'Square Joker' and (_center.discovered or self.bypass_discovery_center) then \n    self.children.center.scale.y = self.children.center.scale.x\nend\n",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 210,
+          "end_line": 215
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_size.toml",
+        "pattern": "if center.name == \"Wee Joker\" and (center.discovered or self.bypass_discovery_center) then \n    H = H*0.7\n    W = W*0.7\n    self.T.h = H\n    self.T.w = W\nend\n",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 300,
+          "end_line": 313
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\joker_size.toml",
+        "pattern": "self.VT.h = self.T.h\nself.VT.w = self.T.w\n",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 5059,
+          "end_line": 5068
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\listed_probabilities.toml",
+        "pattern": "elseif self.ability.name == 'Space Joker' then loc_vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra}",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 951,
+          "end_line": 951
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\listed_probabilities.toml",
+        "pattern": "elseif self.ability.name == '8 Ball' then loc_vars = {''..(G.GAME and G.GAME.probabilities.normal or 1),self.ability.extra}",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 989,
+          "end_line": 989
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\listed_probabilities.toml",
+        "pattern": "elseif self.ability.name == 'Gros Michel' then loc_vars = {self.ability.extra.mult, ''..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra.odds}",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 996,
+          "end_line": 996
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\listed_probabilities.toml",
+        "pattern": "elseif self.ability.name == 'Business Card' then loc_vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra}",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 1000,
+          "end_line": 1000
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\listed_probabilities.toml",
+        "pattern": "elseif self.ability.name == 'Bloodstone' then loc_vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra.odds, self.ability.extra.Xmult}",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 1038,
+          "end_line": 1040
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\listed_probabilities.toml",
+        "pattern": "elseif self.ability.name == 'Cavendish' then loc_vars = {self.ability.extra.Xmult, ''..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra.odds}",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 1055,
+          "end_line": 1055
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\listed_probabilities.toml",
+        "pattern": "elseif self.ability.name == 'Reserved Parking' then loc_vars = {self.ability.extra.dollars, ''..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra.odds}",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 1087,
+          "end_line": 1087
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\listed_probabilities.toml",
+        "pattern": "elseif self.ability.name == 'Hallucination' then loc_vars = {G.GAME.probabilities.normal, self.ability.extra}",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 1090,
+          "end_line": 1090
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\listed_probabilities.toml",
+        "pattern": "elseif context.buying_card then\n",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 2687,
+          "end_line": 2690
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\mod.toml",
+        "pattern": "function Card:set_debuff(should_debuff)",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 699,
+          "end_line": 724
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\override_notice.toml",
+        "pattern": "function Card:draw(layer)",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 4696,
+          "end_line": 4696
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\override_notice.toml",
+        "pattern": "function Card:set_sprites(_center, _front)",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 153,
+          "end_line": 153
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\override_notice.toml",
+        "pattern": "function Card:set_edition(edition, immediate, silent)",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 538,
+          "end_line": 538
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\override_notice.toml",
+        "pattern": "function Card:align_h_popup()",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 4622,
+          "end_line": 4622
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\perma_bonus.toml",
+        "pattern": "loc_vars = { playing_card = not not self.base.colour, value = self.base.value, suit = self.base.suit, colour = self.base.colour,",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 920,
+          "end_line": 921
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\perma_bonus.toml",
+        "pattern": "bonus_chips = (self.ability.bonus + (self.ability.perma_bonus or 0)) > 0 and (self.ability.bonus + (self.ability.perma_bonus or 0)) or nil,",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 924,
+          "end_line": 935
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\perma_bonus.toml",
+        "pattern": "x_mult = center.config.Xmult or 1,",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 359,
+          "end_line": 363
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\perma_bonus.toml",
+        "pattern": "perma_bonus = self.ability and self.ability.perma_bonus or 0,",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 372,
+          "end_line": 383
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\perma_bonus.toml",
+        "pattern": "function Card:get_chip_bonus(*",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 1200,
+          "end_line": 1200
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\perma_bonus.toml",
+        "pattern": "if self.ability.effect == \"Lucky Card\" then\n    if pseudorandom('lucky_mult') < G.GAME.probabilities.normal/5 then\n        self.lucky_trigger = true\n        return self.ability.mult\n    else\n        return 0\n    end\nelse\n    return self.ability.mult\nend",
+        "patch_type": "pattern"
+      },
+      "regions": [
+        {
+          "start_line": 1211,
+          "end_line": 1221
+        }
+      ]
+    },
+    {
+      "patch_source": {
+        "file": "smods-1.0.0-beta-1503a\\lovely\\perma_bonus.toml",
         "pattern": "if self.ability.x_mult <= 1 then return 0 end\nreturn self.ability.x_mult",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1217,
-          "end_line": 1219
+          "start_line": 1227,
+          "end_line": 1229
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\perma_bonus.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\perma_bonus.toml",
         "pattern": "return self.ability.h_mult",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1224,
-          "end_line": 1226
+          "start_line": 1234,
+          "end_line": 1236
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\perma_bonus.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\perma_bonus.toml",
         "pattern": "return self.ability.h_x_mult",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1231,
-          "end_line": 1233
+          "start_line": 1241,
+          "end_line": 1243
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\perma_bonus.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\perma_bonus.toml",
         "pattern": "function Card:get_edition()",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1236,
-          "end_line": 1262
+          "start_line": 1246,
+          "end_line": 1272
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\perma_bonus.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\perma_bonus.toml",
         "pattern": "end\nif ret > 0 then\n    G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + ret",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1335,
-          "end_line": 1341
+          "start_line": 1345,
+          "end_line": 1351
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\perma_bonus.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\perma_bonus.toml",
         "pattern": "if self.ability.h_dollars > 0 then\n    ret.h_dollars = self.ability.h_dollars\n    ret.card = self\nend\n",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1282,
-          "end_line": 1286
+          "start_line": 1292,
+          "end_line": 1296
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\poker_hand.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\poker_hand.toml",
         "pattern": "if k ~= context.scoring_name and v.played >= play_more_than and v.visible then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3921,
-          "end_line": 3921
+          "start_line": 3931,
+          "end_line": 3931
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\poker_hand.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\poker_hand.toml",
         "pattern": "if v.visible and k ~= self.ability.to_do_poker_hand then _poker_hands[#_poker_hands+1] = k end",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3335,
-          "end_line": 3335
+          "start_line": 3345,
+          "end_line": 3345
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\poker_hand.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\poker_hand.toml",
         "pattern": "if v.visible then _poker_hands[#_poker_hands+1] = k end",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 437,
-          "end_line": 437
+          "start_line": 446,
+          "end_line": 446
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\calculate_card_added.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\calculate_card_added.toml",
         "pattern": "(?<indent>[\\t ]*).*then G\\.E_MANAGER:add_event\\(Event\\(\\{ func = function\\(\\) G\\.GAME\\.blind:set_blind\\(nil, true, nil\\); return true end \\}\\)\\) end\n(?<root>)[\\s\\S]*\nfunction Card:remove_from_deck",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 819,
-          "end_line": 828
+          "start_line": 829,
+          "end_line": 838
         }
       ]
     },
     {
       "patch_source": {
-        "file": "smods-1.0.0-beta-1224a\\lovely\\listed_probabilities.toml",
+        "file": "smods-1.0.0-beta-1503a\\lovely\\listed_probabilities.toml",
         "pattern": "pseudorandom\\((.*?)\\) ?< ?G\\.GAME\\.probabilities\\.normal ?\\/ ?(.*?)( |\\)|$)",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 1328,
-          "end_line": 1328
+          "start_line": 1338,
+          "end_line": 1338
         },
         {
-          "start_line": 1731,
-          "end_line": 1731
+          "start_line": 1741,
+          "end_line": 1741
         },
         {
-          "start_line": 2660,
-          "end_line": 2660
+          "start_line": 2670,
+          "end_line": 2670
         },
         {
-          "start_line": 3385,
-          "end_line": 3385
+          "start_line": 3395,
+          "end_line": 3395
         },
         {
-          "start_line": 3465,
-          "end_line": 3465
+          "start_line": 3475,
+          "end_line": 3475
         },
         {
-          "start_line": 3535,
-          "end_line": 3535
+          "start_line": 3545,
+          "end_line": 3545
         },
         {
-          "start_line": 3607,
-          "end_line": 3607
+          "start_line": 3617,
+          "end_line": 3617
         },
         {
-          "start_line": 3662,
-          "end_line": 3662
+          "start_line": 3672,
+          "end_line": 3672
         },
         {
-          "start_line": 3784,
-          "end_line": 3784
+          "start_line": 3794,
+          "end_line": 3794
         }
       ]
     },
@@ -3087,8 +3210,8 @@
       },
       "regions": [
         {
-          "start_line": 4959,
-          "end_line": 4959
+          "start_line": 4971,
+          "end_line": 4971
         }
       ]
     },
@@ -3100,8 +3223,8 @@
       },
       "regions": [
         {
-          "start_line": 4644,
-          "end_line": 4644
+          "start_line": 4655,
+          "end_line": 4655
         }
       ]
     },
@@ -3113,203 +3236,203 @@
       },
       "regions": [
         {
-          "start_line": 4671,
-          "end_line": 4674
+          "start_line": 4682,
+          "end_line": 4685
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\TheOrder.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\TheOrder.toml",
         "pattern": "if SMODS.pseudorandom_probability(self, 'halu'..G.GAME.round_resets.ante, 1, self.ability.extra) then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2660,
-          "end_line": 2660
+          "start_line": 2670,
+          "end_line": 2670
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\TheOrder.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\TheOrder.toml",
         "pattern": "local card = create_card('Joker', G.jokers, nil, 0.99, nil, nil, nil, 'wra')",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1718,
-          "end_line": 1718
+          "start_line": 1728,
+          "end_line": 1728
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\TheOrder.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\TheOrder.toml",
         "pattern": "while not self.ability.to_do_poker_hand do",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 442,
-          "end_line": 444
+          "start_line": 451,
+          "end_line": 453
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\TheOrder.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\TheOrder.toml",
         "pattern": "self.ability.to_do_poker_hand = pseudorandom_element(_poker_hands, pseudoseed('to_do'))",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3337,
-          "end_line": 3339
+          "start_line": 3347,
+          "end_line": 3349
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\rework-center.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\rework-center.toml",
         "pattern": "obj:add_to_deck(self, from_debuff)",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 770,
-          "end_line": 772
+          "start_line": 780,
+          "end_line": 782
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\rework-center.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\rework-center.toml",
         "pattern": "obj:remove_from_deck(self, from_debuff)",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 837,
-          "end_line": 839
+          "start_line": 847,
+          "end_line": 849
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\cards.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\cards.toml",
         "pattern": "if G.jokers.cards[i] ~= self then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 2706,
-          "end_line": 2706
+          "start_line": 2716,
+          "end_line": 2716
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\cards.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\cards.toml",
         "pattern": "local chosen_joker = pseudorandom_element(G.jokers.cards, pseudoseed('ankh_choice'))",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1690,
-          "end_line": 1694
+          "start_line": 1700,
+          "end_line": 1704
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\cards.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\cards.toml",
         "pattern": "if center.consumeable then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 413,
-          "end_line": 423
+          "start_line": 422,
+          "end_line": 432
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\cards.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\cards.toml",
         "pattern": "if self.ability.name == 'Baseball Card' and self ~= context.other_joker and context.other_joker:is_rarity(\"Uncommon\") then",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 3760,
-          "end_line": 3760
+          "start_line": 3770,
+          "end_line": 3770
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\game.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\game.toml",
         "pattern": "function Card:sell_card()",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1859,
-          "end_line": 1861
+          "start_line": 1869,
+          "end_line": 1871
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\misc.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\misc.toml",
         "pattern": "for i = self.ability.extra.min, self.ability.extra.max do",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 963,
-          "end_line": 963
+          "start_line": 973,
+          "end_line": 973
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\misc.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\misc.toml",
         "pattern": "{string = 'rand()', colour = G.C.JOKER_GREY},{string = \"#@\"..(G.deck and G.deck.cards[1] and G.deck.cards[#G.deck.cards].base.id or 11)..(G.deck and G.deck.cards[1] and G.deck.cards[#G.deck.cards].base.suit:sub(1,1) or 'D'), colour = G.C.RED},",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 972,
-          "end_line": 972
+          "start_line": 982,
+          "end_line": 982
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\cards.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\cards.toml",
         "pattern": "\\) then self.cost = 0 end",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 525,
-          "end_line": 525
+          "start_line": 534,
+          "end_line": 534
         }
       ]
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.0\\lovely\\cards.toml",
+        "file": "BalatroMultiplayer-0.3.1\\lovely\\cards.toml",
         "pattern": "--if there is at least one joker(?<pre>[\\s\\S]+?)for k, v in pairs\\(G.jokers.cards\\) do",
         "patch_type": "regex"
       },
       "regions": [
         {
-          "start_line": 1801,
-          "end_line": 1806
+          "start_line": 1811,
+          "end_line": 1816
         }
       ]
     }

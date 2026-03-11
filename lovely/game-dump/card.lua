@@ -150,6 +150,7 @@ SMODS.enh_cache:write(self, nil)
     if self.playing_card and not initial then check_for_unlock({type = 'modify_deck'}) end
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function Card:set_sprites(_center, _front)
     if _front then 
         local _atlas, _pos = get_front_spriteinfo(_front)
@@ -311,25 +312,32 @@ function Card:set_ability(center, initial, delay_sprites)
         self.T.w = W
     end
 
-    if delay_sprites == 'quantum' or delay_sprites == 'manual' then
-    elseif delay_sprites then 
-        self.ability.delayed = true
+    if delay_sprites then 
         G.E_MANAGER:add_event(Event({
             func = function()
                 if not self.REMOVED then
-                    self:set_sprites(center)
-                    if self.ability and not initial then
-                      self.front_hidden = self:should_hide_front()
+                    if delay_sprites ~= 'quantum' then
+                        SMODS.clean_up_children(self.children)
+                        if self.canvas_text then SMODS.clean_up_canvas_text(self) end
+                        if self.playing_card and self.ability and not self:should_hide_front() then self:set_sprites(nil, self.config.card) end
+                        self:set_sprites(center)
+                        if self.ability and not initial then
+                          self.front_hidden = self:should_hide_front()
+                        end
                     end
-                    self.ability.delayed = false
                 end
                 return true
             end
         })) 
     else
-        self:set_sprites(center)
-        if self.ability and not initial then
-          self.front_hidden = self:should_hide_front()
+        if delay_sprites ~= 'quantum' then
+            SMODS.clean_up_children(self.children)
+            if self.canvas_text then SMODS.clean_up_canvas_text(self) end
+            if self.playing_card and self.ability and not self:should_hide_front() then self:set_sprites(nil, self.config.card) end
+            self:set_sprites(center)
+            if self.ability and not initial then
+              self.front_hidden = self:should_hide_front()
+            end
         end
     end
 
@@ -376,6 +384,7 @@ function Card:set_ability(center, initial, delay_sprites)
     }
     self.ability = self.ability or {}
     new_ability.extra_value = nil
+    new_ability.debuff_sources = {}
     self.ability.extra_value = self.ability.extra_value or 0
     for k, v in pairs(new_ability) do
         self.ability[k] = v
@@ -526,6 +535,7 @@ function Card:set_cost()
     self.sell_cost_label = self.facing == 'back' and '?' or self.sell_cost
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function Card:set_edition(edition, immediate, silent)
     self.edition = nil
     if not edition then return end
@@ -910,7 +920,7 @@ function Card:generate_UIBox_ability_table(vars_only)
         local bonus_chips = self.ability.bonus + (self.ability.perma_bonus or 0)
         local total_h_dollars = self:get_h_dollars()
         loc_vars = { playing_card = not not self.base.colour, value = self.base.value, suit = self.base.suit, colour = self.base.colour,
-                    nominal_chips = self.base.nominal > 0 and self.base.nominal or nil,
+                    nominal_chips = self.base.nominal ~= 0 and self.base.nominal or nil,
                     bonus_x_chips = self.ability.perma_x_chips ~= 0 and (self.ability.perma_x_chips + 1) or nil,
                     bonus_mult = self.ability.perma_mult ~= 0 and self.ability.perma_mult or nil,
                     bonus_x_mult = self.ability.perma_x_mult ~= 0 and (self.ability.perma_x_mult + 1) or nil,
@@ -4609,6 +4619,7 @@ function Card:move(dt)
     end
 end
 
+-- Function overridden by SMODS in src/overrides.lua
 function Card:align_h_popup()
         local focused_ui = self.children.focused_ui and true or false
         local popup_direction = (self.children.buy_button or (self.area and self.area.config.view_deck) or (self.area and self.area.config.type == 'shop')) and 'cl' or 
@@ -4682,6 +4693,7 @@ function Card:juice_up(scale, rot_amount)
     Moveable.juice_up(self, scale, rot_amt)
 end
 
+-- Function overridden by SMODS in src/card_draw.lua
 function Card:draw(layer)
     layer = layer or 'both'
 
@@ -4935,10 +4947,10 @@ function Card:highlight(is_higlighted)
             self.children.use_button = UIBox{
                 definition = G.UIDEF.use_and_sell_buttons(self), 
                 config = {align=
-                        ((self.area == G.jokers) or (self.area == G.consumeables)) and "cr" or
+                        self.area.config.align_buttons and "cr" or
                         "bmi"
                     , offset = 
-                        ((self.area == G.jokers) or (self.area == G.consumeables)) and {x=x_off - 0.4,y=0} or
+                        self.area.config.align_buttons and {x=x_off - 0.4,y=0} or
                         {x=0,y=0.65},
                     parent =self}
             }
@@ -5094,6 +5106,7 @@ function Card:load(cardTable, other_card)
     self.edition = cardTable.edition
     self.seal = cardTable.seal
 
+    if self.canvas_text then SMODS.clean_up_canvas_text(self) end
     remove_all(self.children)
     self.children = {}
     self.children.shadow = Moveable(0, 0, 0, 0)
@@ -5138,6 +5151,7 @@ function Card:remove()
         end
     end
 
+    if self.canvas_text then SMODS.clean_up_canvas_text(self) end
     remove_all(self.children)
 
     for k, v in pairs(G.I.CARD) do
@@ -6140,6 +6154,10 @@ FNSJ.simulate_mp_lets_go_gambling = function(joker_obj, context)
 		FN.SIM.add_dollars(exact_money, min_money, max_money)
 		FN.SIM.x_mult(exact_xmult, min_xmult, max_xmult)
 	end
+end
+
+FNSJ.simulate_mp_seltzer = function(joker_obj, context)
+	if context.cardarea == G.play and context.repetition then FN.SIM.add_reps(1) end
 end
 
 FNSJ.simulate_mp_bloodstone = function(joker_obj, context)
