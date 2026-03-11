@@ -113,17 +113,6 @@ function Moveable:set_alignment(args)
 end
 
 function Moveable:align_to_major()
-if not self or not self.alignment or not self.role then return end
-if not self.alignment.type or not self.alignment.prev_type then return end
-if not self.alignment.offset or not self.alignment.prev_offset then return end
-if not self.alignment.offset.x or not self.alignment.offset.y then return end
-if not self.alignment.prev_offset.x or not self.alignment.prev_offset.y then return end
-if not self.T then return end
-if not self.Mid or not self.Mid.T or not self.Mid.T.w or not self.Mid.T.h or not self.Mid.T.x or not self.Mid.T.y then return end
-if not self.role.major or not self.role.major.T then return end
-if not self.role.major.T.w or not self.role.major.T.h or not self.role.major.T.x or not self.role.major.T.y then return end
-if not self.T.w or not self.T.h or not self.T.x or not self.T.y then return end
-if not self.role.offset then self.role.offset = {} end
     if self.alignment.type ~= self.alignment.prev_type then 
         self.alignment.type_list = {
             a = self.alignment.type == 'a',

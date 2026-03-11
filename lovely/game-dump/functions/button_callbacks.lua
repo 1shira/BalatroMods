@@ -748,10 +748,7 @@ G.FUNCS.change_viewed_back = function(args)
   G.PROFILES[G.SETTINGS.profile].MEMORY.deck = args.to_val
   for key, val in pairs(G.sticker_card.area.cards) do
   	val.children.back = false
-  	local temp_x, temp_y = val.T.x, val.T.y
   	val:set_ability(val.config.center, true)
-  	val.children.back.VT.x, val.children.back.VT.y = temp_x, temp_y
-  	val.children.center.VT.x, val.children.center.VT.y = temp_x, temp_y
   end
 end
 
@@ -1843,7 +1840,7 @@ end
 
 G.FUNCS.start_setup_run = function(e)
   if G.OVERLAY_MENU then G.FUNCS.exit_overlay_menu() end
-  if G.SETTINGS.current_setup == 'New Run' or G.SETTINGS.current_setup == 'Multiplayer' then
+  if G.SETTINGS.current_setup == 'New Run' then 
     if not G.GAME or (not G.GAME.won and not G.GAME.seeded) then
       if G.SAVED_GAME ~= nil then
         if not G.SAVED_GAME.GAME.won then 
@@ -2517,9 +2514,6 @@ G.FUNCS.buy_from_shop = function(e)
 end
   
   G.FUNCS.toggle_shop = function(e)
-  if MP.LOBBY.code then
-    MP.ACTIONS.spent_last_shop(to_big(MP.GAME.spent_total) - to_big(MP.GAME.spent_before_shop))
-  end
     stop_use()
     G.CONTROLLER.locks.toggle_shop = true
     if G.shop then 
@@ -2708,9 +2702,7 @@ end
               G.E_MANAGER:add_event(Event({func = function()
                 G.CONTROLLER:snap_to({node = _top_button})
               return true end }))
-              if _top_button.config.button ~= "mp_toggle_ready" then
-              	_top_button.config.button = "select_blind"
-              end
+              _top_button.config.button = 'select_blind'
               _top_button.config.colour = G.C.FILTER
               _top_button.config.hover = true
               _top_button.children[1].config.colour = G.C.WHITE
@@ -2968,7 +2960,7 @@ if Handy.insta_cash_out.is_skipped and e.config.button then return end
         e.config.button = nil
         G.round_eval.alignment.offset.y = G.ROOM.T.y + 15
         G.round_eval.alignment.offset.x = 0
-        G.deck:shuffle('cashout'..MP.order_round_based(true))
+        G.deck:shuffle('cashout'..G.GAME.round_resets.ante)
         G.deck:hard_set_T()
         delay(0.3)
         G.E_MANAGER:add_event(Event({

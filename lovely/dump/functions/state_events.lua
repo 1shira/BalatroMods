@@ -91,13 +91,7 @@ function end_round()
     G.E_MANAGER:add_event(Event({
       trigger = 'after',
       delay = 0.2,
-      func = function()if MP.handle_duplicate_end() then
-	return true
-end
-if MP.LOBBY.code then
-	MP.GAME.round_ended = true
-end
-
+      func = function()
         G.GAME.blind.in_blind = false
         local game_over = true
         local game_won = false
@@ -105,9 +99,6 @@ end
         G.RESET_JIGGLES = true
             if G.GAME.chips - G.GAME.blind.chips >= 0 then
                 game_over = false
-            end
-            if MP.LOBBY.code then
-            	game_over = false
             end
             -- context.end_of_round calculations
             SMODS.saved = false
@@ -119,10 +110,6 @@ end
             if not G.GAME.won and G.GAME.round_resets.ante >= G.GAME.win_ante and G.GAME.blind:get_type() == 'Boss' then
                 game_won = true
                 G.GAME.won = true
-            end
-            if MP.LOBBY.code then
-            	game_won = nil
-            	G.GAME.won = nil
             end
             if game_over then
                 G.STATE = G.STATES.GAME_OVER
@@ -203,50 +190,25 @@ end
                     delay(0.4); SMODS.ante_end = true; ease_ante(1); SMODS.ante_end = nil; delay(0.4); check_for_unlock({type = 'ante_up', ante = G.GAME.round_resets.ante + 1})
                 end
                 G.FUNCS.draw_from_discard_to_deck()
-                MP.handle_deck_out()
                 G.E_MANAGER:add_event(Event({
                     trigger = 'after',
                     delay = 0.3,
                     func = function()
                         G.STATE = G.STATES.ROUND_EVAL
                         G.STATE_COMPLETE = false
-                        local mp_nemesis_spoof = false
-                        if G.GAME.round_resets.blind == G.P_BLINDS.bl_mp_nemesis then
-                        	mp_nemesis_spoof = true
-                        	if G.GAME.blind_on_deck == "Small" then
-                        		G.GAME.round_resets.blind = G.P_BLINDS.bl_small
-                        	elseif G.GAME.blind_on_deck == "Big" then
-                        		G.GAME.round_resets.blind = G.P_BLINDS.bl_big
-                        	else
-                        		mp_nemesis_spoof = false
-                        	end
-                        end
-                        local temp_furthest_blind = 0
 
                         if G.GAME.round_resets.blind == G.P_BLINDS.bl_small then
                             G.GAME.round_resets.blind_states.Small = 'Defeated'
-                            temp_furthest_blind = G.GAME.round_resets.ante * 10 + 1
                         elseif G.GAME.round_resets.blind == G.P_BLINDS.bl_big then
                             G.GAME.round_resets.blind_states.Big = 'Defeated'
-                            temp_furthest_blind = G.GAME.round_resets.ante * 10 + 2
                         else
                             G.GAME.current_round.voucher = SMODS.get_next_vouchers()
                             G.GAME.round_resets.blind_states.Boss = 'Defeated'
-                            temp_furthest_blind = (G.GAME.round_resets.ante - 1) * 10 + 3
                             for k, v in ipairs(G.playing_cards) do
                                 v.ability.played_this_ante = nil
                             end
                         end
 
-                        if MP.LOBBY.code then
-                        	MP.GAME.furthest_blind = (temp_furthest_blind > MP.GAME.furthest_blind) and temp_furthest_blind or MP.GAME.furthest_blind
-                        	MP.ACTIONS.set_furthest_blind(MP.GAME.furthest_blind)
-                        
-                        	MP.GAME.pincher_index = MP.GAME.pincher_index + 1
-                        end
-                        if mp_nemesis_spoof then
-                        	G.GAME.round_resets.blind = G.P_BLINDS.bl_mp_nemesis
-                        end
                         if G.GAME.round_resets.temp_handsize then G.hand:change_size(-G.GAME.round_resets.temp_handsize); G.GAME.round_resets.temp_handsize = nil end
                         if G.GAME.round_resets.temp_reroll_cost then G.GAME.round_resets.temp_reroll_cost = nil; calculate_reroll_cost(true) end
 
@@ -299,17 +261,6 @@ function new_round()
 
             G.GAME.round_bonus.next_hands = 0
             G.GAME.round_bonus.discards = 0
-            local mp_nemesis_spoof = false
-            if G.GAME.round_resets.blind == G.P_BLINDS.bl_mp_nemesis then
-            	mp_nemesis_spoof = true
-            	if G.GAME.blind_on_deck == "Small" then
-            		G.GAME.round_resets.blind = G.P_BLINDS.bl_small
-            	elseif G.GAME.blind_on_deck == "Big" then
-            		G.GAME.round_resets.blind = G.P_BLINDS.bl_big
-            	else
-            		mp_nemesis_spoof = false
-            	end
-            end
 
             local blhash = ''
             if G.GAME.round_resets.blind == G.P_BLINDS.bl_small then
@@ -326,9 +277,6 @@ function new_round()
             end
             G.GAME.subhash = (G.GAME.round_resets.ante)..(blhash)
 
-            if mp_nemesis_spoof then
-            	G.GAME.round_resets.blind = G.P_BLINDS.bl_mp_nemesis
-            end
             G.GAME.blind:set_blind(G.GAME.round_resets.blind)
             
             SMODS.calculate_context({setting_blind = true, blind = G.GAME.round_resets.blind})
@@ -340,7 +288,7 @@ function new_round()
                 trigger = 'immediate',
                 func = function()
                     G.STATE = G.STATES.DRAW_TO_HAND
-                    G.deck:shuffle('nr'..MP.order_round_based(true))
+                    G.deck:shuffle('nr'..G.GAME.round_resets.ante)
                     G.deck:hard_set_T()
                     G.STATE_COMPLETE = false
                     return true
@@ -980,8 +928,8 @@ G.FUNCS.evaluate_round = function()
     local pitch = 0.95
     local dollars = 0
 
-    if G.GAME.chips - G.GAME.blind.chips >= 0 or MP.is_pvp_boss() then
-    add_round_eval_row({dollars = G.GAME.blind.dollars, name='blind1', pitch = pitch})
+    if G.GAME.chips - G.GAME.blind.chips >= 0 then
+        add_round_eval_row({dollars = G.GAME.blind.dollars, name='blind1', pitch = pitch})
         pitch = pitch + 0.06
         dollars = dollars + G.GAME.blind.dollars
     else
@@ -1007,7 +955,7 @@ G.FUNCS.evaluate_round = function()
     SMODS.calculate_context{round_eval = true}
     G.GAME.selected_back:trigger_effect({context = 'eval'})
 
-    if G.GAME.current_round.hands_left > 0 and (not G.GAME.modifiers.no_extra_hand_money) and (not MP.is_pvp_boss()) then
+    if G.GAME.current_round.hands_left > 0 and not G.GAME.modifiers.no_extra_hand_money then
         add_round_eval_row({dollars = G.GAME.current_round.hands_left*(G.GAME.modifiers.money_per_hand or 1), disp = G.GAME.current_round.hands_left, bonus = true, name='hands', pitch = pitch})
         pitch = pitch + 0.06
         dollars = dollars + G.GAME.current_round.hands_left*(G.GAME.modifiers.money_per_hand or 1)
@@ -1052,48 +1000,7 @@ G.FUNCS.evaluate_round = function()
         check_for_unlock({type = 'interest_streak'})
         dollars = dollars + G.GAME.interest_amount*math.min(math.floor(G.GAME.dollars/5), G.GAME.interest_cap/5)
     end
-  if not MP.GAME.comeback_bonus_given then
-		MP.GAME.comeback_bonus_given = true
-		local comeback_bonus
 
-		if MP.LOBBY.config.ruleset == "ruleset_mp_sandbox" then
-		    comeback_bonus = 3 * (G.GAME.round_resets.ante - 1)
-		else
-			if MP.is_major_league_ruleset() then 
-				comeback_bonus = 4 * MP.GAME.comeback_bonus
-			else
-				if G.GAME.stake >= 6 then
-					comeback_bonus = 2
-				else
-			    	comeback_bonus = 4
-				end
-			end
-		end
-
-		add_round_eval_row({
-			bonus = true,
-			name = "comeback",
-			pitch = pitch,
-			dollars = comeback_bonus,
-		})
-		dollars = dollars + comeback_bonus
-	end
-
-    if G.GAME.modifiers.mp_modified_interest_rate and G.GAME.dollars >= G.GAME.modifiers.mp_modified_interest_rate and not G.GAME.modifiers.TRUE_no_interest then
-    	local interest = G.GAME.modifiers.mp_modified_interest_rate
-    	local cap = G.GAME.interest_cap / (5 / interest)
-    	add_round_eval_row({bonus = true, name='mp_modified_interest', pitch = pitch, dollars = G.GAME.interest_amount*math.min(math.floor(G.GAME.dollars/interest), cap/interest)})
-    	pitch = pitch + 0.06
-    	if (not G.GAME.seeded and not G.GAME.challenge) or SMODS.config.seeded_unlocks then
-    		if G.GAME.interest_amount*math.min(math.floor(G.GAME.dollars/interest), cap/interest) == G.GAME.interest_amount*G.GAME.interest_cap/interest then 
-    			G.PROFILES[G.SETTINGS.profile].career_stats.c_round_interest_cap_streak = G.PROFILES[G.SETTINGS.profile].career_stats.c_round_interest_cap_streak + 1
-    		else
-    			G.PROFILES[G.SETTINGS.profile].career_stats.c_round_interest_cap_streak = 0
-    		end
-    	end
-    	check_for_unlock({type = 'interest_streak'})
-    	dollars = dollars + G.GAME.interest_amount*math.min(math.floor(G.GAME.dollars/interest), cap/interest)
-    end
     pitch = pitch + 0.06
 
     if total_cashout_rows > 7 then

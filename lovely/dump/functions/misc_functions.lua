@@ -327,8 +327,7 @@ end
 
 function pseudoseed(key, predict_seed)
   if key == 'seed' then return math.random() end
-  -- disabled by Multiplayer because of voucher rng calls while paused 
-  -- if G.SETTINGS.paused and key ~= 'to_do' then return math.random() end
+  if G.SETTINGS.paused and key ~= 'to_do' then return math.random() end
 
   if predict_seed then 
     local _pseed = pseudohash(key..(predict_seed or ''))
@@ -1849,7 +1848,6 @@ utf8.chars =
 	end
 
 function localize(args, misc_cat)
-   if not args then return "ERROR" end
   if args and not (type(args) == 'table') then
     if misc_cat and G.localization.misc[misc_cat] then return G.localization.misc[misc_cat][args] or 'ERROR' end
     return G.localization.misc.dictionary[args] or 'ERROR'
@@ -1974,7 +1972,7 @@ function localize(args, misc_cat)
           button = part.control.button,
           underline = part.control.u and loc_colour(part.control.u),
             object = DynaText({string = {assembled_string},
-              colours = {(part.control.V and args.vars.colours[tonumber(part.control.V)]) or (part.control.C and loc_colour(part.control.C)) or args.text_colour or G.C.UI.TEXT_LIGHT},
+              colours = {(part.control.V and args.vars.colours[tonumber(part.control.V)]) or (part.control.C and loc_colour(part.control.C)) or args.text_colour or args.text_colour or G.C.UI.TEXT_LIGHT},
               bump = not args.no_bump,
               text_effect = SMODS.DynaTextEffects[part.control.E] and part.control.E,
               silent = not args.no_silent,
@@ -2034,7 +2032,7 @@ function localize(args, misc_cat)
           button = part.control.button,
           underline = part.control.u and loc_colour(part.control.u),
           shadow = args.shadow,
-          colour = part.control.V and args.vars.colours[tonumber(part.control.V)] or not part.control.C and args.text_colour or loc_colour(part.control.C or nil, args.default_col),
+          colour = part.control.V and args.vars.colours[tonumber(part.control.V)] or not part.control.C and args.text_colour or not part.control.C and args.text_colour or loc_colour(part.control.C or nil, args.default_col),
           scale = 0.32*(part.control.s and tonumber(part.control.s) or args.scale  or 1)*desc_scale},}
         end
       end

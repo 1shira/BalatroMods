@@ -3,26 +3,14 @@
   "entries": [
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\preview.toml",
-        "patch_type": "copy"
-      },
-      "regions": [
-        {
-          "start_line": 3286,
-          "end_line": 4048
-        }
-      ]
-    },
-    {
-      "patch_source": {
         "file": "smods-1.0.0-beta-1503a\\lovely\\achievements.toml",
         "pattern": "if G.GAME.challenge then return end",
         "patch_type": "pattern"
       },
       "regions": [
         {
-          "start_line": 1411,
-          "end_line": 1416
+          "start_line": 1337,
+          "end_line": 1342
         }
       ]
     },
@@ -34,12 +22,12 @@
       },
       "regions": [
         {
-          "start_line": 1965,
-          "end_line": 1965
+          "start_line": 1891,
+          "end_line": 1891
         },
         {
-          "start_line": 1972,
-          "end_line": 1972
+          "start_line": 1898,
+          "end_line": 1898
         }
       ]
     },
@@ -51,8 +39,8 @@
       },
       "regions": [
         {
-          "start_line": 1973,
-          "end_line": 1991
+          "start_line": 1899,
+          "end_line": 1917
         }
       ]
     },
@@ -64,8 +52,8 @@
       },
       "regions": [
         {
-          "start_line": 623,
-          "end_line": 636
+          "start_line": 586,
+          "end_line": 599
         }
       ]
     },
@@ -77,8 +65,8 @@
       },
       "regions": [
         {
-          "start_line": 678,
-          "end_line": 712
+          "start_line": 641,
+          "end_line": 675
         }
       ]
     },
@@ -90,8 +78,8 @@
       },
       "regions": [
         {
-          "start_line": 714,
-          "end_line": 736
+          "start_line": 677,
+          "end_line": 699
         }
       ]
     },
@@ -103,8 +91,8 @@
       },
       "regions": [
         {
-          "start_line": 639,
-          "end_line": 674
+          "start_line": 602,
+          "end_line": 637
         }
       ]
     },
@@ -116,8 +104,8 @@
       },
       "regions": [
         {
-          "start_line": 739,
-          "end_line": 766
+          "start_line": 702,
+          "end_line": 729
         }
       ]
     },
@@ -129,8 +117,8 @@
       },
       "regions": [
         {
-          "start_line": 767,
-          "end_line": 789
+          "start_line": 730,
+          "end_line": 752
         }
       ]
     },
@@ -142,8 +130,8 @@
       },
       "regions": [
         {
-          "start_line": 939,
-          "end_line": 939
+          "start_line": 902,
+          "end_line": 902
         }
       ]
     },
@@ -155,8 +143,8 @@
       },
       "regions": [
         {
-          "start_line": 932,
-          "end_line": 938
+          "start_line": 895,
+          "end_line": 901
         }
       ]
     },
@@ -168,8 +156,8 @@
       },
       "regions": [
         {
-          "start_line": 1205,
-          "end_line": 1207
+          "start_line": 1131,
+          "end_line": 1133
         }
       ]
     },
@@ -181,8 +169,8 @@
       },
       "regions": [
         {
-          "start_line": 448,
-          "end_line": 449
+          "start_line": 411,
+          "end_line": 412
         }
       ]
     },
@@ -194,8 +182,8 @@
       },
       "regions": [
         {
-          "start_line": 460,
-          "end_line": 461
+          "start_line": 423,
+          "end_line": 424
         }
       ]
     },
@@ -207,8 +195,8 @@
       },
       "regions": [
         {
-          "start_line": 964,
-          "end_line": 964
+          "start_line": 927,
+          "end_line": 927
         }
       ]
     },
@@ -220,12 +208,12 @@
       },
       "regions": [
         {
-          "start_line": 969,
-          "end_line": 969
+          "start_line": 932,
+          "end_line": 932
         },
         {
-          "start_line": 992,
-          "end_line": 992
+          "start_line": 955,
+          "end_line": 955
         }
       ]
     },
@@ -237,8 +225,8 @@
       },
       "regions": [
         {
-          "start_line": 985,
-          "end_line": 985
+          "start_line": 948,
+          "end_line": 948
         }
       ]
     },
@@ -250,8 +238,8 @@
       },
       "regions": [
         {
-          "start_line": 925,
-          "end_line": 927
+          "start_line": 888,
+          "end_line": 890
         }
       ]
     },
@@ -263,8 +251,8 @@
       },
       "regions": [
         {
-          "start_line": 1012,
-          "end_line": 1017
+          "start_line": 975,
+          "end_line": 980
         }
       ]
     },
@@ -276,8 +264,8 @@
       },
       "regions": [
         {
-          "start_line": 973,
-          "end_line": 980
+          "start_line": 936,
+          "end_line": 943
         }
       ]
     },
@@ -289,8 +277,8 @@
       },
       "regions": [
         {
-          "start_line": 1024,
-          "end_line": 1024
+          "start_line": 987,
+          "end_line": 987
         }
       ]
     },
@@ -302,8 +290,8 @@
       },
       "regions": [
         {
-          "start_line": 2197,
-          "end_line": 2197
+          "start_line": 2123,
+          "end_line": 2123
         }
       ]
     },
@@ -315,8 +303,8 @@
       },
       "regions": [
         {
-          "start_line": 2209,
-          "end_line": 2209
+          "start_line": 2135,
+          "end_line": 2135
         }
       ]
     },
@@ -328,8 +316,8 @@
       },
       "regions": [
         {
-          "start_line": 1141,
-          "end_line": 1141
+          "start_line": 1104,
+          "end_line": 1104
         }
       ]
     },
@@ -341,8 +329,8 @@
       },
       "regions": [
         {
-          "start_line": 439,
-          "end_line": 440
+          "start_line": 402,
+          "end_line": 403
         }
       ]
     },
@@ -354,8 +342,8 @@
       },
       "regions": [
         {
-          "start_line": 1129,
-          "end_line": 1130
+          "start_line": 1092,
+          "end_line": 1093
         }
       ]
     },
@@ -367,8 +355,8 @@
       },
       "regions": [
         {
-          "start_line": 3104,
-          "end_line": 3107
+          "start_line": 3011,
+          "end_line": 3014
         }
       ]
     },
@@ -380,8 +368,8 @@
       },
       "regions": [
         {
-          "start_line": 2717,
-          "end_line": 2736
+          "start_line": 2629,
+          "end_line": 2648
         }
       ]
     },
@@ -393,8 +381,8 @@
       },
       "regions": [
         {
-          "start_line": 3266,
-          "end_line": 3278
+          "start_line": 3173,
+          "end_line": 3185
         }
       ]
     },
@@ -406,8 +394,8 @@
       },
       "regions": [
         {
-          "start_line": 1569,
-          "end_line": 1569
+          "start_line": 1495,
+          "end_line": 1495
         }
       ]
     },
@@ -419,8 +407,8 @@
       },
       "regions": [
         {
-          "start_line": 2826,
-          "end_line": 2828
+          "start_line": 2733,
+          "end_line": 2735
         }
       ]
     },
@@ -432,8 +420,8 @@
       },
       "regions": [
         {
-          "start_line": 2923,
-          "end_line": 2944
+          "start_line": 2830,
+          "end_line": 2851
         }
       ]
     },
@@ -445,8 +433,8 @@
       },
       "regions": [
         {
-          "start_line": 2915,
-          "end_line": 2915
+          "start_line": 2822,
+          "end_line": 2822
         }
       ]
     },
@@ -458,8 +446,8 @@
       },
       "regions": [
         {
-          "start_line": 2918,
-          "end_line": 2918
+          "start_line": 2825,
+          "end_line": 2825
         }
       ]
     },
@@ -471,8 +459,8 @@
       },
       "regions": [
         {
-          "start_line": 3186,
-          "end_line": 3186
+          "start_line": 3093,
+          "end_line": 3093
         }
       ]
     },
@@ -484,8 +472,8 @@
       },
       "regions": [
         {
-          "start_line": 2390,
-          "end_line": 2409
+          "start_line": 2308,
+          "end_line": 2327
         }
       ]
     },
@@ -497,8 +485,8 @@
       },
       "regions": [
         {
-          "start_line": 2449,
-          "end_line": 2449
+          "start_line": 2365,
+          "end_line": 2365
         }
       ]
     },
@@ -510,8 +498,8 @@
       },
       "regions": [
         {
-          "start_line": 2450,
-          "end_line": 2450
+          "start_line": 2366,
+          "end_line": 2366
         }
       ]
     },
@@ -523,8 +511,8 @@
       },
       "regions": [
         {
-          "start_line": 2451,
-          "end_line": 2451
+          "start_line": 2367,
+          "end_line": 2367
         }
       ]
     },
@@ -536,8 +524,8 @@
       },
       "regions": [
         {
-          "start_line": 2452,
-          "end_line": 2452
+          "start_line": 2368,
+          "end_line": 2368
         }
       ]
     },
@@ -549,8 +537,8 @@
       },
       "regions": [
         {
-          "start_line": 2411,
-          "end_line": 2411
+          "start_line": 2329,
+          "end_line": 2329
         }
       ]
     },
@@ -562,8 +550,8 @@
       },
       "regions": [
         {
-          "start_line": 2417,
-          "end_line": 2417
+          "start_line": 2335,
+          "end_line": 2335
         }
       ]
     },
@@ -575,8 +563,8 @@
       },
       "regions": [
         {
-          "start_line": 2492,
-          "end_line": 2492
+          "start_line": 2404,
+          "end_line": 2404
         }
       ]
     },
@@ -588,8 +576,8 @@
       },
       "regions": [
         {
-          "start_line": 2948,
-          "end_line": 2962
+          "start_line": 2855,
+          "end_line": 2869
         }
       ]
     },
@@ -601,8 +589,8 @@
       },
       "regions": [
         {
-          "start_line": 3020,
-          "end_line": 3029
+          "start_line": 2927,
+          "end_line": 2936
         }
       ]
     },
@@ -614,8 +602,8 @@
       },
       "regions": [
         {
-          "start_line": 1230,
-          "end_line": 1230
+          "start_line": 1156,
+          "end_line": 1156
         }
       ]
     },
@@ -627,8 +615,8 @@
       },
       "regions": [
         {
-          "start_line": 1231,
-          "end_line": 1245
+          "start_line": 1157,
+          "end_line": 1171
         }
       ]
     },
@@ -640,8 +628,8 @@
       },
       "regions": [
         {
-          "start_line": 1262,
-          "end_line": 1264
+          "start_line": 1188,
+          "end_line": 1190
         }
       ]
     },
@@ -653,8 +641,8 @@
       },
       "regions": [
         {
-          "start_line": 1275,
-          "end_line": 1282
+          "start_line": 1201,
+          "end_line": 1208
         }
       ]
     },
@@ -666,28 +654,28 @@
       },
       "regions": [
         {
-          "start_line": 3015,
-          "end_line": 3015
+          "start_line": 2922,
+          "end_line": 2922
         },
         {
-          "start_line": 3018,
-          "end_line": 3018
+          "start_line": 2925,
+          "end_line": 2925
         },
         {
-          "start_line": 3043,
-          "end_line": 3043
+          "start_line": 2950,
+          "end_line": 2950
         },
         {
-          "start_line": 3097,
-          "end_line": 3097
+          "start_line": 3004,
+          "end_line": 3004
         },
         {
-          "start_line": 3103,
-          "end_line": 3103
+          "start_line": 3010,
+          "end_line": 3010
         },
         {
-          "start_line": 3159,
-          "end_line": 3159
+          "start_line": 3066,
+          "end_line": 3066
         }
       ]
     },
@@ -699,12 +687,12 @@
       },
       "regions": [
         {
-          "start_line": 1589,
-          "end_line": 1589
+          "start_line": 1515,
+          "end_line": 1515
         },
         {
-          "start_line": 1594,
-          "end_line": 1594
+          "start_line": 1520,
+          "end_line": 1520
         }
       ]
     },
@@ -716,8 +704,8 @@
       },
       "regions": [
         {
-          "start_line": 2637,
-          "end_line": 2639
+          "start_line": 2549,
+          "end_line": 2551
         }
       ]
     },
@@ -729,8 +717,8 @@
       },
       "regions": [
         {
-          "start_line": 2655,
-          "end_line": 2657
+          "start_line": 2567,
+          "end_line": 2569
         }
       ]
     },
@@ -742,8 +730,8 @@
       },
       "regions": [
         {
-          "start_line": 2681,
-          "end_line": 2683
+          "start_line": 2593,
+          "end_line": 2595
         }
       ]
     },
@@ -755,8 +743,8 @@
       },
       "regions": [
         {
-          "start_line": 2817,
-          "end_line": 2817
+          "start_line": 2724,
+          "end_line": 2724
         }
       ]
     },
@@ -768,8 +756,8 @@
       },
       "regions": [
         {
-          "start_line": 2818,
-          "end_line": 2818
+          "start_line": 2725,
+          "end_line": 2725
         }
       ]
     },
@@ -781,8 +769,8 @@
       },
       "regions": [
         {
-          "start_line": 2302,
-          "end_line": 2302
+          "start_line": 2228,
+          "end_line": 2228
         }
       ]
     },
@@ -794,8 +782,8 @@
       },
       "regions": [
         {
-          "start_line": 2782,
-          "end_line": 2787
+          "start_line": 2689,
+          "end_line": 2694
         }
       ]
     },
@@ -807,8 +795,8 @@
       },
       "regions": [
         {
-          "start_line": 2838,
-          "end_line": 2838
+          "start_line": 2745,
+          "end_line": 2745
         }
       ]
     },
@@ -820,8 +808,8 @@
       },
       "regions": [
         {
-          "start_line": 3044,
-          "end_line": 3044
+          "start_line": 2951,
+          "end_line": 2951
         }
       ]
     },
@@ -833,8 +821,8 @@
       },
       "regions": [
         {
-          "start_line": 1676,
-          "end_line": 1676
+          "start_line": 1602,
+          "end_line": 1602
         }
       ]
     },
@@ -846,8 +834,8 @@
       },
       "regions": [
         {
-          "start_line": 1682,
-          "end_line": 1682
+          "start_line": 1608,
+          "end_line": 1608
         }
       ]
     },
@@ -859,8 +847,8 @@
       },
       "regions": [
         {
-          "start_line": 1791,
-          "end_line": 1791
+          "start_line": 1717,
+          "end_line": 1717
         }
       ]
     },
@@ -872,8 +860,8 @@
       },
       "regions": [
         {
-          "start_line": 2496,
-          "end_line": 2496
+          "start_line": 2408,
+          "end_line": 2408
         }
       ]
     },
@@ -885,8 +873,8 @@
       },
       "regions": [
         {
-          "start_line": 2533,
-          "end_line": 2539
+          "start_line": 2445,
+          "end_line": 2451
         }
       ]
     },
@@ -898,8 +886,8 @@
       },
       "regions": [
         {
-          "start_line": 2525,
-          "end_line": 2532
+          "start_line": 2437,
+          "end_line": 2444
         }
       ]
     },
@@ -911,8 +899,8 @@
       },
       "regions": [
         {
-          "start_line": 2500,
-          "end_line": 2506
+          "start_line": 2412,
+          "end_line": 2418
         }
       ]
     },
@@ -924,8 +912,8 @@
       },
       "regions": [
         {
-          "start_line": 2205,
-          "end_line": 2205
+          "start_line": 2131,
+          "end_line": 2131
         }
       ]
     },
@@ -937,12 +925,12 @@
       },
       "regions": [
         {
-          "start_line": 3024,
-          "end_line": 3024
+          "start_line": 2931,
+          "end_line": 2931
         },
         {
-          "start_line": 3033,
-          "end_line": 3033
+          "start_line": 2940,
+          "end_line": 2940
         }
       ]
     },
@@ -954,8 +942,8 @@
       },
       "regions": [
         {
-          "start_line": 3166,
-          "end_line": 3180
+          "start_line": 3073,
+          "end_line": 3087
         }
       ]
     },
@@ -967,8 +955,8 @@
       },
       "regions": [
         {
-          "start_line": 2246,
-          "end_line": 2254
+          "start_line": 2172,
+          "end_line": 2180
         }
       ]
     },
@@ -980,8 +968,8 @@
       },
       "regions": [
         {
-          "start_line": 2337,
-          "end_line": 2340
+          "start_line": 2255,
+          "end_line": 2258
         }
       ]
     },
@@ -993,8 +981,8 @@
       },
       "regions": [
         {
-          "start_line": 2309,
-          "end_line": 2309
+          "start_line": 2235,
+          "end_line": 2235
         }
       ]
     },
@@ -1006,8 +994,8 @@
       },
       "regions": [
         {
-          "start_line": 2261,
-          "end_line": 2262
+          "start_line": 2187,
+          "end_line": 2188
         }
       ]
     },
@@ -1019,8 +1007,8 @@
       },
       "regions": [
         {
-          "start_line": 2265,
-          "end_line": 2266
+          "start_line": 2191,
+          "end_line": 2192
         }
       ]
     },
@@ -1032,8 +1020,8 @@
       },
       "regions": [
         {
-          "start_line": 2274,
-          "end_line": 2274
+          "start_line": 2200,
+          "end_line": 2200
         }
       ]
     },
@@ -1045,8 +1033,8 @@
       },
       "regions": [
         {
-          "start_line": 2317,
-          "end_line": 2317
+          "start_line": 2243,
+          "end_line": 2243
         }
       ]
     },
@@ -1058,8 +1046,8 @@
       },
       "regions": [
         {
-          "start_line": 2347,
-          "end_line": 2347
+          "start_line": 2265,
+          "end_line": 2265
         }
       ]
     },
@@ -1071,8 +1059,8 @@
       },
       "regions": [
         {
-          "start_line": 507,
-          "end_line": 517
+          "start_line": 470,
+          "end_line": 480
         }
       ]
     },
@@ -1084,8 +1072,8 @@
       },
       "regions": [
         {
-          "start_line": 541,
-          "end_line": 541
+          "start_line": 504,
+          "end_line": 504
         }
       ]
     },
@@ -1097,8 +1085,8 @@
       },
       "regions": [
         {
-          "start_line": 3230,
-          "end_line": 3240
+          "start_line": 3137,
+          "end_line": 3147
         }
       ]
     },
@@ -1110,8 +1098,8 @@
       },
       "regions": [
         {
-          "start_line": 3245,
-          "end_line": 3245
+          "start_line": 3152,
+          "end_line": 3152
         }
       ]
     },
@@ -1123,8 +1111,8 @@
       },
       "regions": [
         {
-          "start_line": 2510,
-          "end_line": 2518
+          "start_line": 2422,
+          "end_line": 2430
         }
       ]
     },
@@ -1136,8 +1124,8 @@
       },
       "regions": [
         {
-          "start_line": 1342,
-          "end_line": 1342
+          "start_line": 1268,
+          "end_line": 1268
         }
       ]
     },
@@ -1149,8 +1137,8 @@
       },
       "regions": [
         {
-          "start_line": 1448,
-          "end_line": 1448
+          "start_line": 1374,
+          "end_line": 1374
         }
       ]
     },
@@ -1162,8 +1150,8 @@
       },
       "regions": [
         {
-          "start_line": 1451,
-          "end_line": 1451
+          "start_line": 1377,
+          "end_line": 1377
         }
       ]
     },
@@ -1175,8 +1163,8 @@
       },
       "regions": [
         {
-          "start_line": 1454,
-          "end_line": 1454
+          "start_line": 1380,
+          "end_line": 1380
         }
       ]
     },
@@ -1188,8 +1176,8 @@
       },
       "regions": [
         {
-          "start_line": 3246,
-          "end_line": 3257
+          "start_line": 3153,
+          "end_line": 3164
         }
       ]
     },
@@ -1201,8 +1189,8 @@
       },
       "regions": [
         {
-          "start_line": 3261,
-          "end_line": 3261
+          "start_line": 3168,
+          "end_line": 3168
         }
       ]
     },
@@ -1214,8 +1202,8 @@
       },
       "regions": [
         {
-          "start_line": 2455,
-          "end_line": 2460
+          "start_line": 2371,
+          "end_line": 2376
         }
       ]
     },
@@ -1227,8 +1215,8 @@
       },
       "regions": [
         {
-          "start_line": 2471,
-          "end_line": 2471
+          "start_line": 2384,
+          "end_line": 2384
         }
       ]
     },
@@ -1240,8 +1228,8 @@
       },
       "regions": [
         {
-          "start_line": 2473,
-          "end_line": 2473
+          "start_line": 2386,
+          "end_line": 2386
         }
       ]
     },
@@ -1253,8 +1241,8 @@
       },
       "regions": [
         {
-          "start_line": 2474,
-          "end_line": 2476
+          "start_line": 2389,
+          "end_line": 2389
         }
       ]
     },
@@ -1266,8 +1254,8 @@
       },
       "regions": [
         {
-          "start_line": 2987,
-          "end_line": 2987
+          "start_line": 2894,
+          "end_line": 2894
         }
       ]
     },
@@ -1279,20 +1267,20 @@
       },
       "regions": [
         {
-          "start_line": 797,
-          "end_line": 797
+          "start_line": 760,
+          "end_line": 760
         },
         {
-          "start_line": 808,
-          "end_line": 808
+          "start_line": 771,
+          "end_line": 771
         },
         {
-          "start_line": 813,
-          "end_line": 813
+          "start_line": 776,
+          "end_line": 776
         },
         {
-          "start_line": 818,
-          "end_line": 818
+          "start_line": 781,
+          "end_line": 781
         }
       ]
     },
@@ -1304,8 +1292,8 @@
       },
       "regions": [
         {
-          "start_line": 1058,
-          "end_line": 1062
+          "start_line": 1021,
+          "end_line": 1025
         }
       ]
     },
@@ -1317,8 +1305,8 @@
       },
       "regions": [
         {
-          "start_line": 2774,
-          "end_line": 2774
+          "start_line": 2681,
+          "end_line": 2681
         }
       ]
     },
@@ -1330,8 +1318,8 @@
       },
       "regions": [
         {
-          "start_line": 3188,
-          "end_line": 3203
+          "start_line": 3095,
+          "end_line": 3110
         }
       ]
     },
@@ -1343,12 +1331,12 @@
       },
       "regions": [
         {
-          "start_line": 1046,
-          "end_line": 1046
+          "start_line": 1009,
+          "end_line": 1009
         },
         {
-          "start_line": 1069,
-          "end_line": 1069
+          "start_line": 1032,
+          "end_line": 1032
         }
       ]
     },
@@ -1360,8 +1348,8 @@
       },
       "regions": [
         {
-          "start_line": 1921,
-          "end_line": 1929
+          "start_line": 1847,
+          "end_line": 1855
         }
       ]
     },
@@ -1373,12 +1361,12 @@
       },
       "regions": [
         {
-          "start_line": 1874,
-          "end_line": 1874
+          "start_line": 1800,
+          "end_line": 1800
         },
         {
-          "start_line": 2150,
-          "end_line": 2150
+          "start_line": 2076,
+          "end_line": 2076
         }
       ]
     },
@@ -1390,8 +1378,8 @@
       },
       "regions": [
         {
-          "start_line": 1397,
-          "end_line": 1397
+          "start_line": 1323,
+          "end_line": 1323
         }
       ]
     },
@@ -1403,8 +1391,8 @@
       },
       "regions": [
         {
-          "start_line": 1410,
-          "end_line": 1410
+          "start_line": 1336,
+          "end_line": 1336
         }
       ]
     },
@@ -1416,8 +1404,8 @@
       },
       "regions": [
         {
-          "start_line": 614,
-          "end_line": 614
+          "start_line": 577,
+          "end_line": 577
         }
       ]
     },
@@ -1429,8 +1417,8 @@
       },
       "regions": [
         {
-          "start_line": 2846,
-          "end_line": 2855
+          "start_line": 2753,
+          "end_line": 2762
         }
       ]
     },
@@ -1442,8 +1430,8 @@
       },
       "regions": [
         {
-          "start_line": 1551,
-          "end_line": 1557
+          "start_line": 1477,
+          "end_line": 1483
         }
       ]
     },
@@ -1455,8 +1443,8 @@
       },
       "regions": [
         {
-          "start_line": 1557,
-          "end_line": 1557
+          "start_line": 1483,
+          "end_line": 1483
         }
       ]
     },
@@ -1468,8 +1456,8 @@
       },
       "regions": [
         {
-          "start_line": 1564,
-          "end_line": 1564
+          "start_line": 1490,
+          "end_line": 1490
         }
       ]
     },
@@ -1481,8 +1469,8 @@
       },
       "regions": [
         {
-          "start_line": 1260,
-          "end_line": 1261
+          "start_line": 1186,
+          "end_line": 1187
         }
       ]
     },
@@ -1494,8 +1482,8 @@
       },
       "regions": [
         {
-          "start_line": 3209,
-          "end_line": 3229
+          "start_line": 3116,
+          "end_line": 3136
         }
       ]
     },
@@ -1507,8 +1495,8 @@
       },
       "regions": [
         {
-          "start_line": 2481,
-          "end_line": 2486
+          "start_line": 2394,
+          "end_line": 2398
         }
       ]
     },
@@ -1520,68 +1508,320 @@
       },
       "regions": [
         {
-          "start_line": 2949,
-          "end_line": 2949
+          "start_line": 2856,
+          "end_line": 2856
         },
         {
-          "start_line": 2987,
-          "end_line": 2987
+          "start_line": 2894,
+          "end_line": 2894
         },
         {
-          "start_line": 3001,
-          "end_line": 3001
+          "start_line": 2908,
+          "end_line": 2908
         },
         {
-          "start_line": 3002,
-          "end_line": 3002
+          "start_line": 2909,
+          "end_line": 2909
         },
         {
-          "start_line": 3003,
-          "end_line": 3003
+          "start_line": 2910,
+          "end_line": 2910
         },
         {
-          "start_line": 3004,
-          "end_line": 3004
+          "start_line": 2911,
+          "end_line": 2911
         },
         {
-          "start_line": 3005,
-          "end_line": 3005
+          "start_line": 2912,
+          "end_line": 2912
         },
         {
-          "start_line": 3006,
-          "end_line": 3006
+          "start_line": 2913,
+          "end_line": 2913
+        },
+        {
+          "start_line": 2914,
+          "end_line": 2914
+        },
+        {
+          "start_line": 2916,
+          "end_line": 2916
+        },
+        {
+          "start_line": 2917,
+          "end_line": 2917
+        },
+        {
+          "start_line": 2918,
+          "end_line": 2918
+        },
+        {
+          "start_line": 2919,
+          "end_line": 2919
+        },
+        {
+          "start_line": 2920,
+          "end_line": 2920
+        },
+        {
+          "start_line": 2924,
+          "end_line": 2924
+        },
+        {
+          "start_line": 2942,
+          "end_line": 2942
+        },
+        {
+          "start_line": 2944,
+          "end_line": 2944
+        },
+        {
+          "start_line": 2944,
+          "end_line": 2944
+        },
+        {
+          "start_line": 2945,
+          "end_line": 2945
+        },
+        {
+          "start_line": 2946,
+          "end_line": 2946
+        },
+        {
+          "start_line": 2947,
+          "end_line": 2947
+        },
+        {
+          "start_line": 2948,
+          "end_line": 2948
+        },
+        {
+          "start_line": 2948,
+          "end_line": 2948
+        },
+        {
+          "start_line": 2952,
+          "end_line": 2952
+        },
+        {
+          "start_line": 2957,
+          "end_line": 2957
+        },
+        {
+          "start_line": 2957,
+          "end_line": 2957
+        },
+        {
+          "start_line": 2958,
+          "end_line": 2958
+        },
+        {
+          "start_line": 2958,
+          "end_line": 2958
+        },
+        {
+          "start_line": 2959,
+          "end_line": 2959
+        },
+        {
+          "start_line": 2959,
+          "end_line": 2959
+        },
+        {
+          "start_line": 2960,
+          "end_line": 2960
+        },
+        {
+          "start_line": 2960,
+          "end_line": 2960
+        },
+        {
+          "start_line": 2961,
+          "end_line": 2961
+        },
+        {
+          "start_line": 2961,
+          "end_line": 2961
+        },
+        {
+          "start_line": 2962,
+          "end_line": 2962
+        },
+        {
+          "start_line": 2962,
+          "end_line": 2962
+        },
+        {
+          "start_line": 2963,
+          "end_line": 2963
+        },
+        {
+          "start_line": 2963,
+          "end_line": 2963
+        },
+        {
+          "start_line": 2964,
+          "end_line": 2964
+        },
+        {
+          "start_line": 2964,
+          "end_line": 2964
+        },
+        {
+          "start_line": 2965,
+          "end_line": 2965
+        },
+        {
+          "start_line": 2965,
+          "end_line": 2965
+        },
+        {
+          "start_line": 2966,
+          "end_line": 2966
+        },
+        {
+          "start_line": 2966,
+          "end_line": 2966
+        },
+        {
+          "start_line": 2967,
+          "end_line": 2967
+        },
+        {
+          "start_line": 2967,
+          "end_line": 2967
+        },
+        {
+          "start_line": 2968,
+          "end_line": 2968
+        },
+        {
+          "start_line": 2968,
+          "end_line": 2968
+        },
+        {
+          "start_line": 2969,
+          "end_line": 2969
+        },
+        {
+          "start_line": 2969,
+          "end_line": 2969
+        },
+        {
+          "start_line": 2970,
+          "end_line": 2970
+        },
+        {
+          "start_line": 2970,
+          "end_line": 2970
+        },
+        {
+          "start_line": 2971,
+          "end_line": 2971
+        },
+        {
+          "start_line": 2971,
+          "end_line": 2971
+        },
+        {
+          "start_line": 2977,
+          "end_line": 2977
+        },
+        {
+          "start_line": 2978,
+          "end_line": 2978
+        },
+        {
+          "start_line": 2978,
+          "end_line": 2978
+        },
+        {
+          "start_line": 2996,
+          "end_line": 2996
         },
         {
           "start_line": 3007,
           "end_line": 3007
         },
         {
-          "start_line": 3009,
-          "end_line": 3009
+          "start_line": 3007,
+          "end_line": 3007
         },
         {
-          "start_line": 3010,
-          "end_line": 3010
+          "start_line": 3007,
+          "end_line": 3007
         },
         {
-          "start_line": 3011,
-          "end_line": 3011
+          "start_line": 3007,
+          "end_line": 3007
         },
         {
-          "start_line": 3012,
-          "end_line": 3012
+          "start_line": 3008,
+          "end_line": 3008
         },
         {
-          "start_line": 3013,
-          "end_line": 3013
+          "start_line": 3008,
+          "end_line": 3008
         },
         {
-          "start_line": 3017,
-          "end_line": 3017
+          "start_line": 3031,
+          "end_line": 3031
+        },
+        {
+          "start_line": 3031,
+          "end_line": 3031
+        },
+        {
+          "start_line": 3031,
+          "end_line": 3031
+        },
+        {
+          "start_line": 3032,
+          "end_line": 3032
+        },
+        {
+          "start_line": 3033,
+          "end_line": 3033
+        },
+        {
+          "start_line": 3033,
+          "end_line": 3033
+        },
+        {
+          "start_line": 3033,
+          "end_line": 3033
+        },
+        {
+          "start_line": 3034,
+          "end_line": 3034
         },
         {
           "start_line": 3035,
           "end_line": 3035
+        },
+        {
+          "start_line": 3035,
+          "end_line": 3035
+        },
+        {
+          "start_line": 3035,
+          "end_line": 3035
+        },
+        {
+          "start_line": 3036,
+          "end_line": 3036
+        },
+        {
+          "start_line": 3036,
+          "end_line": 3036
+        },
+        {
+          "start_line": 3036,
+          "end_line": 3036
+        },
+        {
+          "start_line": 3037,
+          "end_line": 3037
         },
         {
           "start_line": 3037,
@@ -1596,80 +1836,32 @@
           "end_line": 3038
         },
         {
+          "start_line": 3038,
+          "end_line": 3038
+        },
+        {
+          "start_line": 3038,
+          "end_line": 3038
+        },
+        {
           "start_line": 3039,
           "end_line": 3039
         },
         {
-          "start_line": 3040,
-          "end_line": 3040
-        },
-        {
-          "start_line": 3041,
-          "end_line": 3041
-        },
-        {
-          "start_line": 3041,
-          "end_line": 3041
+          "start_line": 3042,
+          "end_line": 3042
         },
         {
           "start_line": 3045,
           "end_line": 3045
         },
         {
-          "start_line": 3050,
-          "end_line": 3050
+          "start_line": 3046,
+          "end_line": 3046
         },
         {
-          "start_line": 3050,
-          "end_line": 3050
-        },
-        {
-          "start_line": 3051,
-          "end_line": 3051
-        },
-        {
-          "start_line": 3051,
-          "end_line": 3051
-        },
-        {
-          "start_line": 3052,
-          "end_line": 3052
-        },
-        {
-          "start_line": 3052,
-          "end_line": 3052
-        },
-        {
-          "start_line": 3053,
-          "end_line": 3053
-        },
-        {
-          "start_line": 3053,
-          "end_line": 3053
-        },
-        {
-          "start_line": 3054,
-          "end_line": 3054
-        },
-        {
-          "start_line": 3054,
-          "end_line": 3054
-        },
-        {
-          "start_line": 3055,
-          "end_line": 3055
-        },
-        {
-          "start_line": 3055,
-          "end_line": 3055
-        },
-        {
-          "start_line": 3056,
-          "end_line": 3056
-        },
-        {
-          "start_line": 3056,
-          "end_line": 3056
+          "start_line": 3047,
+          "end_line": 3047
         },
         {
           "start_line": 3057,
@@ -1688,12 +1880,24 @@
           "end_line": 3058
         },
         {
+          "start_line": 3058,
+          "end_line": 3058
+        },
+        {
           "start_line": 3059,
           "end_line": 3059
         },
         {
           "start_line": 3059,
           "end_line": 3059
+        },
+        {
+          "start_line": 3059,
+          "end_line": 3059
+        },
+        {
+          "start_line": 3060,
+          "end_line": 3060
         },
         {
           "start_line": 3060,
@@ -1712,20 +1916,20 @@
           "end_line": 3061
         },
         {
-          "start_line": 3062,
-          "end_line": 3062
+          "start_line": 3061,
+          "end_line": 3061
         },
         {
           "start_line": 3062,
           "end_line": 3062
         },
         {
-          "start_line": 3063,
-          "end_line": 3063
+          "start_line": 3062,
+          "end_line": 3062
         },
         {
-          "start_line": 3063,
-          "end_line": 3063
+          "start_line": 3062,
+          "end_line": 3062
         },
         {
           "start_line": 3064,
@@ -1736,224 +1940,8 @@
           "end_line": 3064
         },
         {
-          "start_line": 3070,
-          "end_line": 3070
-        },
-        {
-          "start_line": 3071,
-          "end_line": 3071
-        },
-        {
-          "start_line": 3071,
-          "end_line": 3071
-        },
-        {
-          "start_line": 3089,
-          "end_line": 3089
-        },
-        {
-          "start_line": 3100,
-          "end_line": 3100
-        },
-        {
-          "start_line": 3100,
-          "end_line": 3100
-        },
-        {
-          "start_line": 3100,
-          "end_line": 3100
-        },
-        {
-          "start_line": 3100,
-          "end_line": 3100
-        },
-        {
-          "start_line": 3101,
-          "end_line": 3101
-        },
-        {
-          "start_line": 3101,
-          "end_line": 3101
-        },
-        {
-          "start_line": 3124,
-          "end_line": 3124
-        },
-        {
-          "start_line": 3124,
-          "end_line": 3124
-        },
-        {
-          "start_line": 3124,
-          "end_line": 3124
-        },
-        {
-          "start_line": 3125,
-          "end_line": 3125
-        },
-        {
-          "start_line": 3126,
-          "end_line": 3126
-        },
-        {
-          "start_line": 3126,
-          "end_line": 3126
-        },
-        {
-          "start_line": 3126,
-          "end_line": 3126
-        },
-        {
-          "start_line": 3127,
-          "end_line": 3127
-        },
-        {
-          "start_line": 3128,
-          "end_line": 3128
-        },
-        {
-          "start_line": 3128,
-          "end_line": 3128
-        },
-        {
-          "start_line": 3128,
-          "end_line": 3128
-        },
-        {
-          "start_line": 3129,
-          "end_line": 3129
-        },
-        {
-          "start_line": 3129,
-          "end_line": 3129
-        },
-        {
-          "start_line": 3129,
-          "end_line": 3129
-        },
-        {
-          "start_line": 3130,
-          "end_line": 3130
-        },
-        {
-          "start_line": 3130,
-          "end_line": 3130
-        },
-        {
-          "start_line": 3130,
-          "end_line": 3130
-        },
-        {
-          "start_line": 3131,
-          "end_line": 3131
-        },
-        {
-          "start_line": 3131,
-          "end_line": 3131
-        },
-        {
-          "start_line": 3131,
-          "end_line": 3131
-        },
-        {
-          "start_line": 3132,
-          "end_line": 3132
-        },
-        {
-          "start_line": 3135,
-          "end_line": 3135
-        },
-        {
-          "start_line": 3138,
-          "end_line": 3138
-        },
-        {
-          "start_line": 3139,
-          "end_line": 3139
-        },
-        {
-          "start_line": 3140,
-          "end_line": 3140
-        },
-        {
-          "start_line": 3150,
-          "end_line": 3150
-        },
-        {
-          "start_line": 3150,
-          "end_line": 3150
-        },
-        {
-          "start_line": 3151,
-          "end_line": 3151
-        },
-        {
-          "start_line": 3151,
-          "end_line": 3151
-        },
-        {
-          "start_line": 3151,
-          "end_line": 3151
-        },
-        {
-          "start_line": 3152,
-          "end_line": 3152
-        },
-        {
-          "start_line": 3152,
-          "end_line": 3152
-        },
-        {
-          "start_line": 3152,
-          "end_line": 3152
-        },
-        {
-          "start_line": 3153,
-          "end_line": 3153
-        },
-        {
-          "start_line": 3153,
-          "end_line": 3153
-        },
-        {
-          "start_line": 3153,
-          "end_line": 3153
-        },
-        {
-          "start_line": 3154,
-          "end_line": 3154
-        },
-        {
-          "start_line": 3154,
-          "end_line": 3154
-        },
-        {
-          "start_line": 3154,
-          "end_line": 3154
-        },
-        {
-          "start_line": 3155,
-          "end_line": 3155
-        },
-        {
-          "start_line": 3155,
-          "end_line": 3155
-        },
-        {
-          "start_line": 3155,
-          "end_line": 3155
-        },
-        {
-          "start_line": 3157,
-          "end_line": 3157
-        },
-        {
-          "start_line": 3157,
-          "end_line": 3157
-        },
-        {
-          "start_line": 3157,
-          "end_line": 3157
+          "start_line": 3064,
+          "end_line": 3064
         }
       ]
     },
@@ -1965,12 +1953,12 @@
       },
       "regions": [
         {
-          "start_line": 1305,
-          "end_line": 1305
+          "start_line": 1231,
+          "end_line": 1231
         },
         {
-          "start_line": 1315,
-          "end_line": 1315
+          "start_line": 1241,
+          "end_line": 1241
         }
       ]
     },
@@ -1982,8 +1970,8 @@
       },
       "regions": [
         {
-          "start_line": 1251,
-          "end_line": 1251
+          "start_line": 1177,
+          "end_line": 1177
         }
       ]
     },
@@ -1995,8 +1983,8 @@
       },
       "regions": [
         {
-          "start_line": 2241,
-          "end_line": 2243
+          "start_line": 2167,
+          "end_line": 2169
         }
       ]
     },
@@ -2008,8 +1996,8 @@
       },
       "regions": [
         {
-          "start_line": 555,
-          "end_line": 590
+          "start_line": 518,
+          "end_line": 553
         }
       ]
     },
@@ -2021,36 +2009,36 @@
       },
       "regions": [
         {
-          "start_line": 3073,
-          "end_line": 3073
+          "start_line": 2980,
+          "end_line": 2980
         },
         {
-          "start_line": 3074,
-          "end_line": 3074
+          "start_line": 2981,
+          "end_line": 2981
         },
         {
-          "start_line": 3075,
-          "end_line": 3075
+          "start_line": 2982,
+          "end_line": 2982
         },
         {
-          "start_line": 3076,
-          "end_line": 3076
+          "start_line": 2983,
+          "end_line": 2983
         },
         {
-          "start_line": 3241,
-          "end_line": 3241
+          "start_line": 3148,
+          "end_line": 3148
         },
         {
-          "start_line": 3242,
-          "end_line": 3242
+          "start_line": 3149,
+          "end_line": 3149
         },
         {
-          "start_line": 3243,
-          "end_line": 3243
+          "start_line": 3150,
+          "end_line": 3150
         },
         {
-          "start_line": 3244,
-          "end_line": 3244
+          "start_line": 3151,
+          "end_line": 3151
         }
       ]
     },
@@ -2062,8 +2050,8 @@
       },
       "regions": [
         {
-          "start_line": 1097,
-          "end_line": 1100
+          "start_line": 1060,
+          "end_line": 1063
         }
       ]
     },
@@ -2075,8 +2063,8 @@
       },
       "regions": [
         {
-          "start_line": 3279,
-          "end_line": 3279
+          "start_line": 3186,
+          "end_line": 3186
         }
       ]
     },
@@ -2088,8 +2076,8 @@
       },
       "regions": [
         {
-          "start_line": 1130,
-          "end_line": 1130
+          "start_line": 1093,
+          "end_line": 1093
         }
       ]
     },
@@ -2101,8 +2089,8 @@
       },
       "regions": [
         {
-          "start_line": 1154,
-          "end_line": 1154
+          "start_line": 1117,
+          "end_line": 1117
         }
       ]
     },
@@ -2114,8 +2102,8 @@
       },
       "regions": [
         {
-          "start_line": 3037,
-          "end_line": 3037
+          "start_line": 2944,
+          "end_line": 2944
         }
       ]
     },
@@ -2127,8 +2115,8 @@
       },
       "regions": [
         {
-          "start_line": 3133,
-          "end_line": 3137
+          "start_line": 3040,
+          "end_line": 3044
         }
       ]
     },
@@ -2140,8 +2128,8 @@
       },
       "regions": [
         {
-          "start_line": 849,
-          "end_line": 849
+          "start_line": 812,
+          "end_line": 812
         }
       ]
     },
@@ -2153,8 +2141,8 @@
       },
       "regions": [
         {
-          "start_line": 2355,
-          "end_line": 2355
+          "start_line": 2273,
+          "end_line": 2273
         }
       ]
     },
@@ -2166,8 +2154,8 @@
       },
       "regions": [
         {
-          "start_line": 2215,
-          "end_line": 2215
+          "start_line": 2141,
+          "end_line": 2141
         }
       ]
     },
@@ -2179,8 +2167,8 @@
       },
       "regions": [
         {
-          "start_line": 3035,
-          "end_line": 3035
+          "start_line": 2942,
+          "end_line": 2942
         }
       ]
     },
@@ -2192,8 +2180,8 @@
       },
       "regions": [
         {
-          "start_line": 3040,
-          "end_line": 3040
+          "start_line": 2947,
+          "end_line": 2947
         }
       ]
     },
@@ -2205,8 +2193,8 @@
       },
       "regions": [
         {
-          "start_line": 3039,
-          "end_line": 3039
+          "start_line": 2946,
+          "end_line": 2946
         }
       ]
     },
@@ -2218,8 +2206,8 @@
       },
       "regions": [
         {
-          "start_line": 3030,
-          "end_line": 3030
+          "start_line": 2937,
+          "end_line": 2937
         }
       ]
     },
@@ -2231,8 +2219,8 @@
       },
       "regions": [
         {
-          "start_line": 3027,
-          "end_line": 3027
+          "start_line": 2934,
+          "end_line": 2934
         }
       ]
     },
@@ -2244,8 +2232,8 @@
       },
       "regions": [
         {
-          "start_line": 3045,
-          "end_line": 3045
+          "start_line": 2952,
+          "end_line": 2952
         }
       ]
     },
@@ -2257,8 +2245,8 @@
       },
       "regions": [
         {
-          "start_line": 3047,
-          "end_line": 3047
+          "start_line": 2954,
+          "end_line": 2954
         }
       ]
     },
@@ -2270,8 +2258,8 @@
       },
       "regions": [
         {
-          "start_line": 505,
-          "end_line": 505
+          "start_line": 468,
+          "end_line": 468
         }
       ]
     },
@@ -2283,8 +2271,8 @@
       },
       "regions": [
         {
-          "start_line": 2783,
-          "end_line": 2786
+          "start_line": 2690,
+          "end_line": 2693
         }
       ]
     },
@@ -2296,263 +2284,8 @@
       },
       "regions": [
         {
-          "start_line": 567,
-          "end_line": 585
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\TheOrder.toml",
-        "pattern": "local _, boss = pseudorandom_element(eligible_bosses, pseudoseed('boss'))",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 2758,
-          "end_line": 2763
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\TheOrder.toml",
-        "pattern": "center = pseudorandom_element(_pool, pseudoseed(_pool_key..'_resample'..it))",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 2178,
-          "end_line": 2178
-        },
-        {
-          "start_line": 2441,
-          "end_line": 2441
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\TheOrder.toml",
-        "pattern": "if (area == G.shop_jokers) or (area == G.pack_cards) then",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 2466,
-          "end_line": 2468
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\TheOrder.toml",
-        "pattern": "local eternal_perishable_poll = pseudorandom((area == G.pack_cards and 'packetper' or 'etperpoll')..G.GAME.round_resets.ante)",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 2470,
-          "end_line": 2470
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\TheOrder.toml",
-        "pattern": "if G.GAME.modifiers.enable_rentals_in_shop and pseudorandom((area == G.pack_cards and 'packssjr' or 'ssjr')..G.GAME.round_resets.ante) > 0.7 and not SMODS.Stickers[\"rental\"].should_apply then",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 2476,
-          "end_line": 2476
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\TheOrder.toml",
-        "pattern": "local edition = poll_edition('edi'..(key_append or '')..G.GAME.round_resets.ante)",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 2482,
-          "end_line": 2483
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\TheOrder.toml",
-        "pattern": "if pseudorandom('soul_'.._type..G.GAME.round_resets.ante) > 0.997 then\n\tforced_key = 'c_soul'",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 2412,
-          "end_line": 2413
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\TheOrder.toml",
-        "pattern": "if pseudorandom('soul_'.._type..G.GAME.round_resets.ante) > 0.997 then\n\tforced_key = 'c_black_hole'",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 2418,
-          "end_line": 2421
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\double_emplace.toml",
-        "pattern": "function draw_card(from, to, percent, dir, sort, card, delay, mute, stay_flipped, vol, discarded_only)",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 421,
-          "end_line": 423
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\ce.toml",
-        "pattern": "G.GAME.dollars = G.GAME.dollars + mod",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 96,
-          "end_line": 105
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\decks.toml",
-        "pattern": "G.GAME.dollars = G.GAME.dollars + mod",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 85,
-          "end_line": 91
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\decks.toml",
-        "pattern": "        attention_text({\n          text = text..tostring(math.abs(mod)),",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 111,
-          "end_line": 114
-        }
-      ],
-      "warnings": [
-        "Pattern '''\n        attention_text({\n          text = text..tostring(math.abs(mod)),''' on target 'functions/common_events.lua' for pattern patch from BalatroMultiplayer-0.3.1\\lovely\\decks.toml resulted in 3 matches, wanted 1",
-        "Ignoring excess matches"
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\end_round.toml",
-        "pattern": "function ease_ante(mod)\n",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 223,
-          "end_line": 225
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\game.toml",
-        "pattern": "elseif config.name == 'hands' then",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 1162,
-          "end_line": 1195
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\game.toml",
-        "pattern": "G.GAME.current_round.hands_left = G.GAME.current_round.hands_left + mod",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 192,
-          "end_line": 194
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\game.toml",
-        "pattern": "G.GAME.dollars = G.GAME.dollars + mod",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 93,
-          "end_line": 95
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\misc.toml",
-        "pattern": "\t_pool[#_pool + 1] = 'UNAVAILABLE'\nend\n",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 2324,
-          "end_line": 2331
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\shared_area.toml",
-        "pattern": "G.consumeables.T.y = 0",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 14,
-          "end_line": 17
-        }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\stakes.toml",
-        "pattern": "elseif config.name == 'hands' then",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 1196,
-          "end_line": 1198
+          "start_line": 530,
+          "end_line": 548
         }
       ]
     }

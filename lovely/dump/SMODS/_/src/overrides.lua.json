@@ -3,7 +3,7 @@
   "entries": [
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\TheOrder.toml",
+        "file": "BalatroMultiplayer-0.3.2\\lovely\\TheOrder.toml",
         "pattern": "local poll = pseudorandom(pseudoseed((_key or 'pack_generic')..G.GAME.round_resets.ante))*cume",
         "patch_type": "pattern"
       },

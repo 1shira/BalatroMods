@@ -3,7 +3,7 @@
   "entries": [
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\misc.toml",
+        "file": "BalatroMultiplayer-0.3.2\\lovely\\misc.toml",
         "pattern": "function SMODS.in_scoring(card, scoring_hand)",
         "patch_type": "pattern"
       },
@@ -16,7 +16,7 @@
     },
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\misc.toml",
+        "file": "BalatroMultiplayer-0.3.2\\lovely\\misc.toml",
         "pattern": "for _, area in ipairs(SMODS.get_card_areas('playing_cards')) do",
         "patch_type": "pattern"
       },
@@ -25,17 +25,6 @@
           "start_line": 1680,
           "end_line": 1680
         }
-      ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\misc.toml",
-        "pattern": "smods_hook_save_run()\nif SMODS.last_hand then\n",
-        "patch_type": "pattern"
-      },
-      "regions": [],
-      "warnings": [
-        "Pattern 'smods_hook_save_run()\\nif SMODS.last_hand then\\n' on target '=[SMODS _ \"src/utils.lua\"]' for pattern patch from BalatroMultiplayer-0.3.1\\lovely\\misc.toml resulted in no matches"
       ]
     }
   ]

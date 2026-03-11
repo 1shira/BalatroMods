@@ -47,9 +47,6 @@ function CardArea:init(X, Y, W, H, config)
 end
 
 function CardArea:emplace(card, location, stay_flipped)
-for k, v in pairs(self.cards) do
-	if v == card then return end
-end
     if location == 'front' or self.config.type == 'deck' then 
         table.insert(self.cards, 1, card)
     else
@@ -629,27 +626,6 @@ end
 
 function CardArea:draw_card_from(area, stay_flipped, discarded_only)
     if area:is(CardArea) then
-    local prevent = false
-    do
-    	local _cards = discarded_only and {} or area.cards
-    	local card = nil
-    	if discarded_only then 
-    		for k, v in ipairs(area.cards) do
-    			if v.ability and v.ability.discarded then 
-    				_cards[#_cards+1] = v
-    			end
-    		end
-    	end
-    	if area.config.type == 'discard' or area.config.type == 'deck' then
-    		card = _cards[#_cards]
-    	else
-    		card = _cards[1]
-    	end
-    	for k, v in pairs(self.cards) do
-    		if v == card then prevent = true; break end
-    	end
-    end
-    if prevent then return end
         if #self.cards < self.config.card_limit or self == G.deck or self == G.hand then
             local card = area:remove_card(nil, discarded_only)
             if card then

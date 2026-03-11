@@ -3,18 +3,6 @@
   "entries": [
     {
       "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\preview.toml",
-        "patch_type": "copy"
-      },
-      "regions": [
-        {
-          "start_line": 525,
-          "end_line": 650
-        }
-      ]
-    },
-    {
-      "patch_source": {
         "file": "smods-1.0.0-beta-1503a\\lovely\\booster.toml",
         "pattern": "(?<indent>[\\t ]*)self\\.STATES = \\{",
         "patch_type": "regex"

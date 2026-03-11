@@ -199,19 +199,6 @@
           "end_line": 296
         }
       ]
-    },
-    {
-      "patch_source": {
-        "file": "BalatroMultiplayer-0.3.1\\lovely\\misc.toml",
-        "pattern": "local card = create_card('Tarot', G.consumeables, nil, nil, nil, nil, v, 'deck')",
-        "patch_type": "pattern"
-      },
-      "regions": [
-        {
-          "start_line": 244,
-          "end_line": 244
-        }
-      ]
     }
   ]
 }
