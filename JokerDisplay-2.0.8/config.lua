@@ -1,0 +1,28 @@
+return {
+	default_rows = {
+		reminder = true,
+		extra = true,
+		modifiers = true,
+	},
+	hide_by_default = false,
+	hide_empty = true,
+	shift_to_hide = false,
+	joker_count = true,
+	disable_collapse = false,
+	disable_perishable = false,
+	disable_rental = false,
+	emboss = false,
+	background_colour = { 0, 0, 0, 0.8 },
+	background_opacity = 0.8,
+	background_colour_override = false,
+	text_colour_overrides = {},
+	background_hue = 0,
+	background_saturation = 0,
+	background_brightness = 0,
+	small_rows = {
+		reminder = false,
+		extra = false,
+		modifiers = true,
+	},
+	enabled = true,
+}

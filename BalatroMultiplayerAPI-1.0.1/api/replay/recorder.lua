@@ -1,0 +1,540 @@
+-- MPAPI.replay: dual-stream, deterministic, mod-agnostic action-log recorder.
+-- Sibling to api/replay/api.lua (download/list/spectate) and api/playback/*
+-- (dispatch/timeline) -- this file is the recording side of the same
+-- record -> transport -> download -> dispatch/timeline pipeline, generic to
+-- ANY consuming mod (PvP today, SPDRN or any future one for free) the same
+-- way api/playback/registry.lua's opcode dispatch already is: MPAPI has no
+-- idea what a "buy" or "net_pizza" opcode actually means, only how to
+-- record/hash/transport the {t, opcode, args} tuple. A consuming mod's own
+-- game-logic overrides are the only place opcode meaning lives -- e.g.
+-- BalatroMultiplayerPvP's overrides/game.lua calling MPAPI.replay.record
+-- (aliased there as PVP.RLOG, see lib/replay_log.lua) at its own "buy"/
+-- "sell"/etc. call sites.
+--
+-- Two streams are emitted from the SAME instrumentation points so they stay
+-- event-for-event aligned (shared elapsed-ms timestamp). Both go into the
+-- ordinary Lovely log, distinguished only by a line prefix so parsers know what
+-- to read -- there is no separate file.
+--
+--   1. Carbon-copy (replay) stream  -- prefix "MP_RLOG:". Positional, no names:
+--      "MP_RLOG: 5123 buy 1 2" means "at 5.123s into the run, buy shop area 1,
+--      slot 2". Indiscriminate, so modded content is just "slot N" and replays
+--      across mods for free. This is the only truly replayable stream. The
+--      block opens with a `match_manifest` event (see framing_codes.lua --
+--      recorded like any other opcode, no special header line) and is
+--      trailered by an END + CHK trailer (also under the MP_RLOG: prefix).
+--
+--   2. Human-readable stream  -- prefix "Client sent message:" (the existing
+--      format the website parser already reads). "Client sent message: action:
+--      boughtCardFromShop,card:Blueprint,cost:4".
+--
+-- record() is the single emitter for both lines, so a consuming mod's own
+-- per-action overrides don't log the human line themselves -- they pass the
+-- payload to record().
+--
+-- Timestamps: each event's leading field is `t`, milliseconds elapsed since the
+-- manifest's `start_epoch_ms` (captured once, via a monotonic clock) -- not a
+-- bare sequence counter. This keeps per-event numbers small (a few digits for a
+-- multi-minute match, instead of repeating a 13-digit absolute epoch stamp on
+-- every line) while still being monotonically non-decreasing, so it doubles as
+-- the same ordering key a sequence number would give, and additionally carries
+-- the real elapsed-time information anti-cheat plausibility checks and
+-- reconnect tail-requests both need. Matches the server's
+-- `t` field convention (ms since match start), so this format and the server's
+-- eventual event schema agree instead of diverging.
+--
+-- At end_run both streams are hashed and broadcast in the CHK trailer. The
+-- carbon stream's hash (carbon_hash) is a real SHA-256 over a canonical JSON
+-- re-encoding of its own {t, opcode, args} events (see canonical_hash_input),
+-- not over the text lines themselves -- this is what the server independently
+-- recomputes from its own stored events and compares against at the run's
+-- end (Nakama's lobby/log_check.ts) to flag a tampered log. The human stream's hash (human_hash) stays on a cheap local
+-- Adler-style checksum -- it's never server-verified, just a local corruption
+-- check. Full re-simulation anti-cheat remains future work.
+--
+-- Live transport: a consuming mod is expected to also broadcast every event
+-- (including the MANIFEST/END/CHK framing lines) in real time over its own
+-- MPAPI ActionType by calling RLOG.register_broadcaster(mod_id, fn) (see
+-- BalatroMultiplayerPvP/pvp_api/replay_log_actions.lua or
+-- BalatroMultiplayerSpeed/objects/replay_log/actions.lua for reference
+-- implementations, registering the "pvp_log_event"/"spdrn_log_event" Action-
+-- Types respectively) -- one broadcast per event, not batched, so a
+-- server-side buffer (or a spectator) sees each line as it happens.
+-- RLOG.broadcast_event itself dispatches by the CURRENT lobby's mod_id, not a
+-- single mutable slot: MPAPI.replay is one shared singleton, so if it were a
+-- single function a second consuming mod's registration would silently
+-- clobber the first mod's (whichever mod's file happened to load last would
+-- "win" for every game afterward, regardless of which mod's lobby was
+-- actually live) -- confirmed as a real bug the first time a second consumer
+-- (SPDRN) was added alongside PvP in the same install. The local carbon/human
+-- text lines into the
+-- Lovely log are unaffected either way -- a missing broadcaster just no-ops,
+-- local logging still works (e.g. under the headless test harness).
+MPAPI.replay = MPAPI.replay or {}
+local RLOG = MPAPI.replay
+
+RLOG.CARBON_PREFIX = "MP_RLOG:" -- positional / replay stream
+RLOG.HUMAN_PREFIX = "Client sent message:" -- human-readable stream (website-compatible)
+
+-- Schema version of the whole event format (match_manifest/lobby_info/run_info
+-- framing plus every opcode's own args shape) -- NOT released yet, so this is
+-- reset to 1 rather than continuing to bump. Recorded once per match, in
+-- match_manifest's own args (api/replay/framing_codes.lua), and threaded to
+-- every playback handler as ctx.schema_version (api/playback/driver.lua) so
+-- each MPAPI.RLOG_CODE's replay() can branch on it directly instead of
+-- carrying its own per-opcode version field -- see codes.lua's header comment.
+RLOG.SCHEMA_VERSION = 1
+
+RLOG._start_ms = nil -- monotonic-clock ms at begin_run, source of truth for each event's `t`
+RLOG._fallback_seq = 0 -- ms-surrogate counter when no monotonic clock is available (e.g. tests)
+RLOG._carbon_buffer = {} -- the action "MP_RLOG: <t> ..." lines, hashed at end
+RLOG._carbon_full = {} -- the full carbon block (manifest + actions + END + CHK), sent to the server
+RLOG._human_buffer = {} -- the "Client sent message: ..." lines, hashed at end
+-- {t, opcode, args} tuples for gameplay events only -- populated exclusively by
+-- RLOG.record, so the MANIFEST/END/CHK framing lines (emitted directly via
+-- emit_carbon, bypassing record) are never in here. Used at end_run to compute
+-- a canonical SHA-256 hash the server can independently reproduce (see
+-- canonical_hash_input below) -- kept separate from _carbon_buffer because that
+-- one holds pre-formatted text lines, not the structured values a hash needs.
+RLOG._structured_events = {}
+RLOG._run_active = false
+RLOG._force_active = false -- test hook: bypass the lobby gate
+
+-- Per-run card identity dictionary (see RLOG.card_ref below). Keyed by the
+-- Card object's own table reference -- not card.sort_id, which is a per-run
+-- counter unsuitable for cross-referencing. Reset every begin_run so ids
+-- restart at 1 each match.
+RLOG._card_ids = {}
+RLOG._next_card_id = 0
+
+-------------------------------------------------------------------------------
+-- Gate
+-------------------------------------------------------------------------------
+
+-- Only real multiplayer games log. Practice and preview/simulation modes have
+-- no active lobby, so they never emit.
+function RLOG.is_active()
+	if RLOG._force_active then return true end
+	local lobby = MPAPI.get_current_lobby()
+	if not (lobby and lobby.code) then return false end
+	return true
+end
+
+-- Launch-time compatibility check for a recording's own schema_version
+-- (match_manifest.schema_version, see framing_codes.lua) against this
+-- running client's own RLOG.SCHEMA_VERSION. A client can always replay
+-- equal-or-older recordings -- every MPAPI.RLOG_CODE's replay() branches on
+-- ctx.schema_version itself (see codes.lua) -- but never a NEWER format it
+-- doesn't know how to interpret. Called once, before playback starts (each
+-- mod's own _launch_replay/_launch_rejoin), not per-event.
+function RLOG.is_schema_compatible(schema_version)
+	return type(schema_version) == "number" and schema_version <= RLOG.SCHEMA_VERSION
+end
+
+-------------------------------------------------------------------------------
+-- Internal helpers
+-------------------------------------------------------------------------------
+
+-- Mirrors a consuming mod's own live-transport normalize_args (nil stays nil,
+-- a table stays a table, a bare scalar becomes a single-element array) -- see
+-- BalatroMultiplayerPvP/pvp_api/replay_log_actions.lua for the reference
+-- implementation. Applied when building _structured_events (not to args
+-- generally -- fmt_args and the carbon text line still use the original,
+-- unwrapped args) so the hash input matches EXACTLY what the wire transport
+-- sends and the server buffers. Without this, a bare-scalar opcode would hash
+-- differently locally (raw scalar) than what the server observes (wrapped in
+-- a 1-element array by the transport's own normalize_args before broadcast),
+-- so every clean run would spuriously flag as a hash mismatch.
+local function normalize_for_hash(args)
+	if args == nil then return nil end
+	if type(args) == "table" then return args end
+	return { args }
+end
+
+-- Format an opcode's args into the positional arg string.
+-- Each token is either a scalar -> "1" or a list -> dot-joined "1.3.5".
+-- A bare scalar/string is treated as a single token.
+local function fmt_args(args)
+	if args == nil then return "" end
+	if type(args) ~= "table" then return tostring(args) end
+	local parts = {}
+	for _, tok in ipairs(args) do
+		if type(tok) == "table" then
+			local sub = {}
+			for _, v in ipairs(tok) do
+				sub[#sub + 1] = tostring(v)
+			end
+			parts[#parts + 1] = table.concat(sub, ".")
+		else
+			parts[#parts + 1] = tostring(tok)
+		end
+	end
+	return table.concat(parts, " ")
+end
+
+local function emit(msg)
+	sendTraceMessage(msg, "MULTIPLAYER")
+end
+
+-- Milliseconds elapsed since begin_run, for each event's `t`. Falls back to a
+-- plain incrementing counter (behaving like a sequence number) when
+-- love.timer isn't available, e.g. under the headless test harness -- so
+-- `t` is still monotonically non-decreasing even without a real clock.
+local function elapsed_ms()
+	if RLOG._start_ms == nil then
+		RLOG._fallback_seq = RLOG._fallback_seq + 1
+		return RLOG._fallback_seq
+	end
+	return math.floor(love.timer.getTime() * 1000 - RLOG._start_ms + 0.5)
+end
+
+-- mod_id -> broadcaster fn, populated by each consuming mod's own transport
+-- wiring via RLOG.register_broadcaster (see the "Live transport" doc comment
+-- above for why this is a registry keyed by mod_id rather than a single slot).
+RLOG._broadcasters = {}
+
+function RLOG.register_broadcaster(mod_id, fn)
+	RLOG._broadcasters[mod_id] = fn
+end
+
+-- Dispatches to whichever mod owns the CURRENT lobby. No-ops with no lobby
+-- (practice mode, headless tests) or no broadcaster registered for that mod
+-- (a consuming mod that hasn't wired transport up yet) -- local carbon/human
+-- logging is unaffected either way.
+--
+-- A server-refereed lobby (Nakama) sends the event to the server instead,
+-- which stores it with the finished game -- no mod broadcaster involved.
+function RLOG.broadcast_event(t, opcode, args)
+	local lobby = MPAPI.get_current_lobby()
+	if MPAPI.has_server_referee(lobby) then
+		MPAPI._internal.lobby.send_log_event(lobby, t, opcode, args)
+		return
+	end
+	local fn = lobby and RLOG._broadcasters[lobby.mod_id]
+	if fn then fn(t, opcode, args) end
+end
+
+-- Emit a carbon-stream line: tee to the Lovely log, accumulate it into the full
+-- local block, AND broadcast the structured (t, opcode, args) form live via
+-- RLOG.broadcast_event.
+local function emit_carbon(msg, t, opcode, args)
+	RLOG._carbon_full[#RLOG._carbon_full + 1] = msg
+	sendTraceMessage(msg, "MULTIPLAYER")
+	RLOG.broadcast_event(t, opcode, args)
+end
+
+-- Encodes one {t, opcode, args} tuple as a JSON array literal, built manually
+-- rather than via json.encode(ev) on a Lua table -- args is sometimes nil
+-- (e.g. reroll, cashout), and a trailing nil in a positional Lua table makes
+-- `#`/array-vs-object detection undefined, which a generic table encoder can't
+-- be trusted to handle consistently. `t` and `opcode` are scalars (a number
+-- and a string), and every args value a consuming mod passes is nil, a bare
+-- scalar, or a plain positional array/list, never a table with string keys,
+-- so nothing here has Lua/JS pairs()-order ambiguity to worry about; only the
+-- outer 3-element shape does.
+local function encode_event_tuple(ev)
+	local json = require("json")
+	local args_json = ev.args == nil and "null" or json.encode(ev.args)
+	return string.format("[%d,%s,%s]", ev.t, json.encode(ev.opcode), args_json)
+end
+
+-- Canonical JSON-array encoding of every gameplay event (see RLOG._structured_events),
+-- used as the SHA-256 input for RLOG.end_run's CHK line -- independently
+-- reproducible server-side (Node's JSON.stringify over the same tuple shape)
+-- without needing to match Lua's dict key-iteration order, since the whole
+-- input is array-shaped end to end.
+local function canonical_hash_input()
+	local parts = {}
+	for _, ev in ipairs(RLOG._structured_events) do
+		parts[#parts + 1] = encode_event_tuple(ev)
+	end
+	return "[" .. table.concat(parts, ",") .. "]"
+end
+
+-- Cheap Adler-style checksum for the human stream (never server-verified,
+-- purely a local corruption check) -- kept private to this file rather than
+-- exposed as a general-purpose MPAPI hash utility, since it has exactly one
+-- caller (end_run below).
+local function cheap_hash(str)
+	local a, b = 1, 0
+	for i = 1, #str do
+		a = (a + str:byte(i)) % 65521
+		b = (b + a) % 65521
+	end
+	return string.format("%08x", b * 65536 + a)
+end
+
+-------------------------------------------------------------------------------
+-- Public API
+-------------------------------------------------------------------------------
+
+-- Record one state-affecting action. Emits the carbon (positional) line and,
+-- when a human payload is provided, the mirrored human line -- both into the
+-- Lovely log tagged with the same elapsed-ms timestamp `t`.
+--   opcode : string, e.g. "buy"
+--   args   : nil | scalar | list of tokens (scalar or sub-list); see fmt_args
+--   human  : nil | string payload in the existing "action:key,..." format
+function RLOG.record(opcode, args, human)
+	if not RLOG.is_active() or not RLOG._run_active then return end
+
+	local t = elapsed_ms()
+
+	local argstr = fmt_args(args)
+	local cline = RLOG.CARBON_PREFIX .. " " .. t .. " " .. opcode .. (argstr ~= "" and (" " .. argstr) or "")
+	RLOG._carbon_buffer[#RLOG._carbon_buffer + 1] = cline
+	RLOG._structured_events[#RLOG._structured_events + 1] =
+		{ t = t, opcode = opcode, args = normalize_for_hash(args) }
+	emit_carbon(cline, t, opcode, args)
+
+	if human ~= nil and human ~= "" then
+		local hline = RLOG.HUMAN_PREFIX .. " " .. human
+		RLOG._human_buffer[#RLOG._human_buffer + 1] = hline
+		emit(hline)
+	end
+end
+
+-- Compact, self-describing reference to a card's current identity, for
+-- embedding in card-referencing events' args (play/discard/sell/buy/
+-- open_pack/voucher/pack_pick/use/pack_skip/reorder, etc.). Two shapes,
+-- disambiguated by the SIGN of the first element (no lookahead/length-
+-- inference needed):
+--
+--   already-seen : { id, tag, tag, ... }                    -- id > 0
+--   first-seen   : { -id, kind, ident..., tag, tag, ... }    -- id negative
+--
+-- `kind`/`ident` (first-seen only) identify WHAT the card is: "pc" + suit,
+-- value for a playing card; otherwise card.ability.set verbatim (Balatro's
+-- own type name -- "Joker", "Tarot", "Planet", "Spectral", "Voucher"),
+-- falling back to "j" if that's somehow unset, + the card's SMODS center key.
+--
+-- `tag...` (0-3 elements, on EVERY reference, first-seen or not, since
+-- enhancement/edition/seal can mutate mid-run -- Glass Joker, Vampire, Hex,
+-- spectral cards, etc.): "e:"+enhancement key (playing cards only, omitted
+-- when the card has none, i.e. its center is "c_base"), "ed:"+edition type
+-- (omitted when none), "s:"+seal (playing cards only, omitted when none).
+-- Sparse by construction, and reuses Balatro/SMODS' own native vocabulary
+-- rather than a custom enum -- readable without a separate legend, and no
+-- less compressible under gzip (these short strings repeat across thousands
+-- of events; LZ77 turns repeats into cheap back-references either way).
+--
+-- Pure Card-object introspection, no consuming-mod knowledge required -- any
+-- mod recording card-referencing events (PvP, SPDRN, ...) can call this
+-- directly.
+function RLOG.card_ref(card)
+	if not card then return nil end
+
+	local id = RLOG._card_ids[card]
+	local first_seen = id == nil
+	if first_seen then
+		RLOG._next_card_id = RLOG._next_card_id + 1
+		id = RLOG._next_card_id
+		RLOG._card_ids[card] = id
+	end
+
+	-- Every Card object carries a non-nil `.base` table regardless of type
+	-- (Jokers/Tarots/etc. included) -- suit/value presence is what actually
+	-- distinguishes a playing card, not base's mere existence.
+	local is_playing_card = card.base and card.base.suit and card.base.value
+
+	local ref
+	if not first_seen then
+		ref = { id }
+	elseif is_playing_card then
+		ref = { -id, "pc", card.base.suit, card.base.value }
+	elseif card.config and card.config.center and card.config.center.key then
+		local kind = (card.ability and card.ability.set) or "j"
+		ref = { -id, kind, card.config.center.key }
+	else
+		ref = { -id, "?" } -- defensive; shouldn't happen at any real call site
+	end
+
+	if is_playing_card and card.config and card.config.center and card.config.center.key ~= "c_base" then
+		ref[#ref + 1] = "e:" .. card.config.center.key
+	end
+	if card.edition and card.edition.type then ref[#ref + 1] = "ed:" .. card.edition.type end
+	if card.seal then ref[#ref + 1] = "s:" .. card.seal end
+
+	return ref
+end
+
+-- Parallel-array helper for play/discard/pack_pick-targets/use-targets-style
+-- events: given 1-based `indices` into `area` (defaults to G.hand), returns
+-- one RLOG.card_ref per index, same order. Must be called BEFORE the
+-- underlying vanilla function consumes/moves the cards.
+function RLOG.card_refs(indices, area)
+	area = area or (G and G.hand)
+	local out = {}
+	for _, i in ipairs(indices or {}) do
+		local card = area and area.cards and area.cards[i]
+		if card then out[#out + 1] = RLOG.card_ref(card) end
+	end
+	return out
+end
+
+-- Playback-side counterpart to RLOG.card_ref. `id`s are assigned independently
+-- by each RECORDING client (RLOG._card_ids above, scoped to that client's own
+-- match), so they're only meaningful within one recorded player's own event
+-- stream -- callers must keep one `state` table per (playback session,
+-- recorded player), never share it across players or reuse it for a second
+-- replay. See RLOG.new_resolver_state.
+--
+-- `candidates` is searched only for a first-seen ref (id < 0): the list of
+-- live Card objects a match could plausibly come from right now (typically
+-- G.hand.cards for play/discard/use-targets). An already-seen ref (id > 0)
+-- MUST already be in state.by_id -- there is no candidate list to search,
+-- by design (see card_ref's own comment: only first-seen refs carry type
+-- info at all).
+--
+-- Returns nil if resolution fails -- either an already-seen id this playback
+-- session never saw first-seen (impossible in a correctly-ordered replay of
+-- a self-consistent recording), or no unclaimed candidate matches a
+-- first-seen ref's type signature. Both mean this replay has desynced from
+-- the recording (e.g. an RNG-affecting action wasn't replayed in the same
+-- order/count as it was recorded, so G.hand no longer holds what the
+-- recording expects) -- callers MUST treat a nil return as "skip this card,
+-- don't guess", never fall back to the very position that just desynced.
+function RLOG.resolve_card_ref(state, ref, candidates)
+	if not ref then return nil end
+	local id = ref[1]
+	if id > 0 then
+		return state.by_id[id]
+	end
+	id = -id
+	if state.by_id[id] then return state.by_id[id] end
+
+	local kind = ref[2]
+	for _, card in ipairs(candidates or {}) do
+		if not state.assigned[card] then
+			local matches
+			if kind == "pc" then
+				matches = card.base and card.base.suit == ref[3] and card.base.value == ref[4]
+			elseif card.config and card.config.center then
+				matches = card.config.center.key == ref[3]
+			end
+			if matches then
+				state.by_id[id] = card
+				state.assigned[card] = true
+				return card
+			end
+		end
+	end
+	return nil
+end
+
+-- Fresh state for RLOG.resolve_card_ref -- one per (playback session, recorded
+-- player); see that function's own comment for why these can never be shared.
+function RLOG.new_resolver_state()
+	return { by_id = {}, assigned = {} }
+end
+
+-- Start a new match's block: reset counters/buffers and start the clock.
+-- Pure bookkeeping -- no manifest parameter, no framing line of its own.
+-- Callers immediately follow this with MPAPI.RLOGCodes.match_manifest:write(...)
+-- (see framing_codes.lua), an ordinary recorded event that becomes the
+-- block's opening marker instead. Fires once per MATCH (not per individual
+-- Balatro run) -- see run_info in framing_codes.lua for the per-run
+-- seed/deck/stake record.
+function RLOG.begin_run()
+	RLOG._start_ms = (love and love.timer and love.timer.getTime) and (love.timer.getTime() * 1000) or nil
+	RLOG._fallback_seq = 0
+	RLOG._carbon_buffer = {}
+	RLOG._carbon_full = {}
+	RLOG._human_buffer = {}
+	RLOG._structured_events = {}
+	RLOG._run_active = true
+	RLOG._card_ids = {}
+	RLOG._next_card_id = 0
+	RLOG._resumed = false
+end
+
+-- Resume recording a match this client was already recording, after a crash-relaunch
+-- rejoin: a relaunched process starts with no active block, so without this every later
+-- record() is a silent no-op -- the server's log for the rejoined player stopped at the
+-- crash, so their replay (and a second rejoin's fast-forward) ended there. `events` is the
+-- player's own stream as the server holds it (MPAPI.replay.get_active_run's events, the
+-- same ones the rejoin fast-forwarded); `t` carries on from the last of them.
+-- Card ids carry on after the highest first-seen id in `events`, so a card first seen after
+-- the rejoin never reuses a pre-crash card's id (it did: the next new card came out as id 1
+-- again). `cards_by_id` (recorded id -> live Card, a playback driver's resolver state for
+-- this player, when its handlers resolve refs at all -- PvP's are positional) additionally
+-- gives those restored cards their recorded ids back.
+--
+-- A resumed block closes with END but no CHK: the CHK hash covers the whole log the server
+-- holds, and the pre-crash part only comes back parsed (run_active), so its object-valued
+-- args (match_manifest, lobby_info) can't be re-encoded in their original key order -- a
+-- claimed hash would read as tampering ('mismatch' -> flagged, unrated). Without one the
+-- server's check is 'unavailable', as it was for a rejoined player before.
+-- The highest card id first seen in an event's args: a first-seen ref is the only array
+-- shaped { -id, kind, ... } (see card_ref), so it can't be confused with a plain index list.
+local function max_first_seen_id(v, best)
+	if type(v) ~= "table" then return best end
+	if type(v[1]) == "number" and v[1] < 0 and type(v[2]) == "string" then
+		return math.max(best, -v[1])
+	end
+	for _, x in ipairs(v) do
+		best = max_first_seen_id(x, best)
+	end
+	return best
+end
+
+function RLOG.resume_run(events, cards_by_id)
+	RLOG.begin_run()
+	RLOG._resumed = true
+	local last_t = 0
+	for _, ev in ipairs(events or {}) do
+		if type(ev.t) == "number" and ev.t > last_t then last_t = ev.t end
+		RLOG._next_card_id = max_first_seen_id(ev.args, RLOG._next_card_id)
+	end
+	if RLOG._start_ms then
+		RLOG._start_ms = RLOG._start_ms - last_t
+	else
+		RLOG._fallback_seq = last_t
+	end
+	for id, card in pairs(cards_by_id or {}) do
+		RLOG._card_ids[card] = id
+		if id > RLOG._next_card_id then RLOG._next_card_id = id end
+	end
+end
+
+-- Close the current game's block: emit the END line, hash each stream, and emit
+-- the CHK trailer. The hashes are returned for a future result-report step to
+-- submit (see Phase 8/anti-cheat) -- there's no separate "submit the whole
+-- block" step, since the server-side buffer already has every event from the
+-- live broadcasts and independently recomputes carbon_hash itself
+-- (Nakama's lobby/log_check.ts) for comparison against this value. carbon_hash is a real SHA-256 (love.data.hash) over
+-- canonical_hash_input's positional-tuple JSON -- deliberately NOT over
+-- carbon_str's text lines, since a byte-identical text re-formatting is much
+-- harder to guarantee cross-language than re-encoding the same JSON tuples.
+-- human_hash stays on the cheap Adler-style cheap_hash -- it's never
+-- server-verified, purely a local corruption check on the website-compatible
+-- stream.
+function RLOG.end_run(outcome)
+	if not RLOG._run_active then return end
+
+	local json = require("json")
+	local t_end = elapsed_ms()
+	emit_carbon(RLOG.CARBON_PREFIX .. " END " .. json.encode(outcome or {}), t_end, MPAPI.OPCODE.END, outcome or {})
+
+	local carbon_str = table.concat(RLOG._carbon_buffer, "\n")
+	local human_str = table.concat(RLOG._human_buffer, "\n")
+	local carbon_hash = love.data.encode("string", "hex", love.data.hash("sha256", canonical_hash_input()))
+	local human_hash = cheap_hash(human_str)
+	local bytes = #carbon_str + #human_str
+
+	if RLOG._resumed then
+		-- See resume_run: no hash for a block resumed after a crash-rejoin.
+		RLOG._run_active = false
+		return nil, nil
+	end
+
+	local chk_args = { carbon = carbon_hash, human = human_hash, bytes = bytes }
+	emit_carbon(
+		string.format("%s CHK v1 carbon=%s human=%s bytes=%d", RLOG.CARBON_PREFIX, carbon_hash, human_hash, bytes),
+		elapsed_ms(),
+		MPAPI.OPCODE.CHK,
+		chk_args
+	)
+
+	RLOG._run_active = false
+	return carbon_hash, human_hash
+end

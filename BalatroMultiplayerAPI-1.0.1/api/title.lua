@@ -1,0 +1,94 @@
+-- Swaps the BALATRO title logo for the focused mod's custom title while its menu is shown.
+-- A mod opts in via register_mod{ title = <atlas_key> }; that atlas becomes G.SPLASH_LOGO.
+-- The title_top cards are hidden while a custom title is shown so they don't poke through it.
+
+local function atlas(key)
+	return key and (G.ASSET_ATLAS[key] or (SMODS.Atlases and SMODS.Atlases[key])) or nil
+end
+
+-- A title-logo sprite for an atlas, sized and aligned like the vanilla SPLASH_LOGO.
+local function title_sprite(a)
+	local sc = 1.1 * (G.debug_splash_size_toggle and 0.8 or 1)
+	local s = Sprite(0, 0, 13 * sc, 13 * sc * (a.py / a.px), a, { x = 0, y = 0 })
+	s:set_alignment({ major = G.title_top, type = 'cm', bond = 'Strong', offset = { x = 0, y = 0 } })
+	s:define_draw_steps({ { shader = 'dissolve' } })
+	s.dissolve_colours = { G.C.WHITE, G.C.WHITE }
+	-- dissolve is fully-formed at 0; the vanilla logo only sits at 1 mid intro animation.
+	s.dissolve = 0
+	return s
+end
+
+local _hidden_cards = {}
+
+local function set_logo(a, tag)
+	if G.SPLASH_LOGO then pcall(function() G.SPLASH_LOGO:remove() end) end
+	G.SPLASH_LOGO = title_sprite(a)
+	G.SPLASH_LOGO._mpapi_title = tag
+end
+
+local function apply_title(key)
+	if not G.title_top then return end
+	local a = atlas(key)
+	if not (a and a.image) then return end
+	set_logo(a, key)
+end
+
+local function restore_vanilla()
+	if G.title_top and G.ASSET_ATLAS['balatro'] then
+		set_logo(G.ASSET_ATLAS['balatro'], nil)
+	end
+end
+
+local function hide_title_cards()
+	if not (G.title_top and G.title_top.cards) then return end
+	for _, c in ipairs(G.title_top.cards) do
+		if c.states and c.states.visible ~= false then
+			c.states.visible = false
+			_hidden_cards[#_hidden_cards + 1] = c
+		end
+	end
+end
+
+local function show_title_cards()
+	for _, c in ipairs(_hidden_cards) do
+		if c and c.states then c.states.visible = true end
+	end
+	_hidden_cards = {}
+end
+
+local function manage_title()
+	if not G.SPLASH_LOGO then return end
+	local cfg = MPAPI._internal.get_active_title and MPAPI._internal.get_active_title()
+	if cfg then
+		if G.SPLASH_LOGO._mpapi_title ~= cfg then apply_title(cfg) end
+		-- Vanilla's own main-menu boot/reveal sequence (Game:main_menu, game.lua) schedules a
+		-- ONE-TIME delayed ease_value(G.SPLASH_LOGO, 'dissolve', -1, ...) every time it runs
+		-- (cold boot AND every return from a run, not just first launch) to dissolve out its
+		-- own intro splash sprite a fraction of a second to ~2s later. That event looks up
+		-- G.SPLASH_LOGO fresh at fire time, not by a reference captured when it was scheduled
+		-- -- if our custom title has already been swapped in by then (which happens almost
+		-- immediately, since this function runs every frame), the event dissolves OUR base
+		-- logo to invisible instead of vanilla's. Confirmed live, on both cold
+		-- boot and returning from a practice run: G.SPLASH_LOGO.dissolve reads -1 (fully
+		-- dissolved) afterward, with the correct atlas/tag still attached -- only this one
+		-- field is wrong. Re-asserting it every frame is simpler and more robust than racing
+		-- or cancelling that vanilla event, whose delay differs depending on how the main menu
+		-- was reached and isn't something MPAPI has a clean hook into.
+		if G.SPLASH_LOGO._mpapi_title == cfg and G.SPLASH_LOGO.dissolve ~= 0 then
+			G.SPLASH_LOGO.dissolve = 0
+		end
+		hide_title_cards()
+	elseif G.SPLASH_LOGO._mpapi_title then
+		restore_vanilla()
+		show_title_cards()
+	end
+end
+
+if not MPAPI._title_update_hooked then
+	MPAPI._title_update_hooked = true
+	local _ref = Game.update
+	function Game:update(dt)
+		_ref(self, dt)
+		pcall(manage_title)
+	end
+end

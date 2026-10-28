@@ -1,0 +1,153 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 2147483600
+
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = '''function SMODS.in_scoring(card, scoring_hand)'''
+position = 'after'
+payload = '''   if not scoring_hand then return false end'''
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = "for _, area in ipairs(SMODS.get_card_areas('playing_cards')) do"
+position = 'after'
+payload = "if not area.cards then goto continue end"
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = '''functions/misc_functions.lua'''
+pattern = "function localize(args, misc_cat)"
+position = 'after'
+payload = '''
+   if not args then return "ERROR" end'''
+match_indent = true
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = '''engine/moveable.lua'''
+pattern = "function Moveable:align_to_major()"
+position = 'after'
+payload = '''
+if not self or not self.alignment or not self.role then return end
+if not self.alignment.type or not self.alignment.prev_type then return end
+if not self.alignment.offset or not self.alignment.prev_offset then return end
+if not self.alignment.offset.x or not self.alignment.offset.y then return end
+if not self.alignment.prev_offset.x or not self.alignment.prev_offset.y then return end
+if not self.T then return end
+if not self.Mid or not self.Mid.T or not self.Mid.T.w or not self.Mid.T.h or not self.Mid.T.x or not self.Mid.T.y then return end
+if not self.role.major or not self.role.major.T then return end
+if not self.role.major.T.w or not self.role.major.T.h or not self.role.major.T.x or not self.role.major.T.y then return end
+if not self.T.w or not self.T.h or not self.T.x or not self.T.y then return end
+if not self.role.offset then self.role.offset = {} end'''
+match_indent = true
+times = 1
+
+# remove collection misprint when in multiplayer
+# code restructured from "no peeking" by spad_overolls
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = 'for i = self.ability.extra.min, self.ability.extra.max do'
+position = "before"
+payload = '''
+local mp_collection = self.area.config.type == "title" and PVP.LOBBY.code
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''{string = 'rand()', colour = G.C.JOKER_GREY},{string = "#@"..(G.deck and G.deck.cards[1] and G.deck.cards[#G.deck.cards].base.id or 11)..(G.deck and G.deck.cards[1] and G.deck.cards[#G.deck.cards].base.suit:sub(1,1) or 'D'), colour = G.C.RED},'''
+position = "at"
+payload = '''{string = 'rand()', colour = G.C.JOKER_GREY},{string = "#@"..(mp_collection and 'NOPE' or G.deck and G.deck.cards[1] and G.deck.cards[#G.deck.cards].base.id or 11)..(mp_collection and '' or G.deck and G.deck.cards[1] and G.deck.cards[#G.deck.cards].base.suit:sub(1,1) or 'D'), colour = G.C.RED},'''
+match_indent = true
+
+# this seed is passed through a billion functions, and never global scoped
+# just give it to us
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = 'self.GAME.selected_back_key = selected_back'
+position = "after"
+payload = '''
+G._MP_SET_SEED = args.seed
+'''
+match_indent = true
+
+# relevant only for small world (its fake starting consumables need their own set);
+# outside a PvP session the deck's consumables are created exactly as vanilla does
+# (Ghost Deck's c_hex as a 'Tarot').
+[[patches]]
+[patches.pattern]
+target = "back.lua"
+pattern = '''local card = create_card('Tarot', G.consumeables, nil, nil, nil, nil, v, 'deck')'''
+position = "at"
+payload = '''local card = create_card((PVP.in_session() and not PVP.legacy_smallworld()) and G.P_CENTERS[v].set or 'Tarot', G.consumeables, nil, nil, nil, nil, v, 'deck')'''
+match_indent = true
+
+# Added in 0a583263 ("fix voucher desync", BalatroMultiplayer, 2025-08-28): The
+# Order rolls the next voucher with pseudoseed("Voucher0"), and a roll made while
+# paused took vanilla's math.random() branch on one client only, desyncing the two
+# players' shops. That only matters inside a PvP session; everywhere else (vanilla,
+# SPDRN, whose racers may not have PvP installed at all) vanilla's guard stays.
+[[patches]]
+[patches.pattern]
+target = "functions/misc_functions.lua"
+pattern = '''if G.SETTINGS.paused and key ~= 'to_do' then return math.random() end'''
+position = "at"
+payload = '''if G.SETTINGS.paused and key ~= 'to_do' and not PVP.in_session() then return math.random() end'''
+match_indent = true
+
+# Pool exclusion hook (RNG-safe removal from get_current_pool) moved to
+# BalatroMultiplayerAPI/lovely/pool_gating.toml -- MPAPI.should_exclude_from_pool
+# applies generically to any MPAPI-consumer mod's content, not just PvP's.
+
+# STEAMODDED BUG - hackfix for deck flashing in incorrect position for one frame when switching (caused due to set_sprites drawing jank)
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "val:set_ability(val.config.center, true)"
+position = 'at'
+payload = '''
+local temp_x, temp_y = val.T.x, val.T.y
+val:set_ability(val.config.center, true)
+val.children.back.VT.x, val.children.back.VT.y = temp_x, temp_y
+val.children.center.VT.x, val.children.center.VT.y = temp_x, temp_y
+'''
+match_indent = true
+times = 1
+
+# fix magic trick suit+rank desync between PvP players; outside a PvP session the
+# shop rolls its playing cards as vanilla does.
+# this fix should become obsolete in a later steamodded version (currently 1620a)
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "local flags = SMODS.calculate_context({create_shop_card = true, set = v.type*})"
+position = 'before'
+payload = '''
+if PVP.in_session() then args.front = false end
+'''
+match_indent = true
+times = 1
+
+# log any panic collects
+[[patches]]
+[patches.pattern]
+target = "functions/misc_functions.lua"
+pattern = '''collectgarbage("collect")'''
+position = 'before'
+payload = '''
+PVP._DEBUG_PANIC_COLLECTS = (PVP._DEBUG_PANIC_COLLECTS or 0) + 1
+'''
+match_indent = true
+times = 1

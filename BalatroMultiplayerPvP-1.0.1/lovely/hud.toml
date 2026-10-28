@@ -1,0 +1,33 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 2147483600
+
+# Run Info/Options minh-shrink patch used to live here -- moved to
+# BalatroMultiplayerAPI's own lovely/hud.toml (generalized to
+# MPAPI.get_current_lobby(), with a PVP.is_practice_mode() fallback for this
+# mod's own practice mode) so SPDRN gets the same consistent HUD button
+# heights instead of only PvP.
+
+[[patches]]
+[patches.regex]
+target = "functions/UI_definitions.lua"
+pattern = '''\{n=G\.UIT\.C, config=\{align = "cm", padding = 0\.05, minw = 1\.45, minh = 1,'''
+position = 'at'
+payload = '''PVP.LOBBY.code and (not PVP.LOBBY.config.disable_live_and_timer_hud) and PVP.UI.timer_hud() or {n=G.UIT.C, config={align = "cm", padding = 0.05, minw = 1.45, minh = 1,'''
+times = 1
+
+# Instant PvP blind change
+[[patches]]
+[patches.pattern]
+target = "blind.lua"
+pattern = '''G.HUD_blind:get_UIE_by_ID("HUD_blind_name").states.visible = false'''
+position = 'before'
+payload = '''
+if PVP.is_mp_or_practice() and PVP.is_pvp_boss() then
+    PVP.UI.update_blind_HUD(blind, reset, silent)
+    return true
+end
+'''
+match_indent = true
+times = 1
